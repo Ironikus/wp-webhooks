@@ -3,7 +3,7 @@
  * Plugin Name: WP Webhooks
  * Plugin URI: https://ironikus.com/downloads/wp-webhooks/
  * Description: Automate your WordPress system using webhooks
- * Version: 1.0.0
+ * Version: 1.0.2
  * Author: Ironikus
  * Author URI: https://ironikus.com/
  * License: GPL2
@@ -19,7 +19,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 define( 'WPWH_NAME',           'WP Webhooks' );
 
 // Plugin version.
-define( 'WPWH_VERSION',        '1.0.0' );
+define( 'WPWH_VERSION',        '1.0.2' );
 
 // Determines if the plugin is loaded
 define( 'WPWH_SETUP',          true );
@@ -39,22 +39,38 @@ define( 'WPWH_PLUGIN_URL',     plugin_dir_url( WPWH_PLUGIN_FILE ) );
 // Plugin Root File.
 define( 'WPWH_TEXTDOMAIN',     'wp-webhooks' );
 
-// News ID
-define( 'WPWH_NEWS_FEED_ID', 1 );
+if( ! defined( 'WPWHPRO_SETUP' ) ){
 
-/**
- * Load the main instance for our core functions
- */
-require_once WPWH_PLUGIN_DIR . 'core/class-wp-webhooks.php';
+	/**
+	 * Load the main instance for our core functions
+	 */
+	require_once WPWH_PLUGIN_DIR . 'core/class-wp-webhooks-pro.php';
 
-/**
- * The main function to load the only instance
- * of our master class.
- *
- * @return object|WP_Webhooks
- */
-function WPWH() {
-	return WP_Webhooks::instance();
+	/**
+	 * The main function to load the only instance
+	 * of our master class.
+	 *
+	 * @return object|WP_Webhooks_Pro
+	 */
+	function WPWHPRO() {
+		return WP_Webhooks_Pro::instance();
+	}
+
+	WPWHPRO();
+
+} else {
+
+	add_action( 'admin_notices', 'wpwh_premium_version_custom_notice', 100 );
+	function wpwh_premium_version_custom_notice(){
+
+		ob_start();
+		?>
+		<div class="notice notice-warning">
+			<p><?php echo 'To use <strong>WP Webhooks Pro</strong> properly, please deactivate <strong>WP Webhooks</strong>.'; ?></p>
+		</div>
+		<?php
+		echo ob_get_clean();
+
+	}
+
 }
-
-WPWH();

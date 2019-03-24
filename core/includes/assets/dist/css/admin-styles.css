@@ -2,14 +2,14 @@
 .ironikus-wrap a {
   color: #f1592a; }
 
-.ironikus-wrap .wp-webhooks-action-links {
+.ironikus-wrap .wp-webhooks-pro-action-links {
   margin-top: 20px; }
-  .ironikus-wrap .wp-webhooks-action-links a {
+  .ironikus-wrap .wp-webhooks-pro-action-links a {
     text-decoration: none;
     font-size: 17px;
     font-weight: bold;
     padding: 0 10px; }
-    .ironikus-wrap .wp-webhooks-action-links a.active {
+    .ironikus-wrap .wp-webhooks-pro-action-links a.active {
       color: #afafaf;
       font-weight: bold; }
 
@@ -143,7 +143,7 @@
 .ironikus-single-webhook-trigger-handler {
   margin-top: 20px; }
 
-.wpwh-empty {
+.wpwhpro-empty {
   background: #dedede;
   padding: 20px;
   border-radius: 5px;
@@ -153,9 +153,9 @@
 /*
  * Settings Tab
  */
-.wpwh-settings-table .description {
+.wpwhpro-settings-table .description {
   font-size: 11px;
   font-weight: 400; }
 
-.wpwh-settings-table td {
+.wpwhpro-settings-table td {
   padding: 5px 0px; }

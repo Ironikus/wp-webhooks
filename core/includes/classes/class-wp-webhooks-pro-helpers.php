@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WP_Webhooks_Helpers Class
+ * WP_Webhooks_Pro_Helpers Class
  *
  * This class contains all of the available helper functions
  *
@@ -12,10 +12,10 @@
  * The helpers of the plugin.
  *
  * @since 1.0.0
- * @package WPWH
+ * @package WPWHPRO
  * @author Ironikus <info@ironikus.com>
  */
-class WP_Webhooks_Helpers {
+class WP_Webhooks_Pro_Helpers {
 
 	/**
      * Variable to check if translations
@@ -33,10 +33,10 @@ class WP_Webhooks_Helpers {
     private $incoming_content = false;
 
 	/**
-	 * WP_Webhooks_Helpers constructor.
+	 * WP_Webhooks_Pro_Helpers constructor.
 	 */
     public function __construct() {
-        $this->activate_translations = ( get_option( 'wpwh_activate_translations' ) == 'yes' ) ? true : false;
+        $this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
     }
 
 	/**
@@ -52,7 +52,7 @@ class WP_Webhooks_Helpers {
 		 * Filter to control the translation and optimize
 		 * them to a specific output
 		 */
-		$trigger = apply_filters( 'wpwh/helpers/control_translations', $this->activate_translations, $string, $cname );
+		$trigger = apply_filters( 'wpwhpro/helpers/control_translations', $this->activate_translations, $string, $cname );
 		if( empty( $trigger ) ){
 			return $string;
 		}
@@ -70,7 +70,7 @@ class WP_Webhooks_Helpers {
 		}
 
 		if( $prefix == 'default' ){
-			$front = 'WPWH: ';
+			$front = 'WPWHPRO: ';
 		} elseif ( ! empty( $prefix ) ){
 			$front = $prefix;
 		} else {
@@ -120,7 +120,7 @@ class WP_Webhooks_Helpers {
 		/**
 		 * Block an admin notice based onn the specified values
 		 */
-		$throwit = apply_filters('wpwh/helpers/throw_admin_notice', true, $content, $type, $is_dismissible);
+		$throwit = apply_filters('wpwhpro/helpers/throw_admin_notice', true, $content, $type, $is_dismissible);
 		if(!$throwit)
 			return '';
 
@@ -347,7 +347,7 @@ class WP_Webhooks_Helpers {
 	        $return['content'] = $response;
         }
 
-		return apply_filters( 'wpwh/helpers/validate_response_body', $return, $current_content_type, $response );
+		return apply_filters( 'wpwhpro/helpers/validate_response_body', $return, $current_content_type, $response );
 	}
 
 	/**

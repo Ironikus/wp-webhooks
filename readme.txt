@@ -5,8 +5,8 @@ Contributors: ironikusagency
 Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
-Tested up to: 5.1
-Stable Tag: 1.0.0
+Tested up to: 5.1.1
+Stable Tag: 1.0.2
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -29,6 +29,7 @@ It's time to automate your WordPress website on a whole new level!
 * Send data on login, register, update, new post, update post and more
 * Add multiple Webhooks for each trigger and also for the actions
 * Test all of the available triggers with a single click
+* Test all of the available actions within the plugin
 * Fully translatable and ready for multilingual sites
 * Full WPML Support
 * Advanced Developer Hooks
@@ -46,7 +47,7 @@ Sounds like a catchy title, right? Actually, it really is the truth. Why? We wil
 * Advanced security features
 * Completely free premium extensions
 
-Our premium features for WP Webhooks Pro
+Our premium features for [WP Webhooks Pro](https://ironikus.com/products/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * Create users with user meta
 * Update users and user meta
@@ -57,7 +58,7 @@ Our premium features for WP Webhooks Pro
 * IP Whitelist feature for enhanced security
 * In-plugin support
 
-Our free premium extensions for WP Webhooks Pro
+Our free premium extensions for [WP Webhooks Pro](https://ironikus.com/products/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * Create Blog Post Via Email: Yes, it will allow you to create WordPress posts via Email
 * Execute PHP Code: It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
@@ -80,6 +81,12 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.2: March 23, 2019 =
+* Feature: Synced code with the pro version for a better data handling
+
+= 1.0.1: March 20, 2019 =
+* Feature: Test webhook actions directly out of the plugin
 
 = 1.0.0: March 13, 2019 =
 * Birthday of WP Webhooks

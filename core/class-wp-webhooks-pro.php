@@ -1,43 +1,43 @@
 <?php
-if ( ! class_exists( 'WP_Webhooks' ) ) :
+if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 
 	/**
-	 * Main WP_Webhooks Class.
+	 * Main WP_Webhooks_Pro Class.
 	 *
 	 * @since 1.0.0
-	 * @package WPWH
+	 * @package WPWHPRO
 	 * @author Ironikus <info@ironikus.com>
 	 */
-	final class WP_Webhooks {
+	final class WP_Webhooks_Pro {
 
 		/**
 		 * The real instance
 		 *
-		 * @var WP_Webhooks
+		 * @var WP_Webhooks_Pro
 		 * @since 1.0.0
 		 */
 		private static $instance;
 
 		/**
-		 * WPWH settings Object.
+		 * WPWHPRO settings Object.
 		 *
-		 * @var object|WP_Webhooks_Settings
+		 * @var object|WP_Webhooks_Pro_Settings
 		 * @since 1.0.0
 		 */
 		public $settings;
 
 		/**
-		 * WPWH helpers Object.
+		 * WPWHPRO helpers Object.
 		 *
-		 * @var object|WP_Webhooks_Helpers
+		 * @var object|WP_Webhooks_Pro_Helpers
 		 * @since 1.0.0
 		 */
 		public $helpers;
 
 		/**
-		 * WPWH Webhook Object.
+		 * WPWHPRO Webhook Object.
 		 *
-		 * @var object|WP_Webhooks_Webhook
+		 * @var object|WP_Webhooks_Pro_Webhook
 		 * @since 1.0.0
 		 */
 		public $webhook;
@@ -65,32 +65,32 @@ if ( ! class_exists( 'WP_Webhooks' ) ) :
 		}
 
 		/**
-		 * Main WP_Webhooks Instance.
+		 * Main WP_Webhooks_Pro Instance.
 		 *
-		 * Insures that only one instance of WP_Webhooks exists in memory at any one
+		 * Insures that only one instance of WP_Webhooks_Pro exists in memory at any one
 		 * time. Also prevents needing to define globals all over the place.
 		 *
 		 * @since 1.0.0
 		 * @static
 		 * @staticvar array $instance
-		 * @return object|WP_Webhooks The one true WP_Webhooks
+		 * @return object|WP_Webhooks_Pro The one true WP_Webhooks_Pro
 		 */
 		public static function instance() {
-			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof WP_Webhooks ) ) {
-				self::$instance                 = new WP_Webhooks;
+			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof WP_Webhooks_Pro ) ) {
+				self::$instance                 = new WP_Webhooks_Pro;
 				self::$instance->base_hooks();
 				self::$instance->includes();
-				self::$instance->helpers        = new WP_Webhooks_Helpers();
-				self::$instance->settings       = new WP_Webhooks_Settings();
-				self::$instance->webhook        = new WP_Webhooks_Webhook();
+				self::$instance->helpers        = new WP_Webhooks_Pro_Helpers();
+				self::$instance->settings       = new WP_Webhooks_Pro_Settings();
+				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
 
-				new WP_Webhooks_Run();
+				new WP_Webhooks_Pro_Run();
 
 				/**
 				 * Fire a custom action to allow extensions to register
-				 * after WP Webhooks was successfully registered
+				 * after WP Webhooks Pro was successfully registered
 				 */
-				do_action( 'wpwh_plugin_loaded' );
+				do_action( 'wpwhpro_plugin_loaded' );
 			}
 
 			return self::$instance;
@@ -104,11 +104,11 @@ if ( ! class_exists( 'WP_Webhooks' ) ) :
 		 * @return void
 		 */
 		private function includes() {
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-helpers.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-settings.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-webhook.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-helpers.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-settings.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-webhook.php';
 
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-run.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-run.php';
 		}
 
 		/**

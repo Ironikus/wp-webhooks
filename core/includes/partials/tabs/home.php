@@ -1,5 +1,5 @@
 <h1>Hey there! You made it!</h1><br>
-<p>We are so thankful that you decided to go with our plugin <strong>WP Webhooks Pro</strong> to make more out of your website!</p>
+<p>We are so thankful that you decided to go with our plugin <strong>WP Webhooks</strong> to make more out of your website!</p>
 <p>To give you the best start possible, we would love to share some insights with you!</p>
 <p>
     In case you are not familiar with how the plugin works, we created some awesome docs that should help you with getting started: <a href="https://ironikus.com/docs/" title="See the video" target="_blank">Check out our docs</a>

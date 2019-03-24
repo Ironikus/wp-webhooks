@@ -59,7 +59,7 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'wpwh_ironikus_add_webhook_trigger',
+                action : 'ironikus_add_webhook_trigger',
                 webhook_url : webhook_url_val,
                 webhook_group : webhook_id,
                 webhook_callback : $webhook_callback,
@@ -77,7 +77,7 @@
                         $( $this ).css( { 'background': '#00a73f' } );
 
                         var $webhook_html = '<tr id="ironikus-webhook-id-' + $webhook['webhook'] + '"><td>';
-                        $webhook_html += '<input class="ironikus-webhook-input" type="text" name="ironikus_wp_webhooks_webhook_url" value="' + $webhook['webhook_url'] + '" readonly /><br>';
+                        $webhook_html += '<input class="ironikus-webhook-input" type="text" name="ironikus_wp_webhooks_pro_webhook_url" value="' + $webhook['webhook_url'] + '" readonly /><br>';
                         $webhook_html += '</td><td><div class="ironikus-element-actions">';
                         $webhook_html += '<span class="ironikus-delete" ironikus-delete="' + $webhook['webhook'] + '" ironikus-group="' + $webhook['webhook_group'] + '" >Delete</span>';
 
@@ -120,7 +120,7 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'wpwh_ironikus_remove_webhook_trigger',
+                action : 'ironikus_remove_webhook_trigger',
                 webhook : $webhook,
                 webhook_group : $webhook_group,
                 ironikus_nonce: ironikus.ajax_nonce
@@ -148,7 +148,7 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'wpwh_ironikus_test_webhook_trigger',
+                action : 'ironikus_test_webhook_trigger',
                 webhook : $webhook,
                 webhook_group : $webhook_group,
                 webhook_callback : $webhook_callback,

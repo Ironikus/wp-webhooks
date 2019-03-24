@@ -1,16 +1,16 @@
 <?php
 
 /**
- * Class WP_Webhooks_Settings
+ * Class WP_Webhooks_Pro_Settings
  *
  * This class contains all of our important settings
  * Here you can configure the whole plugin behavior.
  *
  * @since 1.0.0
- * @package WPWH
+ * @package WPWHPRO
  * @author Ironikus <info@ironikus.com>
  */
-class WP_Webhooks_Settings{
+class WP_Webhooks_Pro_Settings{
 
 	/**
 	 * Our globally used capability
@@ -45,7 +45,7 @@ class WP_Webhooks_Settings{
 	private $action_nonce;
 
 	/**
-	 * WP_Webhooks_Settings constructor.
+	 * WP_Webhooks_Pro_Settings constructor.
 	 *
 	 * We define all of our necessary settings in here.
 	 * If you need to do plugin related changes, everything will
@@ -53,16 +53,16 @@ class WP_Webhooks_Settings{
 	 */
 	function __construct(){
 		$this->admin_cap            = 'manage_options';
-		$this->page_name            = 'wp-webhooks';
+		$this->page_name            = 'wp-webhooks-pro';
 		$this->page_title           = WPWH_NAME;
 		$this->webhook_settings_key = 'ironikus_webhook_webhooks';
 		$this->news_transient_key   = 'ironikus_cached_news';
-		$this->webhook_ident_param  = 'wpwh_action';
+		$this->webhook_ident_param  = 'wpwhpro_action';
 		$this->active_webhook_ident_param  = 'wpwhpro_active_webhooks';
 		$this->default_settings     = $this->load_default_settings();
 		$this->action_nonce        = array(
-			'action' => 'ironikus_wpwh_actions',
-			'arg'    => 'ironikus_wpwh_actions_nonce'
+			'action' => 'ironikus_wpwhpro_actions',
+			'arg'    => 'ironikus_wpwhpro_actions_nonce'
 		);
 		$this->trans_strings        = $this->load_default_strings();
 		$this->active_webhooks      = $this->setup_active_webhooks();
@@ -77,10 +77,10 @@ class WP_Webhooks_Settings{
 			'wpwhpro_activate_translations' => array(
 				'id'          => 'wpwhpro_activate_translations',
 				'type'        => 'checkbox',
-				'label'       => WPWH()->helpers->translate('Activate Translations', 'wpwh-fields-activate-translations'),
+				'label'       => WPWHPRO()->helpers->translate('Activate Translations', 'wpwhpro-fields-activate-translations'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWH()->helpers->translate('Check this button if you want to enable our translation engine on your website.', 'wpwh-fields-translations-tip')
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to enable our translation engine on your website.', 'wpwhpro-fields-translations-tip')
 			),
 		);
 
@@ -98,7 +98,7 @@ class WP_Webhooks_Settings{
 			}
 		}
 
-		return apply_filters('wpwh/settings/fields', $fields);
+		return apply_filters('wpwhpro/settings/fields', $fields);
 	}
 
 	public function setup_active_webhooks(){
@@ -128,7 +128,7 @@ class WP_Webhooks_Settings{
 			'sufficient-permissions'    => 'You do not have sufficient permissions to access this page.',
 		);
 
-		return apply_filters( 'wpwh/admin/default_strings', $trans_arr );
+		return apply_filters( 'wpwhpro/admin/default_strings', $trans_arr );
 	}
 
 	/**
@@ -157,7 +157,7 @@ class WP_Webhooks_Settings{
 		 *
 		 * This filter is called every time the capability is needed.
 		 */
-		return apply_filters( 'wpwh/admin/settings/capability', $this->admin_cap, $target );
+		return apply_filters( 'wpwhpro/admin/settings/capability', $this->admin_cap, $target );
 	}
 
 	/**
@@ -169,7 +169,7 @@ class WP_Webhooks_Settings{
 		/*
 		 * Filter the page name based on your needs
 		 */
-		return apply_filters( 'wpwh/admin/settings/page_name', $this->page_name );
+		return apply_filters( 'wpwhpro/admin/settings/page_name', $this->page_name );
 	}
 
 	/**
@@ -181,7 +181,7 @@ class WP_Webhooks_Settings{
 		/*
 		 * Filter the page title based on your needs.
 		 */
-		return apply_filters( 'wpwh/admin/settings/page_title', $this->page_title );
+		return apply_filters( 'wpwhpro/admin/settings/page_title', $this->page_title );
 	}
 
 	/**
@@ -215,7 +215,7 @@ class WP_Webhooks_Settings{
 		/*
 		 * Filter the page title based on your needs.
 		 */
-		return apply_filters( 'wpwh/admin/settings/webhook_ident_param', $this->webhook_ident_param );
+		return apply_filters( 'wpwhpro/admin/settings/webhook_ident_param', $this->webhook_ident_param );
 	}
 
 	/**
