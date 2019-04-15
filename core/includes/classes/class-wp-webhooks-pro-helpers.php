@@ -230,6 +230,23 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
+	 * Get Parameters from URL string
+	 *
+	 * @param $url - the url
+	 *
+	 * @return array - the parameters of the url
+	 */
+	public function get_parameters_from_url( $url ){
+
+		$parts = parse_url($url);
+
+		parse_str($parts['query'], $url_parameter);
+
+		return empty( $url_parameter ) ? array() : $url_parameter;
+
+	}
+
+	/**
 	 * Builds an url out of the mai values
 	 *
 	 * @param $url - the default url to set the params to

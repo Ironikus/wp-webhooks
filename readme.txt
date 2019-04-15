@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
 Tested up to: 5.1.1
-Stable Tag: 1.0.2
+Stable Tag: 1.0.3
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -81,6 +81,10 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.3: April 13, 2019 =
+* Feature: Optimized headers for "Send Data" triggers
+* Feature: Add Signature for "Send Data" triggers through new settings option
 
 = 1.0.2: March 23, 2019 =
 * Feature: Synced code with the pro version for a better data handling

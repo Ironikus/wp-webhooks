@@ -82,6 +82,18 @@ class WP_Webhooks_Pro_Settings{
 				'required'    => false,
 				'description' => WPWHPRO()->helpers->translate('Check this button if you want to enable our translation engine on your website.', 'wpwhpro-fields-translations-tip')
 			),
+
+			/**
+			 * SET TRIGGER SECRET
+			 */
+			'wpwhpro_trigger_secret' => array(
+				'id'          => 'wpwhpro_trigger_secret',
+				'type'        => 'text',
+				'label'       => WPWHPRO()->helpers->translate('Trigger Secret', 'wpwhpro-fields-trigger-secret'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPWHPRO()->helpers->translate('Enhance your website security by setting a custom trigger secret key. This allows you to validate against the incoming data from the recipient url side.', 'wpwhpro-fields-trigger-secret-tip')
+			),
 		);
 
 		foreach( $fields as $key => $field ){

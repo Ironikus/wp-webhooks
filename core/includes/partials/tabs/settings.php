@@ -25,6 +25,10 @@ if( isset( $_POST['ironikus_update_settings'] ) ) {
 			} else {
 				$value = 'yes';
 			}
+		} elseif( $setting['type'] == 'text' ){
+			if( isset( $_POST[ $settings_name ] ) ){
+				$value = sanitize_title( $_POST[ $settings_name ] );
+			}
 		}
 
 		update_option( $settings_name, $value );

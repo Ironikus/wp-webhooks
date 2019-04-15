@@ -389,6 +389,12 @@ class WP_Webhooks_Pro_Webhook {
 		do_action( 'wpwhpro/webhooks/add_webhooks_actions', $action, $response_ident_value, $response_api_key );
 	}
 
+	public function generate_trigger_signature( $data, $secret ) {
+		$hash_signature = apply_filters( 'wpwhpro/admin/webhooks/webhook_trigger_signature', 'sha256', $data );
+
+		return base64_encode( hash_hmac( $hash_signature, $data, $secret, true ) );
+	}
+
 	/**
 	 * Our external API Call to post a certain trigger
 	 *
@@ -398,22 +404,33 @@ class WP_Webhooks_Pro_Webhook {
 	 * @return array
 	 */
 	public function post_to_webhook( $url, $data, $args = array() ){
-		$response = array();
-		$default_args = array(
-			'body' => $data,
-			'blocking' => false,
-			'timeout' => 100
+
+		$http_args = array(
+			'method'      => 'POST',
+			'timeout'     => MINUTE_IN_SECONDS,
+			'redirection' => 0,
+			'httpversion' => '1.0',
+			'blocking'    => false,
+			'user-agent'  => sprintf(  WPWHPRO_NAME . '/%s Trigger (WordPress/%s)', WPWHPRO_VERSION, $GLOBALS['wp_version'] ),
+			'body'        => trim( wp_json_encode( $data ) ),
+			'headers'     => array(
+				'Content-Type' => 'application/json',
+			),
+			'cookies'     => array(),
 		);
 
-		$webhook_response = wp_remote_post( $url, array_merge( $default_args, $args ) );
+		$http_args = apply_filters( 'wpwhpro/admin/webhooks/webhook_http_args', array_merge( $http_args, $args ), $args, $url );
 
-		if ( ! is_wp_error( $webhook_response ) ) {
+		$http_args['headers']['X-WP-Webhook-Source'] = home_url( '/' );
 
-			if ( isset( $webhook_response['body'] ) && strlen( $webhook_response['body'] ) > 0 ) {
-				$response = wp_remote_retrieve_body( $webhook_response );
-			}
-
+		$secret_key = get_option( 'wpwhpro_trigger_secret' );
+		if( ! empty( $secret_key ) ){
+			$http_args['headers']['X-WP-Webhook-Signature'] = $this->generate_trigger_signature( $http_args['body'], $secret_key );
 		}
+
+		$response = wp_safe_remote_request( $url, $http_args );
+
+		do_action( 'wpwhpro/admin/webhooks/webhook_trigger_sent', $response, $url, $http_args );
 
 		return $response;
 	}
