@@ -1,12 +1,12 @@
 === WP Webhooks ===
 Author URI: https://ironikus.com/
 Plugin URI: https://ironikus.com/downloads/wp-webhooks/
-Contributors: ironikusagency
+Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
 Tested up to: 5.1.1
-Stable Tag: 1.0.3
+Stable Tag: 1.0.4
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -27,9 +27,11 @@ It's time to automate your WordPress website on a whole new level!
 
 * Create users and posts via external webhooks on your website (Custom post types supported)
 * Send data on login, register, update, new post, update post and more
+* Send data on custom WordPress hook calls
 * Add multiple Webhooks for each trigger and also for the actions
 * Test all of the available triggers with a single click
 * Test all of the available actions within the plugin
+* Advanced settings for each webhook trigger url
 * Fully translatable and ready for multilingual sites
 * Full WPML Support
 * Advanced Developer Hooks
@@ -81,6 +83,26 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.4: April 24, 2019 =
+* Feature: Introduce new webhook trigger settings - You can now set custom rules for each of your webhook triggers
+* Feature: Confirm action before deleting a trigger webhook
+* Feature: Reset WP Webhook data via the settings
+* Feature: Added a new webhook trigger that fires after a custom WordPress action hook was called. ( Send Data On Custom Action )
+* Feature: Introduce new default settings for the following webhooks: Send Data On New Post, Send Data On Post Update, Send Data On Post Deletion
+* Feature: Introduce new settings to fire a trigger only on certain post types for the following webhooks: Send Data On New Post, Send Data On Post Update, Send Data On Post Deletion
+* Tweak: Add post data and post meta data to the post_delete trigger
+* Tweak: Optimize process for generated webhook trigger id's
+* Tweak: Change post_delete trigger from after_delete_post to delete_post
+* Tweak: Optimize response for custom action after certain webhooks
+* Tweak: Optimize phpDocs
+* Tweak: Optimize Send Data tab
+* Tweak: Improve the displayed values for single webhook trigger responses
+* Fix: Fix issue of not visible whitelist and log tabs after saving the settings
+* Dev: Introduce optimized handler for posting data to a webhook. You can now also parse the whole webhook array construct
+* Dev: Add new webhook default settings api
+* Dev: Add new webhook settings api
+* Dev: Introduce new update function for updating webhook data
 
 = 1.0.3: April 13, 2019 =
 * Feature: Optimized headers for "Send Data" triggers

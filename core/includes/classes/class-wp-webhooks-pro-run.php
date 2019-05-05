@@ -49,6 +49,7 @@ class WP_Webhooks_Pro_Run{
 		add_action( 'wp_ajax_ironikus_add_webhook_trigger',  array( $this, 'ironikus_add_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_trigger',  array( $this, 'ironikus_remove_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_test_webhook_trigger',  array( $this, 'ironikus_test_webhook_trigger' ) );
+		add_action( 'wp_ajax_ironikus_save_webhook_trigger_settings',  array( $this, 'ironikus_save_webhook_trigger_settings' ) );
 
 		// Load admin page tabs
 		add_filter( 'wpwhpro/admin/settings/menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
@@ -61,6 +62,9 @@ class WP_Webhooks_Pro_Run{
 		// Setup triggers
 		add_action( 'plugins_loaded', array( $this, 'add_webhook_triggers' ), 10 );
 		add_filter( 'wpwhpro/webhooks/get_webhooks_triggers', array( $this, 'add_webhook_triggers_content' ), 10 );
+
+		//Reset wp webhooks
+		add_action( 'admin_init', array( $this, 'reset_wpwhpro_data' ), 10 );
 
 		//Load just active ones
 		add_action( 'wpwhpro/webhooks/get_webhooks_triggers', array( $this, 'filter_active_webhooks_triggers' ), PHP_INT_MAX - 100, 2 );
@@ -138,7 +142,7 @@ class WP_Webhooks_Pro_Run{
 		$url_parts              = parse_url( $webhook_current_url );
 		parse_str($url_parts['query'], $query_params);
 		$clean_url              = strtok( $webhook_current_url, '?' );
-        $new_webhook            = strtotime( date( 'Y-n-d H:i:s' ) );
+		$new_webhook            = strtotime( date( 'Y-n-d H:i:s' ) ) . 999 . rand( 10, 9999 );
 
         if( ! isset( $webhooks[ $new_webhook ] ) ){
             WPWHPRO()->webhook->create( $new_webhook, 'trigger', array( 'group' => $webhook_group, 'webhook_url' => $webhook_url ) );
@@ -195,7 +199,7 @@ class WP_Webhooks_Pro_Run{
 			if( ! empty( $webhook_callback ) ){
 				$data = apply_filters( 'ironikus_demo_' . $webhook_callback, array(), $webhook, $webhook_group, $webhooks[ $webhook ] );
 
-				$response_data = WPWHPRO()->webhook->post_to_webhook( $webhooks[ $webhook ]['webhook_url'], $data, array( 'blocking' => true ) );
+				$response_data = WPWHPRO()->webhook->post_to_webhook( $webhooks[ $webhook ], $data, array( 'blocking' => true ) );
 
 				if ( ! empty( $response_data ) ) {
 					$response['data']       = $response_data;
@@ -207,6 +211,33 @@ class WP_Webhooks_Pro_Run{
         echo json_encode( $response );
 		die();
     }
+
+	/*
+	 * Functionality to load all of the available demo webhook triggers
+	 */
+	public function ironikus_save_webhook_trigger_settings(){
+		check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+
+		$webhook            = isset( $_REQUEST['webhook_id'] ) ? intval( $_REQUEST['webhook_id'] ) : '';
+		$webhook_group      = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
+		$trigger_settings   = ( isset( $_REQUEST['trigger_settings'] ) && ! empty( $_REQUEST['trigger_settings'] ) ) ? $_REQUEST['trigger_settings'] : '';
+		$response           = array( 'success' => false );
+
+		parse_str( $trigger_settings, $trigger_settings_data );
+
+		if( ! empty( $webhook_group ) && ! empty( $webhook ) ){
+			$check = WPWHPRO()->webhook->update( $webhook, 'trigger', $webhook_group, array(
+				'settings' => $trigger_settings_data
+			) );
+
+			if( ! empty( $check ) ){
+				$response['success'] = true;
+			}
+		}
+
+		echo json_encode( $response );
+		die();
+	}
 
 	/**
 	 * ######################
@@ -281,6 +312,33 @@ class WP_Webhooks_Pro_Run{
 				break;
 		}
 
+	}
+
+	/**
+	 * ######################
+	 * ###
+	 * #### SETTINGS EXTENSIONS
+	 * ###
+	 * ######################
+	 */
+
+	/*
+	 * Reset the settings and webhook data
+	 */
+	public function reset_wpwhpro_data(){
+
+		if( ! is_admin() || ! is_user_logged_in() ){
+			return;
+		}
+
+		$current_url_full = WPWHPRO()->helpers->get_current_url();
+		$reset_all = get_option( 'wpwhpro_reset_data' );
+		if( $reset_all && $reset_all === 'yes' ){
+			delete_option( 'wpwhpro_reset_data' );
+			WPWHPRO()->webhook->reset_wpwhpro();
+			wp_redirect( $current_url_full );
+			die();
+		}
 	}
 
 	/**
@@ -1047,6 +1105,7 @@ $return_args = array(
 		$triggers[] = $this->trigger_post_create();
 		$triggers[] = $this->trigger_post_update();
 		$triggers[] = $this->trigger_post_delete();
+		$triggers[] = $this->trigger_custom_action_content();
 
 		return $triggers;
 	}
@@ -1088,9 +1147,14 @@ $return_args = array(
         }
 
 		if( isset( $available_triggers['post_delete'] ) ){
-			add_action( 'after_delete_post', array( $this, 'ironikus_trigger_post_delete' ), 10, 3 );
+			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete' ), 10, 3 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
         }
+
+		if( isset( $available_triggers['custom_action'] ) ){
+			add_action( 'wp_webhooks_send_to_webhook', array( $this, 'wp_webhooks_send_to_webhook_action' ), 10, 1 );
+			add_filter( 'ironikus_demo_test_custom_action', array( $this, 'ironikus_send_demo_custom_action' ), 10 );
+		}
 
 	}
 
@@ -1330,9 +1394,10 @@ $return_args = array(
 		$webhooks               = WPWHPRO()->webhook->get_hooks( 'trigger', 'create_user' );
 		$user_data              = (array) get_user_by( 'id', $user_id );
 		$user_data['user_meta'] = get_user_meta( $user_id );
+		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
         }
 
         do_action( 'wpwhpro/webhooks/trigger_user_register', $user_id, $user_data, $response_data );
@@ -1382,12 +1447,13 @@ $return_args = array(
 		$user_data               = (array) get_user_by( 'id', $user_id );
 		$user_data['user_meta']  = get_user_meta( $user_id );
 		$user_data['user_login'] = get_user_meta( $user_login );
+		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
 		}
 
-		do_action( 'wpwhpro/webhooks/trigger_user_login', $user_id, $user_data );
+		do_action( 'wpwhpro/webhooks/trigger_user_login', $user_id, $user_data, $response_data );
 	}
 
 	/**
@@ -1436,12 +1502,13 @@ $return_args = array(
 		$user_data                  = (array) get_user_by( 'id', $user_id );
 		$user_data['user_meta']     = get_user_meta( $user_id );
 		$user_data['user_old_data'] = $old_data;
+		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
 		}
 
-		do_action( 'wpwhpro/webhooks/trigger_user_update', $user_id, $user_data );
+		do_action( 'wpwhpro/webhooks/trigger_user_update', $user_id, $user_data, $response_data );
 	}
 
 	/**
@@ -1454,6 +1521,20 @@ $return_args = array(
 	 * @since 1.2
 	 */
 	public function trigger_post_create(){
+
+		$validated_post_types = array();
+		foreach( get_post_types() as $name ){
+
+			$singular_name = $name;
+			$post_type_obj = get_post_type_object( $singular_name );
+			if( ! empty( $post_type_obj->labels->singular_name ) ){
+				$singular_name = $post_type_obj->labels->singular_name;
+			} elseif( ! empty( $post_type_obj->labels->name ) ){
+				$singular_name = $post_type_obj->labels->name;
+			}
+
+			$validated_post_types[ $name ] = $singular_name;
+		}
 
 		$parameter = array(
 			'post_id'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the created post.', 'trigger-post-create' ) ),
@@ -1470,10 +1551,27 @@ $return_args = array(
 		<?php
 		$description = ob_get_clean();
 
+		$settings = array(
+			'load_default_settings' => true,
+			'data' => array(
+				'wpwhpro_post_create_trigger_on_post_type' => array(
+					'id'          => 'wpwhpro_post_create_trigger_on_post_type',
+					'type'        => 'select',
+					'multiple'    => true,
+					'choices'      => $validated_post_types,
+					'label'       => WPWHPRO()->helpers->translate('Trigger on selected post types', 'wpwhpro-fields-trigger-on-post-type'),
+					'placeholder' => '',
+					'required'    => false,
+					'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+				),
+			)
+		);
+
 		return array(
 			'trigger'           => 'post_create',
 			'name'              => WPWHPRO()->helpers->translate( 'Send Data On New Post', 'trigger-post-create' ),
 			'parameter'         => $parameter,
+			'settings'          => $settings,
 			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_post_create( array(), '', '' ) ),
 			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after a new post was created.', 'trigger-post-create' ),
 			'description'       => $description,
@@ -1488,6 +1586,20 @@ $return_args = array(
 	 * @since 1.2
 	 */
 	public function trigger_post_update(){
+
+		$validated_post_types = array();
+		foreach( get_post_types() as $name ){
+
+			$singular_name = $name;
+			$post_type_obj = get_post_type_object( $singular_name );
+			if( ! empty( $post_type_obj->labels->singular_name ) ){
+				$singular_name = $post_type_obj->labels->singular_name;
+			} elseif( ! empty( $post_type_obj->labels->name ) ){
+				$singular_name = $post_type_obj->labels->name;
+			}
+
+			$validated_post_types[ $name ] = $singular_name;
+		}
 
 		$parameter = array(
 			'post_id'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the updated post.', 'trigger-post-update' ) ),
@@ -1504,10 +1616,27 @@ $return_args = array(
 		<?php
 		$description = ob_get_clean();
 
+		$settings = array(
+			'load_default_settings' => true,
+			'data' => array(
+				'wpwhpro_post_update_trigger_on_post_type' => array(
+					'id'          => 'wpwhpro_post_update_trigger_on_post_type',
+					'type'        => 'select',
+					'multiple'    => true,
+					'choices'      => $validated_post_types,
+					'label'       => WPWHPRO()->helpers->translate('Trigger on selected post types', 'wpwhpro-fields-trigger-on-post-type'),
+					'placeholder' => '',
+					'required'    => false,
+					'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+				),
+			)
+		);
+
 		return array(
 			'trigger'           => 'post_update',
 			'name'              => WPWHPRO()->helpers->translate( 'Send Data On Post Update', 'trigger-post-update' ),
 			'parameter'         => $parameter,
+			'settings'          => $settings,
 			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_post_create( array(), '', '' ) ),
 			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after an existing post is updated.', 'trigger-post-update' ),
 			'description'       => $description,
@@ -1523,6 +1652,20 @@ $return_args = array(
 	 */
 	public function trigger_post_delete(){
 
+		$validated_post_types = array();
+		foreach( get_post_types() as $name ){
+
+			$singular_name = $name;
+			$post_type_obj = get_post_type_object( $singular_name );
+			if( ! empty( $post_type_obj->labels->singular_name ) ){
+				$singular_name = $post_type_obj->labels->singular_name;
+			} elseif( ! empty( $post_type_obj->labels->name ) ){
+				$singular_name = $post_type_obj->labels->name;
+			}
+
+			$validated_post_types[ $name ] = $singular_name;
+		}
+
 		$parameter = array(
 			'post_id' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the deleted post.', 'trigger-post-delete' ) ),
 		);
@@ -1536,14 +1679,73 @@ $return_args = array(
 		<?php
 		$description = ob_get_clean();
 
+		$settings = array(
+			'load_default_settings' => true,
+			'data' => array(
+				'wpwhpro_post_delete_trigger_on_post_type' => array(
+					'id'          => 'wpwhpro_post_delete_trigger_on_post_type',
+					'type'        => 'select',
+					'multiple'    => true,
+					'choices'      => $validated_post_types,
+					'label'       => WPWHPRO()->helpers->translate('Trigger on selected post types', 'wpwhpro-fields-trigger-on-post-type'),
+					'placeholder' => '',
+					'required'    => false,
+					'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+				),
+			)
+		);
+
 		return array(
 			'trigger'           => 'post_delete',
 			'name'              => WPWHPRO()->helpers->translate( 'Send Data On Post Deletion', 'trigger-post-delete' ),
 			'parameter'         => $parameter,
+			'settings'          => $settings,
 			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_post_delete( array(), '', '' ) ),
 			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after a post was deleted.', 'trigger-post-delete' ),
 			'description'       => $description,
 			'callback'          => 'test_post_delete'
+		);
+
+	}
+
+	/*
+	 * Register the post delete trigger as an element
+	 *
+	 * @since 1.6.4
+	 */
+	public function trigger_custom_action_content(){
+
+		$parameter = array();
+
+		ob_start();
+		?>
+        <p><?php echo WPWHPRO()->helpers->translate( "This webhook enables you to send a custom action to a webhook within your code. To do so, you only have to define the action and the data you want to send to it. ", "trigger-custom-action" ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( "Down below you will see an example on what it may looks like:", "trigger-custom-action" ); ?></p>
+        <pre>
+$custom_data = array(
+    'data_1' => 'value'
+);
+
+do_action( 'wp_webhooks_send_to_webhook', $custom_data );
+        </pre>
+        <p><?php echo WPWHPRO()->helpers->translate( "As soon as this action fires, it will instantly be sent th the specified webhook urls within this webhook trigger.", "trigger-custom-action" ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( "Please don't forget to set your custom webhook url above so that the webhook works.", "trigger-custom-action" ); ?></p>
+		<?php
+		$description = ob_get_clean();
+
+		$settings = array(
+			'load_default_settings' => true
+		);
+
+		return array(
+			'trigger'           => 'custom_action',
+			'name'              => WPWHPRO()->helpers->translate( 'Send Data On Custom Action', 'trigger-custom-action' ),
+			'parameter'         => $parameter,
+			'settings'          => $settings,
+			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_custom_action() ),
+			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after a custom action was called. For more information, please check the description.', 'trigger-custom-action' ),
+			'description'       => $description,
+			'callback'          => 'test_custom_action'
 		);
 
 	}
@@ -1562,12 +1764,30 @@ $return_args = array(
 			    'post'      => $post,
 			    'post_meta' => get_post_meta( $post_id ),
 		    );
+		    $response_data = array();
 
 		    foreach( $webhooks as $webhook ){
-			    $response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $data_array );
+
+			    $is_valid = true;
+
+			    if( isset( $webhook['settings'] ) ){
+				    foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+					    if( $settings_name === 'wpwhpro_post_create_trigger_on_post_type' && ! empty( $settings_data ) ){
+						    if( ! in_array( $post->post_type, $settings_data ) ){
+							    $is_valid = false;
+						    }
+					    }
+
+				    }
+			    }
+
+			    if( $is_valid ){
+				    $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+			    }
 		    }
 
-		    do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post );
+		    do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post, $response_data );
         }
 	}
 
@@ -1585,9 +1805,27 @@ $return_args = array(
 			    'post'      => $post,
 			    'post_meta' => get_post_meta( $post_id ),
 		    );
+		    $response_data = array();
 
 		    foreach( $webhooks as $webhook ){
-			    $response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $data_array );
+
+			    $is_valid = true;
+
+			    if( isset( $webhook['settings'] ) ){
+				    foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+					    if( $settings_name === 'wpwhpro_post_update_trigger_on_post_type' && ! empty( $settings_data ) ){
+						    if( ! in_array( $post->post_type, $settings_data ) ){
+							    $is_valid = false;
+						    }
+					    }
+
+				    }
+			    }
+
+			    if( $is_valid ){
+				    $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+			    }
 		    }
 
 		    do_action( 'wpwhpro/webhooks/trigger_post_update', $post_id, $post, $response_data );
@@ -1601,16 +1839,37 @@ $return_args = array(
 	 */
 	public function ironikus_trigger_post_delete( $post_id ){
 
-        $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_delete' );
-        $data_array = array(
-                'post_id' => $post_id
-        );
+		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_delete' );
+		$post = get_post( $post_id );
+		$data_array = array(
+			'post_id' => $post_id,
+			'post'      => $post,
+			'post_meta' => get_post_meta( $post_id ),
+		);
+		$response_data = array();
 
-        foreach( $webhooks as $webhook ){
-            $response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $data_array );
-        }
+		foreach( $webhooks as $webhook ){
 
-        do_action( 'wpwhpro/webhooks/trigger_post_delete', $post_id, $response_data );
+			$is_valid = true;
+
+			if( isset( $webhook['settings'] ) ){
+				foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+					if( $settings_name === 'wpwhpro_post_delete_trigger_on_post_type' && ! empty( $settings_data ) ){
+						if( ! in_array( $post->post_type, $settings_data ) ){
+							$is_valid = false;
+						}
+					}
+
+				}
+			}
+
+			if( $is_valid ) {
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+			}
+		}
+
+		do_action( 'wpwhpro/webhooks/trigger_post_delete', $post_id, $response_data );
 	}
 
 	/**
@@ -1693,6 +1952,33 @@ $return_args = array(
 	public function ironikus_send_demo_post_delete( $data, $webhook, $webhook_group ) {
 
 		return array( 'post_id' => 12345 ); // the deleted demo post id
+	}
+
+	/*
+	 * Register the post delete trigger logic
+	 *
+	 * @since 1.6.4
+	 */
+	public function wp_webhooks_send_to_webhook_action( $data ){
+
+		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'custom_action' );
+		$response_data = array();
+
+		foreach( $webhooks as $webhook ){
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data );
+		}
+
+		do_action( 'wpwhpro/webhooks/trigger_post_delete', $data, $response_data );
+	}
+
+	/*
+	 * Register the demo post delete trigger callback
+	 *
+	 * @since 1.6.4
+	 */
+	public function ironikus_send_demo_custom_action() {
+
+		return array( WPWHPRO()->helpers->translate( 'Your very own data construct.', 'trigger-custom-action' ) ); // Custom content from the action
 	}
 
 }

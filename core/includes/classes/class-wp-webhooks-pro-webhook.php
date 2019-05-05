@@ -119,7 +119,7 @@ class WP_Webhooks_Pro_Webhook {
 	/**
 	 * Set custom webhooks inside of our array()
 	 *
-	 * @param $key - The key of the single webhook
+	 * @param $key - The key of the single webhook (not the idetifier)
 	 * @param $type - the type of the hooks you want to get (triggers, actions, all (default))
 	 * @param $data - (array) The custom data of the specified webhook
 	 * @param string $group - (Optional) A webhook group
@@ -138,6 +138,7 @@ class WP_Webhooks_Pro_Webhook {
 		}
 
 		if( $type == 'trigger' ){
+			//A trigger needs to belong to a group
 			if( ! empty( $group ) ){
 				if( ! isset( $this->webhook_options[ $type ][ $group ] ) ){
 					$this->webhook_options[ $type ][ $group ] = array();
@@ -223,12 +224,79 @@ class WP_Webhooks_Pro_Webhook {
 				break;
 			case 'trigger':
 				$data['webhook_url'] = $args['webhook_url'];
+
+				if( isset( $args['settings'] ) && is_array( $args['settings'] ) ){
+					$data['settings'] = $args['settings'];
+				}
+
 				$group = $args['group'];
 				break;
 		}
 
 
 		return $this->set_hooks( $webhook, $type, $data, $group );
+
+	}
+
+	/**
+	 * Update an existig webhook URL
+	 *
+	 * @param $key - The webhook identifier
+	 * @param $type - the type of the hooks you want to get (triggers, actions, all (default))
+	 * @param array $args - Custom attributes depending on the webhooks
+	 *
+	 * @return bool - Wether the webhook was updated or not
+	 */
+	public function update( $key, $type, $group = '', $args = array() ){
+
+		if( empty( $key ) || empty( $type ) ){
+			return false;
+		}
+
+		$current_hooks = $this->get_hooks();
+		$group = ( ! empty( $group ) ) ? $group : '';
+
+
+		$data = array();
+
+		if( ! empty( $group ) ){
+			if( isset( $current_hooks[ $type ] ) ){
+				if( isset( $current_hooks[ $type ][ $group ] ) ){
+					if( isset( $current_hooks[ $type ][ $group ][ $key ] ) ){
+						$data = $current_hooks[ $type ][ $group ][ $key ];
+					}
+				}
+			}
+		} else {
+			if( isset( $current_hooks[ $type ] ) ){
+				if( isset( $current_hooks[ $type ][ $key ] ) ){
+					$data = $current_hooks[ $type ][ $key ];
+				}
+			}
+		}
+
+		$check = false;
+		if( ! empty( $data ) ){
+			$data = array_merge( $data, $args );
+
+			//Revalidate the settings data with the $data array
+			if( isset( $args['settings'] ) ){
+
+				$data['settings'] = $args['settings'];
+
+				//Remove empty entries since we don't want to save what's not necessary
+				foreach( $data['settings'] as $skey => $sdata ){
+					if( $sdata === '' ){
+						unset( $data['settings'][ $skey ] );
+					}
+				}
+
+			}
+
+			$check = $this->set_hooks( $key, $type, $data, $group );
+		}
+
+		return $check;
 
 	}
 
@@ -259,6 +327,29 @@ class WP_Webhooks_Pro_Webhook {
 	 * ###
 	 * ######################
 	 */
+
+	/*
+	 * The core logic for reseting our plugin
+	 *
+	 * @since 1.6.4
+	 */
+	public function reset_wpwhpro(){
+
+		//Reset settings
+		$settings = WPWHPRO()->settings->get_settings();
+		foreach( $settings as $key => $value ){
+			if( $key ){
+				delete_option( $key );
+			}
+		}
+
+		//Reset active webhook parameter and all its data
+		delete_option( WPWHPRO()->settings->get_active_webhooks_ident() );
+
+		//Reset all the webhook settings
+		delete_option( WPWHPRO()->settings->get_webhook_option_key() );
+
+	}
 
 	/**
 	 * Create the webhook url for the specified webhook
@@ -403,7 +494,68 @@ class WP_Webhooks_Pro_Webhook {
 	 *
 	 * @return array
 	 */
-	public function post_to_webhook( $url, $data, $args = array() ){
+	public function post_to_webhook( $webhook, $data, $args = array(), $skip_validation = false ){
+
+		/*
+		 * Allow also to send the whole webhook
+		 * @since 1.6.4
+		 */
+		if( is_array( $webhook ) ){
+			$url = $webhook['webhook_url'];
+		} else {
+			$url = $webhook;
+		}
+
+		/*
+		 * Validate default settings
+		 *
+		 * @since 1.6.4
+		 */
+		$response = array(
+			'success' => false,
+			'is_valid' => true,
+		);
+		if( is_array($webhook) && isset( $webhook['settings'] ) && ! empty( $webhook['settings'] ) && ! $skip_validation ){
+
+			foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+				if( $settings_name === 'wpwhpro_user_must_be_logged_in' && (integer) $settings_data === 1 ){
+					if( ! is_user_logged_in() ){
+						$response['msg'] = WPWHPRO()->helpers->translate( 'Trigger not sent because the settings did not match.', 'wpwhpro-admin-webhooks' );
+						$response['is_valid'] = false;
+					}
+				}
+
+				if( $settings_name === 'wpwhpro_user_must_be_logged_out' && (integer) $settings_data === 1 ){
+					if( is_user_logged_in() ){
+						$response['msg'] = WPWHPRO()->helpers->translate( 'Trigger not sent because the settings did not match.', 'wpwhpro-admin-webhooks' );
+						$response['is_valid'] = false;
+					}
+				}
+
+				if( $settings_name === 'wpwhpro_trigger_backend_only' && (integer) $settings_data === 1 ){
+					if( ! is_admin() ){
+						$response['msg'] = WPWHPRO()->helpers->translate( 'Trigger not sent because the settings did not match.', 'wpwhpro-admin-webhooks' );
+						$response['is_valid'] = false;
+					}
+				}
+
+				if( $settings_name === 'wpwhpro_trigger_frontend_only' && (integer) $settings_data === 1 ){
+					if( is_admin() ){
+						$response['msg'] = WPWHPRO()->helpers->translate( 'Trigger not sent because the settings did not match.', 'wpwhpro-admin-webhooks' );
+						$response['is_valid'] = false;
+					}
+				}
+
+			}
+
+		}
+
+		$response = apply_filters( 'wpwhpro/admin/webhooks/is_valid_trigger_response', $response, $webhook, $data, $args );
+
+		if( $response['is_valid'] === false ){
+			return $response;
+		}
 
 		$http_args = array(
 			'method'      => 'POST',
@@ -411,7 +563,7 @@ class WP_Webhooks_Pro_Webhook {
 			'redirection' => 0,
 			'httpversion' => '1.0',
 			'blocking'    => false,
-			'user-agent'  => sprintf(  WPWHPRO_NAME . '/%s Trigger (WordPress/%s)', WPWHPRO_VERSION, $GLOBALS['wp_version'] ),
+			'user-agent'  => sprintf(  WPWH_NAME . '/%s Trigger (WordPress/%s)', WPWHPRO_VERSION, $GLOBALS['wp_version'] ),
 			'body'        => trim( wp_json_encode( $data ) ),
 			'headers'     => array(
 				'Content-Type' => 'application/json',

@@ -1,3 +1,6 @@
+/* ----------------------------------------------------------------------------
+ * Mixins & Variables
+ * ------------------------------------------------------------------------- */
 /* Main Area */
 .ironikus-wrap a {
   color: #f1592a; }
@@ -50,7 +53,7 @@
     display: -ms-flexbox;
     display: flex;
     -ms-flex-wrap: wrap;
-        flex-wrap: wrap; }
+    flex-wrap: wrap; }
     .accordion .ironikus-arguments ul li {
       width: 50%; }
       .accordion .ironikus-arguments ul li .ironikus-attribute-wrapper {
@@ -103,10 +106,10 @@
 .ironikus-single-webhook-trigger-handler {
   display: -ms-flexbox;
   display: flex; }
-  .ironikus-single-webhook-trigger-handler .ironikus-save {
+  .ironikus-single-webhook-trigger-handler > p {
     background: #007ca7;
     color: #fff;
-    padding: 0 15px;
+    padding: 0 15px !important;
     line-height: 26px;
     margin: 1px;
     cursor: pointer; }
@@ -133,6 +136,16 @@
   color: red;
   cursor: pointer; }
 
+.ironikus-settings-wrapper {
+  text-decoration: none; }
+  .ironikus-settings-wrapper .ironikus-settings {
+    color: #007dab;
+    cursor: pointer; }
+
+.ironikus-refresh {
+  color: #007dab;
+  cursor: pointer; }
+
 .ironikus-send-demo {
   color: #007dab;
   cursor: pointer; }
@@ -150,6 +163,35 @@
   border: 2px dashed grey;
   color: #6f6f6f; }
 
+/* TBH Modal wrapper */
+.ironikus-tb-webhook-wrapper .ironikus-tb-webhook-url {
+  margin: 20px 0; }
+
+@media only screen and (max-width: 800px) {
+  #TB_window {
+    top: 0 !important;
+    left: 0 !important;
+    margin: 20px !important;
+    width: calc(100% - 40px) !important;
+    height: calc(100% - 40px) !important;
+    overflow: scroll !important; }
+  #TB_ajaxContent {
+    height: auto !important; }
+    #TB_ajaxContent tbody > tr {
+      display: block; } }
+
+#TB_ajaxContent {
+  width: calc(100% - 40px) !important;
+  padding: 0 20px 20px 20px !important; }
+  #TB_ajaxContent tbody > tr {
+    padding: 10px; }
+    #TB_ajaxContent tbody > tr:nth-child(2n) {
+      background: #f5f5f5; }
+    #TB_ajaxContent tbody > tr:nth-child(2n+1) {
+      background: #e0e0e0; }
+  #TB_ajaxContent tbody tr td {
+    padding: 5px 10px; }
+
 /*
  * Settings Tab
  */
@@ -157,5 +199,13 @@
   font-size: 11px;
   font-weight: 400; }
 
-.wpwhpro-settings-table td {
+.wpwhpro-settings-table tr td {
   padding: 5px 0px; }
+  .wpwhpro-settings-table tr td:first-of-type {
+    padding-right: 10px; }
+
+.wpwhpro-settings-table input[type=text] {
+  width: 200px; }
+
+.wpwhpro-logs .wpwhpro-log-action-wrapper {
+  margin-top: 40px; }

@@ -8,6 +8,9 @@ $settings = WPWHPRO()->settings->get_settings();
 $triggers = WPWHPRO()->webhook->get_triggers( '', false );
 $actions = WPWHPRO()->webhook->get_actions( false );
 $active_webhooks = WPWHPRO()->settings->get_active_webhooks();
+$current_url_full = WPWHPRO()->helpers->get_current_url();
+
+$reload_location = false;
 
 if( isset( $_POST['ironikus_update_settings'] ) ) {
 	if( ! wp_verify_nonce( $_POST['ironikus_wpwhpro_settings_nonce'], 'ironikus_wpwhpro_settings' ) ) {
@@ -56,9 +59,16 @@ if( isset( $_POST['ironikus_update_settings'] ) ) {
 	}
 	// END Action Settings
 	update_option( WPWHPRO()->settings->get_active_webhooks_ident(),  $active_webhooks );
+	$reload_location = true;
 
 	echo WPWHPRO()->helpers->create_admin_notice( 'The settings are successfully updated. Please refresh the page.', 'success', true );
 }
+
+//Reload the page
+if( $reload_location ){
+	echo '<script type="text/javascript">window.location = window.location.href;location.reload();</script>';
+}
+
 ?>
 
 <h2><?php echo WPWHPRO()->helpers->translate('Global Settings', 'admin-settings'); ?></h2>

@@ -60,6 +60,7 @@ class WP_Webhooks_Pro_Settings{
 		$this->webhook_ident_param  = 'wpwhpro_action';
 		$this->active_webhook_ident_param  = 'wpwhpro_active_webhooks';
 		$this->default_settings     = $this->load_default_settings();
+		$this->default_trigger_settings     = $this->load_default_trigger_settings();
 		$this->action_nonce        = array(
 			'action' => 'ironikus_wpwhpro_actions',
 			'arg'    => 'ironikus_wpwhpro_actions_nonce'
@@ -94,6 +95,18 @@ class WP_Webhooks_Pro_Settings{
 				'required'    => false,
 				'description' => WPWHPRO()->helpers->translate('Enhance your website security by setting a custom trigger secret key. This allows you to validate against the incoming data from the recipient url side.', 'wpwhpro-fields-trigger-secret-tip')
 			),
+
+			/**
+			 * Reset WP Webbhooks Pro
+			 */
+			'wpwhpro_reset_data' => array(
+				'id'          => 'wpwhpro_reset_data',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro', 'wpwhpro-fields-reset'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data of the plugin is gone.', 'wpwhpro-fields-reset-tip')
+			),
 		);
 
 		foreach( $fields as $key => $field ){
@@ -111,6 +124,52 @@ class WP_Webhooks_Pro_Settings{
 		}
 
 		return apply_filters('wpwhpro/settings/fields', $fields);
+	}
+
+	/*
+	 * Return the default filter settings
+	 *
+	 * @since 1.6.4
+	 */
+	private function load_default_trigger_settings(){
+		$fields = array(
+
+			'wpwhpro_user_must_be_logged_in' => array(
+				'id'          => 'wpwhpro_user_must_be_logged_in',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('User must be logged in', 'wpwhpro-fields-trigger-settings'),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to fire this webhook only when the user is logged in ( is_user_logged_in() function is used ).', 'wpwhpro-fields-trigger-settings')
+			),
+			'wpwhpro_user_must_be_logged_out' => array(
+				'id'          => 'wpwhpro_user_must_be_logged_out',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('User must be logged out', 'wpwhpro-fields-trigger-settings'),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to fire this webhook only when the user is logged out ( ! is_user_logged_in() function is used ).', 'wpwhpro-fields-trigger-settings')
+			),
+			'wpwhpro_trigger_backend_only' => array(
+				'id'          => 'wpwhpro_trigger_backend_only',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Trigger from backend only', 'wpwhpro-fields-trigger-settings'),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to fire this trigger only from the backend. Every post submitted through the frontend is ignored ( is_admin() function is used ).', 'wpwhpro-fields-trigger-settings')
+			),
+			'wpwhpro_trigger_frontend_only' => array(
+				'id'          => 'wpwhpro_trigger_frontend_only',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Trigger from frontend only', 'wpwhpro-fields-trigger-settings'),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to fire this trigger only from the frontent. Every post submitted through the frontend is ignored ( ! is_admin() function is used ).', 'wpwhpro-fields-trigger-settings')
+			)
+
+		);
+
+		return apply_filters('wpwhpro/settings/default_trigger_settings', $fields);
 	}
 
 	public function setup_active_webhooks(){
@@ -249,6 +308,18 @@ class WP_Webhooks_Pro_Settings{
 	public function get_settings(){
 
 		return $this->default_settings;
+
+	}
+
+	/**
+	 * Return the default trigger settings data
+	 *
+	 * @since 1.6.4
+	 * @return array - the default trigger settings data
+	 */
+	public function get_default_trigger_settings(){
+
+		return $this->default_trigger_settings;
 
 	}
 
