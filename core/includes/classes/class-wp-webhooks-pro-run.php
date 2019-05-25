@@ -279,7 +279,7 @@ class WP_Webhooks_Pro_Run{
 
 		$tabs['home']           = WPWHPRO()->helpers->translate( 'Home', 'admin-menu' );
 		$tabs['send-data']      = WPWHPRO()->helpers->translate( 'Send Data', 'admin-menu' );
-		$tabs['recieve-data']   = WPWHPRO()->helpers->translate( 'Recieve Data', 'admin-menu' );
+		$tabs['recieve-data']   = WPWHPRO()->helpers->translate( 'Receive Data', 'admin-menu' );
 		$tabs['settings']       = WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' );
 		$tabs['pro']            = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
@@ -727,7 +727,7 @@ $return_args = array(
 		$first_name         = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'first_name' ) );
 		$last_name          = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'last_name' ) );
 		$role               = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'role' ) );
-		$user_pass          = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_pass' ) );
+		$user_pass          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_pass' );
 		$do_action          = sanitize_email( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' ) );
 
 		$rich_editing     = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'rich_editing' ) == 'yes' ) ? true : false;

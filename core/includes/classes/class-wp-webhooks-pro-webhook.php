@@ -515,6 +515,43 @@ class WP_Webhooks_Pro_Webhook {
 			'success' => false,
 			'is_valid' => true,
 		);
+		$response_content_type_slug = 'json';
+		$response_content_type = 'application/json';
+
+		//Required settings
+		if( is_array($webhook) && isset( $webhook['settings'] ) && ! empty( $webhook['settings'] ) ) {
+
+			foreach ( $webhook['settings'] as $settings_name => $settings_data ) {
+
+				if( $settings_name === 'wpwhpro_trigger_response_type' && ! empty( $settings_data ) ){
+
+					switch( $settings_data ){
+						case 'form':
+							$response_content_type_slug = 'form';
+							$response_content_type = 'application/x-www-form-urlencoded';
+							break;
+						case 'xml':
+							if( extension_loaded('simplexml') ){
+								$response_content_type_slug = 'xml';
+								$response_content_type = 'application/xml';
+							} else {
+								$response['msg'] = WPWHPRO()->helpers->translate( 'SimpleXML is not activated on your server. Please activate it first or switch the content type of your webhook.', 'wpwhpro-admin-webhooks' );
+								$response['is_valid'] = false;
+							}
+							break;
+						case 'json':
+						default:
+							//Just for reference
+							$response_content_type_slug = 'json';
+							$response_content_type = 'application/json';
+							break;
+					}
+
+				}
+
+			}
+		}
+
 		if( is_array($webhook) && isset( $webhook['settings'] ) && ! empty( $webhook['settings'] ) && ! $skip_validation ){
 
 			foreach( $webhook['settings'] as $settings_name => $settings_data ){
@@ -564,12 +601,33 @@ class WP_Webhooks_Pro_Webhook {
 			'httpversion' => '1.0',
 			'blocking'    => false,
 			'user-agent'  => sprintf(  WPWH_NAME . '/%s Trigger (WordPress/%s)', WPWHPRO_VERSION, $GLOBALS['wp_version'] ),
-			'body'        => trim( wp_json_encode( $data ) ),
 			'headers'     => array(
-				'Content-Type' => 'application/json',
+				'Content-Type' => $response_content_type,
 			),
 			'cookies'     => array(),
 		);
+
+		switch( $response_content_type_slug ){
+			case 'form':
+				$http_args['body'] = $data;
+				break;
+			case 'xml':
+				$sxml_data = apply_filters( 'wpwhpro/admin/webhooks/simplexml_data', '<data/>', $http_args );
+				$xml_data = $data;
+				$xml = WPWHPRO()->helpers->convert_to_xml( new SimpleXMLElement( $sxml_data ), $xml_data );
+				$http_args['body'] = $xml->asXML();
+				break;
+			case 'json':
+			default:
+				$http_args['body'] = trim( wp_json_encode( $data ) );
+				break;
+		}
+
+		//Add charset if available
+		$blog_charset = get_option( 'blog_charset' );
+		if ( ! empty( $blog_charset ) ) {
+			$http_args['headers']['Content-Type'] .= '; charset=' . $blog_charset;
+		}
 
 		$http_args = apply_filters( 'wpwhpro/admin/webhooks/webhook_http_args', array_merge( $http_args, $args ), $args, $url );
 

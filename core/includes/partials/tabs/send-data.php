@@ -25,7 +25,9 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
 
 				if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
 					$settings = array_merge( WPWHPRO()->settings->get_default_trigger_settings(), $settings );
-				}
+                }
+                
+                $settings = array_merge( WPWHPRO()->settings->get_required_trigger_settings(), $settings );
 
 			}
 
@@ -111,17 +113,25 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
                                                                                     <select name="<?php echo $setting_name; ?><?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? '[]' : ''; ?>" <?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? 'multiple' : ''; ?>>
 																						<?php
 																						if( isset( $settings_data[ $setting_name ] ) ){
-																							$settings_data[ $setting_name ] = array_flip( $settings_data[ $setting_name ] );
+																							$settings_data[ $setting_name ] = ( is_array( $settings_data[ $setting_name ] ) ) ? array_flip( $settings_data[ $setting_name ] ) : $settings_data[ $setting_name ];
 																						}
 																						?>
 																						<?php foreach( $setting['choices'] as $choice_name => $choice_label ) : ?>
 																							<?php
 																							$selected = '';
-																							if( isset( $settings_data[ $setting_name ] ) ){
-																								if( isset( $settings_data[ $setting_name ][ $choice_name ] ) ){
-																									$selected = 'selected="selected"';
-																								}
-																							}
+                                                                                            if( isset( $settings_data[ $setting_name ] ) ){
+
+                                                                                                if( is_array( $settings_data[ $setting_name ] ) ){
+	                                                                                                if( isset( $settings_data[ $setting_name ][ $choice_name ] ) ){
+		                                                                                                $selected = 'selected="selected"';
+	                                                                                                }
+                                                                                                } else {
+	                                                                                                if( $settings_data[ $setting_name ] === $choice_name ){
+		                                                                                                $selected = 'selected="selected"';
+	                                                                                                }
+                                                                                                }
+
+                                                                                            }
 																							?>
                                                                                             <option value="<?php echo $choice_name; ?>" <?php echo $selected; ?>><?php echo WPWHPRO()->helpers->translate( $choice_label, 'wpwhpro-page-triggers' ); ?></option>
 																						<?php endforeach; ?>

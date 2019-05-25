@@ -30,13 +30,13 @@ class WP_Webhooks_Pro_Helpers {
      *
 	 * @var mixed - the current content
 	 */
-    private $incoming_content = false;
+	private $incoming_content = false;
 
 	/**
 	 * WP_Webhooks_Pro_Helpers constructor.
 	 */
     public function __construct() {
-        $this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
+		$this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
     }
 
 	/**
@@ -410,6 +410,34 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
+	 * Check if a specified content is xml
+	 *
+	 * @param $object - the simplexml object
+	 * @param $data - the data that should be converted
+	 *
+	 * @return $obbject - The current simple xml element
+	 */
+	function convert_to_xml( SimpleXMLElement $object, array $data ) {
+
+		foreach( $data as $key => $value ) {
+			if( is_array( $value ) ) {
+				$new_object = $object->addChild( $key );
+				$this->convert_to_xml( $new_object, $value );
+			} else {
+				// if the key is an integer, it needs text with it to actually work.
+				if( is_numeric( $key ) ) {
+					$prefix = apply_filters( 'wpwhpro/helpers/convert_to_xml_int_prefix', 'wpwh_', $object, $data );
+					$key = $prefix . $key;
+				}
+
+				$object->addChild( $key, $value );
+			}
+		}
+
+		return $object;
+	}
+
+	/**
      * This function validates all necessary tags for displayable content.
      *
 	 * @param $content - The validated content
@@ -506,7 +534,15 @@ class WP_Webhooks_Pro_Helpers {
         //Make sure we don't pass single arrays as well
         if( is_array( $return ) && isset( $return[0] ) && count( $return ) > 1 ){
 	        $return = $return[0];
-        }
+		}
+		
+		//Validate form url encode strings again
+		if( is_string( $return ) ){
+            $stripslashes = apply_filters( 'wpwhpro/helpers/request_values_stripslashes', true, $return );
+			if( $stripslashes ){
+				$return = stripslashes( $return );
+			}
+		}
 
         return $return;
     }

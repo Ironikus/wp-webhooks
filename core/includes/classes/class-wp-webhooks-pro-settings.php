@@ -60,6 +60,7 @@ class WP_Webhooks_Pro_Settings{
 		$this->webhook_ident_param  = 'wpwhpro_action';
 		$this->active_webhook_ident_param  = 'wpwhpro_active_webhooks';
 		$this->default_settings     = $this->load_default_settings();
+		$this->required_trigger_settings     = $this->load_required_trigger_settings();
 		$this->default_trigger_settings     = $this->load_default_trigger_settings();
 		$this->action_nonce        = array(
 			'action' => 'ironikus_wpwhpro_actions',
@@ -124,6 +125,28 @@ class WP_Webhooks_Pro_Settings{
 		}
 
 		return apply_filters('wpwhpro/settings/fields', $fields);
+	}
+
+	private function load_required_trigger_settings(){
+		$fields = array(
+
+			'wpwhpro_trigger_response_type' => array(
+				'id'          => 'wpwhpro_trigger_response_type',
+				'type'        => 'select',
+				'label'       => WPWHPRO()->helpers->translate('Change the data response type', 'wpwhpro-fields-trigger-required-settings'),
+				'choices'     => array(
+					'json' => 'JSON',
+					'xml' => 'XML',
+					'form' => 'X-WWW-FORM-URLENCODE',
+				),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Set a custom response type for the data that gets send to the specified URL. Default is JSON.', 'wpwhpro-fields-trigger-required-settings')
+			)
+
+		);
+
+		return apply_filters('wpwhpro/settings/required_trigger_settings', $fields);
 	}
 
 	/*
@@ -308,6 +331,18 @@ class WP_Webhooks_Pro_Settings{
 	public function get_settings(){
 
 		return $this->default_settings;
+
+	}
+
+	/**
+	 * Return the required trigger settings data
+	 *
+	 * @since 1.0.5
+	 * @return array - the default trigger settings data
+	 */
+	public function get_required_trigger_settings(){
+
+		return $this->required_trigger_settings;
 
 	}
 

@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
 Tested up to: 5.1.1
-Stable Tag: 1.0.4
+Stable Tag: 1.0.5
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -38,6 +38,12 @@ It's time to automate your WordPress website on a whole new level!
 * Optimized settings page for more control
 * Supports XML, JSON, plain text/HTML and form urlencode
 * Supports Zapier, automate.io and more
+
+= Free Extensions =
+On wordpress.org you will also find more free extensions to equip your favorite plugins via webhooks.
+
+* [Contact Form 7 Integration](https://wordpress.org/plugins/wpwh-contact-form-7/)
+* [WP Reset Integration](https://wordpress.org/plugins/wpwh-wp-reset-webhook-integration/)
 
 = The best Pro version you have ever seen! =
 
@@ -83,6 +89,15 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.5: May 25, 2019 =
+* Feature: Send your triggers in different content types. Supported types: JSON (Default), XML, X-WWW-FORM-URLENCODE
+* Fix: Correct menu item name from "Recieve Data" to "Receive Data"
+* Fix: Remove sanitation from parsed user password to not change it at all (create_user and update_user trigger)
+* Dev: New filter to strip slashes on responses: wpwhpro/helpers/request_values_stripslashes
+* Dev: New filter for the new convert_to_xml function to change the prefix: wpwhpro/helpers/convert_to_xml_int_prefix
+* Dev: Filter for manipulating the required webhook trigger settings: wpwhpro/settings/required_trigger_settings
+* Dev: Filter to change the simplexml data: wpwhpro/admin/webhooks/simplexml_data
 
 = 1.0.4: April 24, 2019 =
 * Feature: Introduce new webhook trigger settings - You can now set custom rules for each of your webhook triggers
