@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
-Tested up to: 5.1.1
-Stable Tag: 1.0.5
+Tested up to: 5.2.2
+Stable Tag: 1.0.6
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -60,6 +60,7 @@ Our premium features for [WP Webhooks Pro](https://ironikus.com/products/?utm_so
 * Create users with user meta
 * Update users and user meta
 * Delete users
+* Add and/or remove multiple user roles
 * Create posts with post meta
 * Update posts with post meta
 * Delete posts
@@ -89,6 +90,18 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.6: June 30, 2019 =
+* Feature: Webhook actions are ajax ready
+* Feature: Security question before deleting an action or trigger
+* Feature: Settings Engine for webhook actions
+* Fix: When using update_user action in combination with create_if_none, the user was not aadded
+* Fix: Fix text bugs
+* Fix: Debug warning if json data is parsed as an array and not as a string
+* Fix: Fix issue with not correctly applied text domain for translation functions
+* Fix: Non existent translation within the Send Data Tab for the "Add button"
+* Dev: New filter wpwhpro/helpers/request_return_value
+* Dev: New filter wpwhpro/settings/required_action_settings
 
 = 1.0.5: May 25, 2019 =
 * Feature: Send your triggers in different content types. Supported types: JSON (Default), XML, X-WWW-FORM-URLENCODE

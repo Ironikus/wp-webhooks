@@ -62,6 +62,7 @@ class WP_Webhooks_Pro_Settings{
 		$this->default_settings     = $this->load_default_settings();
 		$this->required_trigger_settings     = $this->load_required_trigger_settings();
 		$this->default_trigger_settings     = $this->load_default_trigger_settings();
+		$this->required_action_settings     = $this->load_required_action_settings();
 		$this->action_nonce        = array(
 			'action' => 'ironikus_wpwhpro_actions',
 			'arg'    => 'ironikus_wpwhpro_actions_nonce'
@@ -106,7 +107,7 @@ class WP_Webhooks_Pro_Settings{
 				'label'       => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro', 'wpwhpro-fields-reset'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data of the plugin is gone.', 'wpwhpro-fields-reset-tip')
+				'description' => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip')
 			),
 		);
 
@@ -193,6 +194,20 @@ class WP_Webhooks_Pro_Settings{
 		);
 
 		return apply_filters('wpwhpro/settings/default_trigger_settings', $fields);
+	}
+
+	/**
+	 * Load the strictly necessary action settings
+	 * to any available action.
+	 *
+	 * @return array - the action settings
+	 */
+	private function load_required_action_settings(){
+		$fields = array(
+			//Will soon be filled
+		);
+
+		return apply_filters('wpwhpro/settings/required_action_settings', $fields);
 	}
 
 	public function setup_active_webhooks(){
@@ -355,6 +370,18 @@ class WP_Webhooks_Pro_Settings{
 	public function get_default_trigger_settings(){
 
 		return $this->default_trigger_settings;
+
+	}
+
+	/**
+	 * Return the required action settings data
+	 *
+	 * @since 1.0.6
+	 * @return array - the default action settings data
+	 */
+	public function get_required_action_settings(){
+
+		return $this->required_action_settings;
 
 	}
 

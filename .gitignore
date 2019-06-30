@@ -1,2 +1,6 @@
-.DS_Store
 .idea
+.DS_Store
+/core/includes/assets/gulpfile.js
+node_modules
+/core/includes/assets/package.json
+/core/includes/assets/src

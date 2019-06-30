@@ -61,8 +61,6 @@ class WP_Webhooks_Pro_Helpers {
 			return $string;
 		}
 
-		$txtdomain = WPWH_TEXTDOMAIN;
-
 		if( ! empty( $cname ) ){
 			$context = $cname;
 		} else {
@@ -79,9 +77,9 @@ class WP_Webhooks_Pro_Helpers {
 
 		// WPML String Translation Logic (WPML itself has problems with _x in some versions)
 		if( function_exists( 'icl_t' ) ){
-			return icl_t( (string) $txtdomain, $context, $string );
+			return icl_t( (string) 'wp-webhooks-pro', $context, $string );
 		} else {
-			return $front . _x( $string, $context, (string) $txtdomain );
+			return $front . _x( $string, $context, (string) 'wp-webhooks-pro' );
 		}
 	}
 
@@ -528,12 +526,18 @@ class WP_Webhooks_Pro_Helpers {
 
         //Validate a left over object to an array
         if( is_object( $return ) ){
-            $return = current( (array) $return );
+            $return = json_decode( json_encode( $return ), true );
         }
 
-        //Make sure we don't pass single arrays as well
-        if( is_array( $return ) && isset( $return[0] ) && count( $return ) > 1 ){
-	        $return = $return[0];
+        if( is_array( $return ) ){
+			//Make sure we don't pass single arrays as well
+			if( isset( $return[0] ) && count( $return ) <= 1 ){
+				$return = $return[0];
+			} else {
+				//other arrays will be again encoded to a json
+				$return = json_encode( $return );
+			}
+	        
 		}
 		
 		//Validate form url encode strings again
@@ -544,7 +548,7 @@ class WP_Webhooks_Pro_Helpers {
 			}
 		}
 
-        return $return;
+        return apply_filters( 'wpwhpro/helpers/request_return_value', $return, $content, $key );
     }
 
 	public function get_current_ip() {

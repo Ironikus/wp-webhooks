@@ -47,9 +47,12 @@ class WP_Webhooks_Pro_Run{
 		add_action( 'admin_enqueue_scripts',    array( $this, 'enqueue_scripts_and_styles' ) );
 		add_action( 'admin_menu', array( $this, 'add_user_submenu' ), 150 );
 		add_action( 'wp_ajax_ironikus_add_webhook_trigger',  array( $this, 'ironikus_add_webhook_trigger' ) );
+		add_action( 'wp_ajax_ironikus_add_webhook_action',  array( $this, 'ironikus_add_webhook_action' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_trigger',  array( $this, 'ironikus_remove_webhook_trigger' ) );
+		add_action( 'wp_ajax_ironikus_remove_webhook_action',  array( $this, 'ironikus_remove_webhook_action' ) );
 		add_action( 'wp_ajax_ironikus_test_webhook_trigger',  array( $this, 'ironikus_test_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_trigger_settings',  array( $this, 'ironikus_save_webhook_trigger_settings' ) );
+		add_action( 'wp_ajax_ironikus_save_webhook_action_settings',  array( $this, 'ironikus_save_webhook_action_settings' ) );
 
 		// Load admin page tabs
 		add_filter( 'wpwhpro/admin/settings/menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
@@ -158,6 +161,38 @@ class WP_Webhooks_Pro_Run{
 
         echo json_encode( $response );
 		die();
+	}
+	
+	/**
+	 * Handler for creating a new webhook action url
+	 *
+	 * @return void
+	 */
+	public function ironikus_add_webhook_action(){
+        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+
+        $webhook_slug   = isset( $_REQUEST['webhook_slug'] ) ? $_REQUEST['webhook_slug'] : '';
+        $webhooks 		= WPWHPRO()->webhook->get_hooks( 'action' ) ;
+		$response       = array( 'success' => false );
+
+		//Sanitize webhook slug properly
+		$webhook_slug = str_replace( '§', '', $webhook_slug );
+		$webhook_slug = sanitize_title( $webhook_slug );
+		
+		if( ! isset( $webhooks[ $webhook_slug ] ) ){
+			WPWHPRO()->webhook->create( $webhook_slug, 'action' );
+
+			$webhooks_updated 		= WPWHPRO()->webhook->get_hooks( 'action' ) ;
+			if( isset( $webhooks_updated[ $webhook_slug ] ) ){
+				$response['success'] = true;
+				$response['webhook'] = $webhook_slug;
+				$response['webhook_action_delete_name'] = WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-actions' );
+				$response['webhook_url'] = WPWHPRO()->webhook->built_url( $webhook_slug, $webhooks_updated[ $webhook_slug ]['api_key'] );
+			}
+		}
+
+        echo json_encode( $response );
+		die();
     }
 
     /*
@@ -178,6 +213,24 @@ class WP_Webhooks_Pro_Run{
             }
 		}
 
+
+        echo json_encode( $response );
+		die();
+	}
+	
+	/*
+     * Remove the action via ajax
+     */
+	public function ironikus_remove_webhook_action(){
+        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+
+        $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
+		$response       = array( 'success' => false );
+
+		$check = WPWHPRO()->webhook->unset_hooks( $webhook, 'action' );
+		if( $check ){
+			$response['success'] = true;
+		}
 
         echo json_encode( $response );
 		die();
@@ -238,6 +291,32 @@ class WP_Webhooks_Pro_Run{
 		echo json_encode( $response );
 		die();
 	}
+
+	/*
+     * Functionality to save all available webhook actions
+     */
+	public function ironikus_save_webhook_action_settings(){
+        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+
+        $webhook            = isset( $_REQUEST['webhook_id'] ) ? sanitize_title( $_REQUEST['webhook_id'] ) : '';
+        $action_settings   = ( isset( $_REQUEST['action_settings'] ) && ! empty( $_REQUEST['action_settings'] ) ) ? $_REQUEST['action_settings'] : '';
+        $response           = array( 'success' => false );
+
+		parse_str( $action_settings, $action_settings_data );
+
+		if( ! empty( $webhook ) ){
+		    $check = WPWHPRO()->webhook->update( $webhook, 'action', '', array(
+                'settings' => $action_settings_data
+            ) );
+
+		    if( ! empty( $check ) ){
+		        $response['success'] = true;
+            }
+        }
+
+        echo json_encode( $response );
+		die();
+    }
 
 	/**
 	 * ######################
@@ -740,9 +819,11 @@ $return_args = array(
             die();
         }
 
-		$user_data = array(
-			'user_email' => $user_email
-		);
+		$user_data = array();
+
+		if( $user_email ){
+			$user_data['user_email'] = $user_email;
+		}
 
         $dynamic_user_login = apply_filters( 'wpwhpro/run/create_action_user_login', false );
         if ( empty( $user_login ) && $dynamic_user_login ) {

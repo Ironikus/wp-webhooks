@@ -472,7 +472,14 @@ class WP_Webhooks_Pro_Webhook {
 		}
 
 		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );
-		$action = ! empty( $action ) ? $action : '';
+		
+		if( empty( $action ) ){
+			if( ! empty( $_REQUEST['action'] ) ){
+				$action = sanitize_title( $_REQUEST['action'] );
+			} else {
+				$action = '';
+			}
+		}
 
 		/*
 		 * Register all of our available action actions
