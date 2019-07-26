@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
 Tested up to: 5.2.2
-Stable Tag: 1.0.6
+Stable Tag: 1.0.7
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -25,7 +25,7 @@ It's time to automate your WordPress website on a whole new level!
 
 = Features =
 
-* Create users and posts via external webhooks on your website (Custom post types supported)
+* Create/Delete users and posts via external webhooks on your website (Custom post types supported)
 * Send data on login, register, update, new post, update post and more
 * Send data on custom WordPress hook calls
 * Add multiple Webhooks for each trigger and also for the actions
@@ -90,6 +90,11 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.7: July 26, 2019 =
+* Feature: Add webhook action to delete users (Also from multisite networks)
+* Feature: Add webhook action to delete posts
+* Fix: Undefined notice while sending triggers
 
 = 1.0.6: June 30, 2019 =
 * Feature: Webhook actions are ajax ready

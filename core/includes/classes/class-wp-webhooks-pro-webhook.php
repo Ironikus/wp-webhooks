@@ -607,7 +607,7 @@ class WP_Webhooks_Pro_Webhook {
 			'redirection' => 0,
 			'httpversion' => '1.0',
 			'blocking'    => false,
-			'user-agent'  => sprintf(  WPWH_NAME . '/%s Trigger (WordPress/%s)', WPWHPRO_VERSION, $GLOBALS['wp_version'] ),
+			'user-agent'  => sprintf(  WPWH_NAME . '/%s Trigger (WordPress/%s)', WPWH_VERSION, $GLOBALS['wp_version'] ),
 			'headers'     => array(
 				'Content-Type' => $response_content_type,
 			),
