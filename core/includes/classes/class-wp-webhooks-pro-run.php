@@ -882,7 +882,7 @@ $return_args = array(
 			$return_args['success'] = true;
 			$return_args['msg'] = WPWHPRO()->helpers->translate("Test value successfully filled.", 'action-test-success' );
         } else {
-			$return_args['msg'] = WPWHPRO()->helpers->translate("test_var was not filled.", 'action-test-success' );
+			$return_args['msg'] = WPWHPRO()->helpers->translate("test_var was not filled properly. Please set it to 'test-value123'", 'action-test-success' );
         }
 
         $return_args['test_var'] = $test_var;
@@ -921,7 +921,7 @@ $return_args = array(
 		$last_name          = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'last_name' ) );
 		$role               = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'role' ) );
 		$user_pass          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_pass' );
-		$do_action          = sanitize_email( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' ) );
+		$do_action          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 
 		$rich_editing     = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'rich_editing' ) == 'yes' ) ? true : false;
 		$send_email         = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'send_email' ) == 'yes' ) ? 'yes' : 'no';
@@ -1369,7 +1369,7 @@ $return_args = array(
 	/**
 	 * The action for deleting a post
 	 */
-	function action_delete_post() {
+	public function action_delete_post() {
 
 		$response_body = WPWHPRO()->helpers->get_response_body();
 		$return_args = array(
@@ -1784,7 +1784,16 @@ $return_args = array(
 	/*
 	 * Register the user login trigger logic
 	 */
-	public function ironikus_trigger_user_login( $user_login, $user_id ){
+	public function ironikus_trigger_user_login( $user_login, $user_obj ){
+
+		$user_id = 0;
+
+		if( is_object( $user_obj ) && isset( $user_obj->data ) ){
+			if( isset( $user_obj->data->ID ) ){
+				$user_id = $user_obj->data->ID;
+			}
+		}
+
 		$webhooks                = WPWHPRO()->webhook->get_hooks( 'trigger', 'login_user' );
 		$user_data               = (array) get_user_by( 'id', $user_id );
 		$user_data['user_meta']  = get_user_meta( $user_id );
@@ -1906,6 +1915,16 @@ $return_args = array(
 					'required'    => false,
 					'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
 				),
+				'wpwhpro_post_create_trigger_on_post_status' => array(
+		            'id'          => 'wpwhpro_post_create_trigger_on_post_status',
+		            'type'        => 'select',
+		            'multiple'    => true,
+		            'choices'      => WPWHPRO()->settings->get_all_post_statuses(),
+		            'label'       => WPWHPRO()->helpers->translate('Trigger on initial post status change', 'wpwhpro-fields-trigger-on-post-type'),
+		            'placeholder' => '',
+		            'required'    => false,
+		            'description' => WPWHPRO()->helpers->translate('Select only the post status you want to fire the trigger on. You can also choose multiple ones. Important: This trigger only fires after the initial post status change. If you change the status after again, it doesn\'t fire anymore. We also need to set a post meta value in the database after you chose the post status functionality.', 'wpwhpro-fields-trigger-on-post-type-tip')
+	            ),
 			)
 		);
 
@@ -2099,7 +2118,10 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 	 */
 	public function ironikus_trigger_post_create( $post_id, $post, $update ){
 
-	    if( ! $update ){
+		$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
+
+	    if( ! $update || ! empty( $temp_post_status_change ) ){
+
 		    $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_create' );
 		    $data_array = array(
 			    'post_id'   => $post_id,
@@ -2110,23 +2132,41 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 
 		    foreach( $webhooks as $webhook ){
 
-			    $is_valid = true;
+		        $is_valid = true;
 
-			    if( isset( $webhook['settings'] ) ){
-				    foreach( $webhook['settings'] as $settings_name => $settings_data ){
+		        if( isset( $webhook['settings'] ) ){
+			        foreach( $webhook['settings'] as $settings_name => $settings_data ){
 
-					    if( $settings_name === 'wpwhpro_post_create_trigger_on_post_type' && ! empty( $settings_data ) ){
-						    if( ! in_array( $post->post_type, $settings_data ) ){
-							    $is_valid = false;
-						    }
-					    }
+				        if( $settings_name === 'wpwhpro_post_create_trigger_on_post_type' && ! empty( $settings_data ) ){
+					        if( ! in_array( $post->post_type, $settings_data ) ){
+						        $is_valid = false;
+					        }
+				        }
 
-				    }
-			    }
+				        if( $settings_name === 'wpwhpro_post_create_trigger_on_post_status' && ! empty( $settings_data ) ){
 
-			    if( $is_valid ){
-				    $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
-			    }
+					        if( ! in_array( $post->post_status, $settings_data ) ){
+
+								update_post_meta( $post_id, 'wpwhpro_create_post_temp_status', $post->post_status );
+								$is_valid = false;
+								
+					        } else {
+
+								if( ! empty( $temp_post_status_change ) ){
+									delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status' );
+
+									do_action( 'wpwhpro/webhooks/trigger_post_create_post_status', $post_id, $post, $response_data );
+								}
+
+							}
+
+				        }
+			        }
+                }
+
+                if( $is_valid ){
+	                $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+                }
 		    }
 
 		    do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post, $response_data );
@@ -2140,7 +2180,11 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 	 */
 	public function ironikus_trigger_post_update( $post_id, $post, $update ){
 
-	    if( $update ){
+		//Make sure we only fire the create_post on status function not within the update_post webhook
+		$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
+
+		//Only call if the create_post function wasn't called before
+	    if( $update && ( empty( $temp_post_status_change ) && ! did_action( 'wpwhpro/webhooks/trigger_post_create_post_status' ) ) ){
 		    $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_update' );
 		    $data_array = array(
 			    'post_id'   => $post_id,

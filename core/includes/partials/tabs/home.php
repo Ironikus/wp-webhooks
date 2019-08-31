@@ -31,3 +31,5 @@
         </p>
 
 <p></p>
+
+<h2>Feel free to <a href="http://wordpress.org/support/view/plugin-reviews/wp-webhooks" target="_blank">rate WP Webhooks ★★★★★</a> if you like it :)</h2>

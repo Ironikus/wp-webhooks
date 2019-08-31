@@ -15,6 +15,8 @@
 	<li>In-plugin support</li>
 </ol>
 
+<h3><a href="https://ironikus.com/compare-wp-webhooks-pro/" target="_blank" title="Compare WP Webhooks Pro">Compare WP Webhooks with WP Webhooks Pro here</a></h3>
+
 <h3>Free premium Extensions</h3>
 <p>
 	We also offer you all of our premium extensions <strong>completely for free</strong> on top of <a href="https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks&utm_medium=notice-pro&utm_campaign=WP%20Webhooks%20Pro" title="WP Webhooks Pro">WP Webhooks Pro</a>! <br>

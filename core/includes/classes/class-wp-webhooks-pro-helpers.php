@@ -219,12 +219,32 @@ class WP_Webhooks_Pro_Helpers {
 	 * @param $args - the available args
 	 * @return string - the url
 	 */
-	public function built_url($url, $args){
+	public function built_url( $url, $args ){
 		if(!empty($args)){
 			$url .= '?' . http_build_query($args);
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Creates the home url in a more optimized way
+	 *
+	 * @param $path - the default url to set the params to
+	 * @param $scheme - the available args
+	 * @return string - the validated url
+	 */
+	public function safe_home_url( $path = '', $scheme = 'irndefault' ){
+		
+		if( $scheme === 'irndefault' ){
+			if( is_ssl() ){
+				$scheme = 'https';
+			} else {
+				$scheme = null;
+			}
+		}
+
+		return home_url( $path, $scheme );
 	}
 
 	/**

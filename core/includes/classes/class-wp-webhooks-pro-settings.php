@@ -188,7 +188,7 @@ class WP_Webhooks_Pro_Settings{
 				'label'       => WPWHPRO()->helpers->translate('Trigger from frontend only', 'wpwhpro-fields-trigger-settings'),
 				'placeholder' => '',
 				'default_value' => '',
-				'description' => WPWHPRO()->helpers->translate('Check this button if you want to fire this trigger only from the frontent. Every post submitted through the frontend is ignored ( ! is_admin() function is used ).', 'wpwhpro-fields-trigger-settings')
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to fire this trigger only from the frontent. Every post submitted through the backend is ignored ( ! is_admin() function is used ).', 'wpwhpro-fields-trigger-settings')
 			)
 
 		);
@@ -436,5 +436,21 @@ class WP_Webhooks_Pro_Settings{
 		}
 
 		return $return;
+	}
+
+	public function get_all_post_statuses(){
+
+		$post_statuses = array();
+
+		//Merge default statuses
+		$post_statuses = array_merge( $post_statuses, get_post_statuses() );
+
+		//Merge woocommerce statuses
+		if ( class_exists( 'WooCommerce' ) && function_exists( 'wc_get_order_statuses' ) ) {
+			$post_statuses = array_merge( $post_statuses, wc_get_order_statuses() );
+		}
+
+
+		return apply_filters( 'wpwhpro/admin/settings/get_all_post_statuses', $post_statuses );
 	}
 }

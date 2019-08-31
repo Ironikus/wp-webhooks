@@ -366,7 +366,7 @@ class WP_Webhooks_Pro_Webhook {
 			'wpwhpro_api_key' => $api_key
 		) );
 
-		$url = add_query_arg( $args, home_url( '/' ) );
+		$url = add_query_arg( $args, WPWHPRO()->helpers->safe_home_url( '/' ) );
 		return $url;
 	}
 
@@ -613,6 +613,8 @@ class WP_Webhooks_Pro_Webhook {
 			),
 			'cookies'     => array(),
 		);
+
+		$data = apply_filters( 'wpwhpro/admin/webhooks/webhook_data', $data, $response, $webhook, $args );
 
 		switch( $response_content_type_slug ){
 			case 'form':

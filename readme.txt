@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
 Tested up to: 5.2.2
-Stable Tag: 1.0.7
+Stable Tag: 1.0.9
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -43,6 +43,7 @@ It's time to automate your WordPress website on a whole new level!
 On wordpress.org you will also find more free extensions to equip your favorite plugins via webhooks.
 
 * [Contact Form 7 Integration](https://wordpress.org/plugins/wpwh-contact-form-7/)
+* [Manage Taxonomy Terms](https://wordpress.org/plugins/wp-webhooks-manage-taxonomy-terms/)
 * [WP Reset Integration](https://wordpress.org/plugins/wpwh-wp-reset-webhook-integration/)
 
 = The best Pro version you have ever seen! =
@@ -55,7 +56,9 @@ Sounds like a catchy title, right? Actually, it really is the truth. Why? We wil
 * Advanced security features
 * Completely free premium extensions
 
-Our premium features for [WP Webhooks Pro](https://ironikus.com/products/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
+[Compare WP Webhooks and WP Webhooks Pro now!](https://ironikus.com/compare-wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro%20Compare)
+
+Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * Create users with user meta
 * Update users and user meta
@@ -67,7 +70,7 @@ Our premium features for [WP Webhooks Pro](https://ironikus.com/products/?utm_so
 * IP Whitelist feature for enhanced security
 * In-plugin support
 
-Our free premium extensions for [WP Webhooks Pro](https://ironikus.com/products/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
+Our free premium extensions for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * Create Blog Post Via Email: Yes, it will allow you to create WordPress posts via Email
 * Execute PHP Code: It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
@@ -90,6 +93,21 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.0.9: August 31, 2019 =
+* Feature: Support Woocommerce post status on default post status features like sending a trigger on post creation with a certain status
+* Tweak: Made action_delete_user function public
+* Fix: Fixed bug with non-working do_action parameter on create/update user action
+* Fix: Issue with non working "Send data on user login" due to wrong interpreted user parameter
+* Dev: New filter for webhook trigger data: wpwhpro/admin/webhooks/webhook_data
+
+= 1.0.8: August 10, 2019 =
+* Feature: Trigger create_post webhook if the initial status of the post changes
+* Tweak: Optimize test webhook description
+* Fix: Correct "Trigger from frontend only" description within the webhook settings
+* Fix: Non-working action testing forms in case https was active (Only in special cases)
+* Dev: New helper function for safe-redirecting the home url
+* Dev: Optimize WordPress coding standards
 
 = 1.0.7: July 26, 2019 =
 * Feature: Add webhook action to delete users (Also from multisite networks)
