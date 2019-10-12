@@ -61,8 +61,34 @@ class WP_Webhooks_Pro_Webhook {
 	private function setup_webhooks(){
 		$webhook_data = get_option( $this->webhook_options_key );
 
-		if( empty( $webhook_data ) || ! is_array( $webhook_data ) )
+		if( empty( $webhook_data ) || ! is_array( $webhook_data ) ){
 			$webhook_data = array();
+		}
+
+		foreach( $webhook_data as $wd_key => $wd_val ){
+
+			switch( $wd_key ){
+				case 'action':
+					foreach( $webhook_data[ $wd_key ] as $wds_key => $wds_val ){
+						if( is_array( $webhook_data[ $wd_key ][ $wds_key ] ) ){
+							$webhook_data[ $wd_key ][ $wds_key ]['webhook_name'] = $wds_key;
+						}
+					}
+					break;
+				case 'trigger':
+				foreach( $webhook_data[ $wd_key ] as $wds_key => $wds_val ){
+					if( is_array( $webhook_data[ $wd_key ][ $wds_key ] ) ){
+						foreach( $webhook_data[ $wd_key ][ $wds_key ] as $wdss_key => $wdss_val ){
+							if( is_array( $webhook_data[ $wd_key ][ $wds_key ][ $wdss_key ] ) ){
+								$webhook_data[ $wd_key ][ $wds_key ][ $wdss_key ]['webhook_name'] = $wds_key;
+							}
+						}
+					}
+				}
+					break;
+			}
+
+		}
 
 		return $webhook_data;
 	}
