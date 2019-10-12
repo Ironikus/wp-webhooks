@@ -59,24 +59,51 @@ a.json-placeholder {
 a.json-placeholder:hover {
   text-decoration: underline; }
 
+/* Main Page */
+body {
+  background: #fff; }
+
 /* Main Area */
-.ironikus-wrap a {
-  color: #f1592a; }
-
-.ironikus-wrap .wp-webhooks-pro-action-links {
-  margin-top: 20px; }
-  .ironikus-wrap .wp-webhooks-pro-action-links a {
-    text-decoration: none;
-    font-size: 17px;
-    font-weight: bold;
-    padding: 0 10px; }
-    .ironikus-wrap .wp-webhooks-pro-action-links a.active {
-      color: #afafaf;
-      font-weight: bold; }
-
-.ironikus-wrap .ironikus-setting-content {
-  margin-top: 20px;
-  font-size: 14px; }
+.ironikus-wrap {
+  text-align: center; }
+  .ironikus-wrap > h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-size: 2.7em;
+    font-weight: 100; }
+  .ironikus-wrap a {
+    color: #f1592a;
+    transition: all .3s; }
+    .ironikus-wrap a:hover {
+      color: #a53d1d; }
+  .ironikus-wrap .wp-webhooks-pro-action-links {
+    padding: 20px 0;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    -ms-flex-pack: center;
+        justify-content: center; }
+    .ironikus-wrap .wp-webhooks-pro-action-links a {
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: bold;
+      padding: 0 10px; }
+      .ironikus-wrap .wp-webhooks-pro-action-links a.active {
+        color: #afafaf;
+        font-weight: bold; }
+  .ironikus-wrap .ironikus-setting-content {
+    margin-top: 20px;
+    font-size: 14px;
+    box-shadow: 0.89em 2.94em 8em -7px #737373;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: left; }
 
 /* Button Styles */
 .wpwhpro-button {
@@ -102,7 +129,8 @@ a.json-placeholder:hover {
   font-size: 1rem;
   width: 100%;
   margin: 0 auto;
-  border-radius: 5px; }
+  border-radius: 5px;
+  text-align: left; }
   .accordion:first-child > .accordion__item > .accordion-header {
     border-bottom: 1px solid transparent; }
   .accordion .accordion-header {
@@ -119,12 +147,15 @@ a.json-placeholder:hover {
       position: relative;
       z-index: 5; }
   .accordion .accordion-body {
-    background: #fcfcfc;
+    background: #f8f8f8;
     color: #3f3c3c;
     display: none; }
     .accordion .accordion-body .accordion-body__contents {
       padding: 1.5em 1.5em;
       font-size: .85em; }
+      .accordion .accordion-body .accordion-body__contents pre {
+        background: gainsboro;
+        padding: 10px; }
   .accordion .ironikus-arguments ul {
     display: -ms-flexbox;
     display: flex;
@@ -141,7 +172,7 @@ a.json-placeholder:hover {
   .accordion .accordion__item.active .accordion-header {
     background: #a53d1d; }
   .accordion .accordion__item .accordion__item .accordion-header {
-    background: #e4e4e4;
+    background: #f1f1f1;
     color: black; }
   .accordion .accordion__item > .accordion-header:after {
     content: "<";
@@ -166,7 +197,7 @@ a.json-placeholder:hover {
     margin-bottom: 9px;
     padding: 15px 10px; }
   .ironikus-webhook-table tbody tr {
-    background: #eaeaea; }
+    background: #f8f8f8; }
 
 .ironikus-webhook-input {
   width: 100%; }
@@ -302,7 +333,8 @@ a.json-placeholder:hover {
     border-right: 1px solid #d2d2d2;
     padding-right: 20px;
     max-height: 700px;
-    overflow: auto; }
+    overflow: auto;
+    min-width: 150px; }
     .wpwhpro-log-view .wpwhpro-log-list .log-element {
       padding: 20px;
       background: #fff;
@@ -323,11 +355,24 @@ a.json-placeholder:hover {
       border-bottom: 1px solid #e6e6e6;
       margin-bottom: 20px; }
 
+.ironikus-webhook-action-table th {
+  text-align: left; }
+
 .ironikus-element-actions .ironikus-delete-action {
   color: red;
   cursor: pointer;
-  margin: 0;
+  margin: 3px 0;
   line-height: 1; }
+
+.ironikus-element-actions .ironikus-status-action {
+  color: #795548;
+  cursor: pointer;
+  margin: 3px 0;
+  line-height: 1; }
+  .ironikus-element-actions .ironikus-status-action.inactive {
+    color: #482214; }
+  .ironikus-element-actions .ironikus-status-action.loading {
+    color: #9e9e9e !important; }
 
 .ironikus-element-actions a {
   color: #007ca7;
@@ -338,6 +383,9 @@ a.json-placeholder:hover {
 
 .ironikus-tb-webhook-actions-wrapper .wpwhpro-action-settings-table {
   margin-bottom: 20px; }
+
+.single-webhook-trigger-table-body tr {
+  background: #ffffff !important; }
 
 .wpwhpro-data-mapping-template-wrapper {
   display: -ms-flexbox;

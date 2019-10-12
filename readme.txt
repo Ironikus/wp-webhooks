@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
-Tested up to: 5.2.2
-Stable Tag: 1.0.9
+Tested up to: 5.2.3
+Stable Tag: 1.1.0
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -25,7 +25,8 @@ It's time to automate your WordPress website on a whole new level!
 
 = Features =
 
-* Create/Delete users and posts via external webhooks on your website (Custom post types supported)
+* Create, Delete, Search and Retrieve users via external webhooks on your website
+* Create, Delete, Search and Retrieve posts via external webhooks on your website (Custom post types supported)
 * Send data on login, register, update, new post, update post and more
 * Send data on custom WordPress hook calls
 * Add multiple Webhooks for each trigger and also for the actions
@@ -93,6 +94,16 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.0: October 12, 2019 =
+* Feature: Deactivate and Activate webhook action URL's
+* Feature: New webhook actions to search/retrieve post(s) within a third party services
+* Feature: New webhook actions to search/retrieve user(s) within a third party services
+* Teak: Optimized and simplified backend layout
+* Tweak: Add webhook name for action and triggers to the webhook settings as data itself (This allows better targeting of webhook manipulations)
+* Tweak: Include fallback logic for non-working JSON contructs that include unicode characters
+* Tweak: Optimize packend docs and WordPress code standards
+* Fix: Remove unncessary var_dump()-calls within our backend tabs
 
 = 1.0.9: August 31, 2019 =
 * Feature: Support Woocommerce post status on default post status features like sending a trigger on post creation with a certain status

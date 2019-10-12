@@ -64,9 +64,9 @@ if( is_array( $menu_endpoints ) ){
 			$title = apply_filters( 'wpwhpro/admin/settings/element/filter_title', $title, $hook_name );
 
 			if( $active_val == $hook_name ){
-				$heading .= '<a class="ironikus-setting-single-tab active ' . $hook_name . '">' . $title . '</a> | ';
+				$heading .= '<a class="ironikus-setting-single-tab active ' . $hook_name . '">' . $title . '</a>';
 			} else {
-				$heading .= '<a class="ironikus-setting-single-tab ' . $hook_name . '" href="?page=' . $this->page_name . '&wpwhprovrs=' . $hook_name . '">' . $title . '</a> | ';
+				$heading .= '<a class="ironikus-setting-single-tab ' . $hook_name . '" href="?page=' . $this->page_name . '&wpwhprovrs=' . $hook_name . '">' . $title . '</a>';
 			}
 		}
 
@@ -92,9 +92,8 @@ if( is_array( $menu_endpoints ) ){
 
     <h1><?php echo WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-page-title' ); ?></h1>
     <div class='wp-webhooks-pro-action-links'>
-	    <?php echo trim( $heading, ' | ' ); ?>
+	    <?php echo $heading; ?>
     </div>
-    <hr/>
 
 	<div class="ironikus-setting-content">
         <?php echo $current_content; ?>

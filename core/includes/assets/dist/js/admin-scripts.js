@@ -161,6 +161,7 @@
                         $webhook_html += '<div class="ironikus-element-actions">';
 
                         $webhook_html += '<p class="ironikus-delete-action" ironikus-webhook-slug="' + $webhook['webhook'] + '">' + $webhook['webhook_action_delete_name'] + '</p>';
+                        $webhook_html += '<p class="ironikus-status-action active" ironikus-webhook-status="active" ironikus-webhook-slug="' + $webhook['webhook'] + '">' + 'Deactivate' + '</p>';
                         $webhook_html += '<span class="ironikus-refresh">Refresh for Settings</span>';
 
                         $webhook_html += '</div>';
@@ -255,6 +256,60 @@
             });
 
         }
+
+    });
+
+    $( document ).on( "click", ".ironikus-status-action", function() {
+
+        var $this = this;
+        var $all_status_actions = $( '.ironikus-status-action' );
+
+        //Prevent from clicking again
+        if( $all_status_actions.hasClass( 'loading' ) ){
+            return;
+        } else {
+            $all_status_actions.addClass( 'loading' );
+        }
+
+        var $webhook = $( $this ).attr( 'ironikus-webhook-slug' );
+        var $webhook_status = $( $this ).attr( 'ironikus-webhook-status' );
+
+        $.ajax({
+            url : ironikus.ajax_url,
+            type : 'post',
+            data : {
+                action : 'ironikus_change_status_webhook_action',
+                webhook : $webhook,
+                webhook_status : $webhook_status,
+                ironikus_nonce: ironikus.ajax_nonce
+            },
+            success : function( $response ) {
+                var $webhook_response = $.parseJSON( $response );
+
+                $all_status_actions.removeClass( 'loading' );
+
+                if( $webhook_response['success'] != 'false' ){
+                    setTimeout(function(){
+                        $( $this ).text( $webhook_response['new_status_name'] );
+                        $( $this ).attr( 'ironikus-webhook-status', $webhook_response['new_status'] )
+                        $( $this ).toggleClass( $webhook_status, $webhook_response['new_status'] );
+
+                        if( $webhook_response['success'] != 'false' ){
+                            $( $this ).css( { 'color': '#00a73f' } );
+                        } else {
+                            $( $this ).css( { 'color': '#a70000' } );
+                        }
+    
+                    }, 200);
+                    setTimeout(function(){
+                        $( $this ).css( { 'color': '' } );
+                    }, 2700);
+                }
+            },
+            error: function( errorThrown ){
+                console.log(errorThrown);
+            }
+        });
 
     });
 

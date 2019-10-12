@@ -480,6 +480,15 @@ class WP_Webhooks_Pro_Webhook {
 			return;
 		}
 
+		//Validate against inactive action webhooks
+		if( isset( $webhooks[ $response_ident_value ] ) && isset( $webhooks[ $response_ident_value ]['status'] ) ){
+			if( $webhooks[ $response_ident_value ]['status'] === 'inactive' ){
+				status_header( 403 );
+				echo json_encode( WPWHPRO()->helpers->translate( 'Your current webhook is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' ) );
+				exit;
+			}
+		}
+
 		$response_body = WPWHPRO()->helpers->get_response_body();
 
 		// set the output to be JSON. (Default)

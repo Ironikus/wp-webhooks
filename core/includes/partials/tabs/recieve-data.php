@@ -49,6 +49,13 @@ $actions = WPWHPRO()->webhook->get_actions();
         $required_settings = WPWHPRO()->settings->get_required_action_settings();
         $settings = array_merge( $required_settings, $settings );
 
+        $status = 'active';
+        $status_name = 'Deactivate';
+        if( isset( $webhook_data['status'] ) && $webhook_data['status'] == 'inactive' ){
+            $status = 'inactive';
+            $status_name = 'Activate';
+        }
+
         ?>
         <?php if( ! is_array( $webhook_data ) ) { continue; } ?>
         <?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-settings-action-data-webhook' ), $webhook ) ) ) { continue; } ?>
@@ -62,6 +69,7 @@ $actions = WPWHPRO()->webhook->get_actions();
             <td>
                 <div class="ironikus-element-actions">
                     <p class="ironikus-delete-action" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-actions' ); ?></p>
+                    <p class="ironikus-status-action <?php echo $status; ?>" ironikus-webhook-status="<?php echo $status; ?>" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-actions' ); ?></p>
                     <a class="thickbox ironikus-action-settings-wrapper" title="<?php echo $webhook; ?>" href="#TB_inline?height=330&width=800&inlineId=wpwhpro-action-settings-<?php echo $webhook; ?>">
                         <span class="ironikus-settings"><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-actions' ); ?></span>
                     </a>
@@ -118,8 +126,6 @@ $actions = WPWHPRO()->webhook->get_actions();
                                                                                     $selected = 'selected="selected"';
                                                                                 }
                                                                             } else {
-                                                                                var_dump($choice_name);
-                                                                                var_dump($settings_data[ $setting_name ]);
                                                                                 if( (string) $settings_data[ $setting_name ] === (string) $choice_name ){
                                                                                     $selected = 'selected="selected"';
                                                                                 }

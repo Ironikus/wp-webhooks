@@ -44,10 +44,10 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
 
 							<table class="ironikus-webhook-table ironikus-group-<?php echo $trigger['trigger']; ?>">
 								<thead>
-								<tr><th style="width:90%">
+								<tr><th style="width:85%">
 										<?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?>
 									</th>
-									<th style="width:10%">
+									<th style="width:15%">
 										<?php echo WPWHPRO()->helpers->translate( 'Action', 'wpwhpro-page-triggers' ); ?>
 									</th>
 								</tr>

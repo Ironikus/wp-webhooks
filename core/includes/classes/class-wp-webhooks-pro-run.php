@@ -50,6 +50,7 @@ class WP_Webhooks_Pro_Run{
 		add_action( 'wp_ajax_ironikus_add_webhook_action',  array( $this, 'ironikus_add_webhook_action' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_trigger',  array( $this, 'ironikus_remove_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_action',  array( $this, 'ironikus_remove_webhook_action' ) );
+		add_action( 'wp_ajax_ironikus_change_status_webhook_action',  array( $this, 'ironikus_change_status_webhook_action' ) );
 		add_action( 'wp_ajax_ironikus_test_webhook_trigger',  array( $this, 'ironikus_test_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_trigger_settings',  array( $this, 'ironikus_save_webhook_trigger_settings' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_action_settings',  array( $this, 'ironikus_save_webhook_action_settings' ) );
@@ -230,6 +231,45 @@ class WP_Webhooks_Pro_Run{
 		$check = WPWHPRO()->webhook->unset_hooks( $webhook, 'action' );
 		if( $check ){
 			$response['success'] = true;
+		}
+
+        echo json_encode( $response );
+		die();
+	}
+	
+	/*
+     * Change the status of the action via ajax
+     */
+	public function ironikus_change_status_webhook_action(){
+        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+
+        $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
+        $webhook_status = isset( $_REQUEST['webhook_status'] ) ? sanitize_title( $_REQUEST['webhook_status'] ) : '';
+		$response       = array( 'success' => false, 'new_status' => '', 'new_status_name' => '' );
+
+		$new_status = null;
+		$new_status_name = null;
+		switch( $webhook_status ){
+			case 'active':
+				$new_status = 'inactive';
+				$new_status_name = 'Activate';
+				break;
+			case 'inactive':
+				$new_status = 'active';
+				$new_status_name = 'Deactivate';
+				break;
+		}
+
+		if( ! empty( $webhook ) ){
+			$check = WPWHPRO()->webhook->update( $webhook, 'action', '', array(
+                'status' => $new_status
+			) );
+			
+			if( $check ){
+				$response['success'] = true;
+				$response['new_status'] = $new_status;
+				$response['new_status_name'] = $new_status_name;
+			}
 		}
 
         echo json_encode( $response );
@@ -498,10 +538,14 @@ class WP_Webhooks_Pro_Run{
 	    //User actions
 		$actions[] = $this->action_create_user_content();
 		$actions[] = $this->action_delete_user_content();
+		$actions[] = $this->action_get_users_content();
+		$actions[] = $this->action_get_user_content();
 
 		//Post actions
 		$actions[] = $this->action_create_post_content();
 		$actions[] = $this->action_delete_post_content();
+		$actions[] = $this->action_get_posts_content();
+		$actions[] = $this->action_get_post_content();
 
 		//Testing actions
 		$actions[] = $this->action_ironikus_test_content();
@@ -540,6 +584,16 @@ class WP_Webhooks_Pro_Run{
 					$this->action_delete_user();
 				}
 				break;
+			case 'get_users':
+				if( isset( $available_triggers['get_users'] ) ){
+					$this->action_get_users();
+				}
+				break;
+			case 'get_user':
+				if( isset( $available_triggers['get_user'] ) ){
+					$this->action_get_user();
+				}
+				break;
 			case 'create_post':
 				if( isset( $available_triggers['create_post'] ) ){
 					$this->action_create_post();
@@ -548,6 +602,16 @@ class WP_Webhooks_Pro_Run{
 			case 'delete_post':
 				if( isset( $available_triggers['delete_post'] ) ){
 					$this->action_delete_post();
+				}
+				break;
+			case 'get_posts':
+				if( isset( $available_triggers['get_posts'] ) ){
+					$this->action_get_posts();
+				}
+				break;
+			case 'get_post':
+				if( isset( $available_triggers['get_post'] ) ){
+					$this->action_get_post();
 				}
 				break;
 			case 'ironikus_test':
@@ -674,6 +738,108 @@ $return_args = array(
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
 			'short_description' => WPWHPRO()->helpers->translate( 'Delete a user via Webhooks Pro.', 'action-create-user-content' ),
+            'description'       => $description
+		);
+
+	}
+
+	/*
+	 * The core logic to grab certain users using WP_User_Query
+	 */
+	public function action_get_users_content(){
+
+		$parameter = array(
+			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_User_Query notation. Please check the description for more information.', 'action-get_users-content' ) ),
+			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: get_results', 'action-get_users-content' ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_users-content' ) )
+		);
+
+		$returns = array(
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_users-content' ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the user query. This depends on the parameters you send.', 'action-get_users-content' ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_users-content' ) ),
+		);
+
+		ob_start();
+		?>
+        <pre>
+$return_args = array(
+    'success' => false,
+    'msg'     => '',
+    'data' => array()
+);
+        </pre>
+		<?php
+		$returns_code = ob_get_clean();
+
+		ob_start();
+		?>
+		<p><?php echo WPWHPRO()->helpers->translate( 'To be able to search for users on your website, it is required to set the "arguments" parameter. In it, you need to define a json construct that represents and preserves the same structure as the WP_User_Query Parameters. Please see the example below:', 'action-get_users-content' ); ?></p>
+		<pre>
+{"search":"Max","number":5}
+</pre>
+	<p><?php echo WPWHPRO()->helpers->translate( 'The example above will filter the users for the name "Max" and returns max five users with that name.', 'action-get_users-content' ); ?>
+	<br><?php echo WPWHPRO()->helpers->translate( 'For more information, please visit the official WordPress WP_User_Query reference site:', 'action-get_users-content' ); ?> <a href="https://codex.wordpress.org/Class_Reference/WP_User_Query" title="WP_User_Query" target="_blank">https://codex.wordpress.org/Class_Reference/WP_User_Query</a></p>
+	<p><?php echo WPWHPRO()->helpers->translate( 'You can also manipulate the output of the query using the return_only parameter. This allows you to, for example, output either only the search results, the total count, the whole query object or any combination in between. Here is an example:', 'action-get_users-content' ); ?></p>
+		<pre>
+get_total,get_results,all
+</pre>
+		<?php
+		$description = ob_get_clean();
+
+		return array(
+			'action'            => 'get_users',
+			'parameter'         => $parameter,
+			'returns'           => $returns,
+			'returns_code'      => $returns_code,
+			'short_description' => WPWHPRO()->helpers->translate( 'Search for users on your WordPress website', 'action-get_users-content' ),
+            'description'       => $description
+		);
+
+	}
+
+	/*
+	 * The core logic to get the user
+	 */
+	public function action_get_user_content(){
+
+		$parameter = array(
+			'user_value'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The user id of the user. You can also use certain other values. Please check the descripton for more details.', 'action-get_user-content' ) ),
+			'value_type'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'You can choose between certain value types. Possible: id, slug, email, login', 'action-get_user-content' ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_user-content' ) )
+		);
+
+		$returns = array(
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_user-content' ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the user qury. This depends on the parameters you send.', 'action-get_user-content' ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_user-content' ) ),
+		);
+
+		ob_start();
+		?>
+        <pre>
+$return_args = array(
+    'success' => false,
+    'msg'     => '',
+    'data' => array()
+);
+        </pre>
+		<?php
+		$returns_code = ob_get_clean();
+
+		ob_start();
+		?>
+		<p><?php echo WPWHPRO()->helpers->translate( 'This webhook uses the get_user_by() function to return a user. To learn more about this function, please check the official WordPress docs:', 'action-get_user-content' ); ?> <a href="https://developer.wordpress.org/reference/functions/get_user_by/" title="get_user_by" target="_blank">https://developer.wordpress.org/reference/functions/get_user_by/</a></p>
+		<p><?php echo WPWHPRO()->helpers->translate( 'For the user_value, you can set by default the user id. It is also possible to set an email, the user login or the slug. If you choose a different parameter for the value_type argument, you can also grab the user through the other values.', 'action-get_user-content' ); ?> </p>
+		<?php
+		$description = ob_get_clean();
+
+		return array(
+			'action'            => 'get_user',
+			'parameter'         => $parameter,
+			'returns'           => $returns,
+			'returns_code'      => $returns_code,
+			'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', 'action-get_user-content' ),
             'description'       => $description
 		);
 
@@ -822,6 +988,158 @@ $return_args = array(
 
 	}
 
+	/*
+	 * The core logic to grab certain users using WP_User_Query
+	 */
+	public function action_get_posts_content(){
+
+		$parameter = array(
+			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_Query notation. Please check the description for more information.', 'action-get_posts-content' ) ),
+			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: posts', 'action-get_posts-content' ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_posts-content' ) )
+		);
+
+		$returns = array(
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_posts-content' ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the post query. This depends on the parameters you send.', 'action-get_posts-content' ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_posts-content' ) ),
+		);
+
+		ob_start();
+		?>
+        <pre>
+$return_args = array(
+    'success' => false,
+    'msg'     => '',
+    'data' => array()
+);
+        </pre>
+		<?php
+		$returns_code = ob_get_clean();
+
+		ob_start();
+		?>
+		<p><?php echo WPWHPRO()->helpers->translate( 'To be able to search for posts on your website, it is required to set the "arguments" parameter. In it, you need to define a json construct that represents and preserves the same structure as the WP_Query Parameters. Please see the example below:', 'action-get_posts-content' ); ?></p>
+		<pre>
+{"post_type":"post","posts_per_page":8}
+</pre>
+	<p><?php echo WPWHPRO()->helpers->translate( 'The example above will filter the posts for the post type "post" and returns max five posts within one request.', 'action-get_posts-content' ); ?>
+	<br><?php echo WPWHPRO()->helpers->translate( 'For more information, please visit the official WordPress WP_Query reference site:', 'action-get_posts-content' ); ?> <a href="https://developer.wordpress.org/reference/classes/wp_query/" title="WP_User_Query" target="_blank">https://developer.wordpress.org/reference/classes/wp_query/</a></p>
+	<p><?php echo WPWHPRO()->helpers->translate( 'You can also manipulate the output of the query using the return_only parameter. This allows you to output only certain values. Here is an example for that:', 'action-get_posts-content' ); ?></p>
+		<pre>
+posts,post_count,found_posts,max_num_pages
+</pre>
+<p><?php echo WPWHPRO()->helpers->translate( 'Possible values for the return_only argument are:', 'action-get_posts-content' ); ?></p>
+<ul>
+	<li>all</li>
+	<li>posts</li>
+	<li>post</li>
+	<li>post_count</li>
+	<li>found_posts</li>
+	<li>max_num_pages</li>
+	<li>current_post</li>
+	<li>query_vars</li>
+	<li>query</li>
+	<li>tax_query</li>
+	<li>meta_query</li>
+	<li>date_query</li>
+	<li>request</li>
+	<li>in_the_loop</li>
+	<li>current_post</li>
+</ul>
+		<?php
+		$description = ob_get_clean();
+
+		return array(
+			'action'            => 'get_posts',
+			'parameter'         => $parameter,
+			'returns'           => $returns,
+			'returns_code'      => $returns_code,
+			'short_description' => WPWHPRO()->helpers->translate( 'Search for posts on your WordPress website', 'action-get_posts-content' ),
+            'description'       => $description
+		);
+
+	}
+
+	/*
+	 * The core logic to get a single post
+	 */
+	public function action_get_post_content(){
+
+		$parameter = array(
+			'post_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the post you want to fetch.', 'action-get_post-content' ) ),
+			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Select the values you want to return. Default is all. Please see the description for more details.', 'action-get_post-content' ) ),
+			'thumbnail_size'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Pass the size of the thumbnail of your given post id. Default is full. Please see the description for more details.', 'action-get_post-content' ) ),
+			'post_taxonomies'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Single value or comma separated list of the taxonomies you want to return. Default: post_tag. Please see the description for more details.', 'action-get_post-content' ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_post-content' ) )
+		);
+
+		$returns = array(
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_post-content' ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the single post. This depends on the parameters you send.', 'action-get_post-content' ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_post-content' ) ),
+		);
+
+		ob_start();
+		?>
+        <pre>
+$return_args = array(
+    'success' => false,
+    'msg'     => '',
+    'data' => array()
+);
+        </pre>
+		<?php
+		$returns_code = ob_get_clean();
+
+		ob_start();
+		?>
+		<p><?php echo WPWHPRO()->helpers->translate( 'This webhook uses multiple functions to fetch the data. Please refer to the documents down below for more information.', 'action-get_post-content' ); ?>
+	<ul>
+		<li><a href="https://developer.wordpress.org/reference/functions/get_post/" title="get_post" target="_blank">https://developer.wordpress.org/reference/functions/get_post/</a></li>
+		<li><a href="https://developer.wordpress.org/reference/functions/wp_get_post_terms/" title="wp_get_post_terms" target="_blank">https://developer.wordpress.org/reference/functions/wp_get_post_terms/</a></li>
+	</ul>
+	</p>
+		<p><?php echo WPWHPRO()->helpers->translate( 'Instead of returning all of the available data, you can also only return certain values. Therefore, simply define the return_only argument and set a single setting or a comma separated list. Here is an example:', 'action-get_post-content' ); ?>
+	<pre>
+post,post_thumbnail,post_terms,post_meta
+</pre>
+
+	<?php echo WPWHPRO()->helpers->translate( 'Possible values are:', 'action-get_post-content' ); ?>
+	<ul>
+		<li>all</li>
+		<li>post</li>
+		<li>post_thumbnail</li>
+		<li>post_terms</li>
+		<li>post_meta</li>
+	</ul>
+	</p>
+	<p><?php echo WPWHPRO()->helpers->translate( 'In case you return a post thumbnail url, you can also define the size of it. This supports all of the registered sizes on your WordPress site. Default: full. Here is a list of all default thumbnail sizes:', 'action-get_post-content' ); ?>
+	<ul>
+		<li><strong>thumbnail</strong> (150px square)</li>
+		<li><strong>medium</strong> (maximum 300px width and height)</li>
+		<li><strong>large</strong> (maximum 1024px width and height)</li>
+		<li><strong>full</strong> (full/original image size you uploaded)</li>
+	</ul>
+	</p>
+	<p><?php echo WPWHPRO()->helpers->translate( 'You can also customize the output of the returned taxonomies. Default is post_tag. This argument accepts a string of a single taxonomy, or a comma separated list of multiple taxonomies. Please see the example down below:', 'action-get_post-content' ); ?>
+	<pre>
+post_tag,custom_taxonomy_1,custom_taxonomy_2
+</pre>
+	</p>
+		<?php
+		$description = ob_get_clean();
+
+		return array(
+			'action'            => 'get_post',
+			'parameter'         => $parameter,
+			'returns'           => $returns,
+			'returns_code'      => $returns_code,
+			'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', 'action-get_post-content' ),
+            'description'       => $description
+		);
+
+	}
 
 	/*
 	 * The core logic to test a webhook
@@ -1114,6 +1432,132 @@ $return_args = array(
 		
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $user, $user_id, $user_email, $send_email );
+		}
+
+		WPWHPRO()->webhook->echo_response_data( $return_args );
+		die();
+	}
+
+	/**
+	 * Get certain users using WP_User_Query
+	 */
+	public function action_get_user() {
+
+		$response_body = WPWHPRO()->helpers->get_response_body();
+		$return_args = array(
+			'success' => false,
+			'msg'     => '',
+            'data' => array()
+		);
+
+		$user_value     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_value' );
+		$value_type     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'value_type' );
+		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+		
+		if( empty( $user_value ) ){
+			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the user_value argument. Please define it first.", 'action-get_user-failure' );
+
+			WPWHPRO()->webhook->echo_response_data( $return_args );
+			die();
+		}
+
+		if( empty( $value_type ) ){
+			$value_type = 'id';
+		}
+
+		if( ! empty( $user_value ) && ! empty( $value_type ) ){
+			$user = get_user_by( $value_type, $user_value );
+
+			if ( is_wp_error( $user ) ) {
+				$return_args['msg'] = WPWHPRO()->helpers->translate( $user->get_error_message(), 'action-get_user-failure' );
+			} else {
+
+				$return_args['msg'] = WPWHPRO()->helpers->translate("User was successfully returned.", 'action-get_users-success' );
+				$return_args['success'] = true;
+				$return_args['data'] = $user;
+
+			}
+
+		} else {
+			$return_args['msg'] = WPWHPRO()->helpers->translate("There is an issue with your defined arguments. Please check them first.", 'action-get_user-failure' );
+		}
+		
+		if( ! empty( $do_action ) ){
+			do_action( $do_action, $return_args, $user_value, $value_type );
+		}
+
+		WPWHPRO()->webhook->echo_response_data( $return_args );
+		die();
+	}
+
+	/**
+	 * Delete function for defined action
+	 */
+	public function action_get_users() {
+
+		$response_body = WPWHPRO()->helpers->get_response_body();
+		$return_args = array(
+			'success' => false,
+			'msg'     => '',
+            'data' => array()
+		);
+
+		$args     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'arguments' );
+		$return_only     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
+		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+		$user_query = null;
+		
+		if( empty( $args ) ){
+			$return_args['msg'] = WPWHPRO()->helpers->translate("arguments is a required parameter. Please define it.", 'action-get_users-failure' );
+
+			WPWHPRO()->webhook->echo_response_data( $return_args );
+			die();
+		}
+
+		$serialized_args = null;
+		if( WPWHPRO()->helpers->is_json( $args ) ){
+			$serialized_args = json_decode( $args, true );
+		}
+
+		$return = array( 'get_results' );
+		if( ! empty( $return_only ) ){
+			$return = array_map( 'trim', explode( ',', $return_only ) );
+		}
+
+		if( ! empty( $serialized_args ) && is_array( $serialized_args ) ){
+			$user_query = new WP_User_Query( $serialized_args );
+
+			if ( is_wp_error( $user_query ) ) {
+				$return_args['msg'] = WPWHPRO()->helpers->translate( $user_query->get_error_message(), 'action-get_users-failure' );
+			} else {
+
+				foreach( $return as $single_return ){
+
+					switch( $single_return ){
+						case 'all':
+							$return_args['data'][ $single_return ] = $user_query;
+							break;
+						case 'get_results':
+							$return_args['data'][ $single_return ] = $user_query->get_results();
+							break;
+						case 'get_total':
+							$return_args['data'][ $single_return ] = $user_query->get_total();
+							break;
+					}
+
+				}
+
+				$return_args['msg'] = WPWHPRO()->helpers->translate("Query was successfully executed.", 'action-get_users-success' );
+				$return_args['success'] = true;
+
+			}
+
+		} else {
+			$return_args['msg'] = WPWHPRO()->helpers->translate("The arguments parameter does not contain a valid json. Please check it first.", 'action-get_users-failure' );
+		}
+		
+		if( ! empty( $do_action ) ){
+			do_action( $do_action, $return_args, $user_query, $args, $return_only );
 		}
 
 		WPWHPRO()->webhook->echo_response_data( $return_args );
@@ -1418,6 +1862,207 @@ $return_args = array(
 
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $post, $post_id, $check, $force_delete );
+		}
+
+		WPWHPRO()->webhook->echo_response_data( $return_args );
+		die();
+	}
+
+	/**
+	 * Grab certain posts using WP_Query
+	 */
+	public function action_get_posts() {
+
+		$response_body = WPWHPRO()->helpers->get_response_body();
+		$return_args = array(
+			'success' => false,
+			'msg'     => '',
+            'data' => array()
+		);
+
+		$args     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'arguments' );
+		$return_only     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
+		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+		$post_query = null;
+		
+		if( empty( $args ) ){
+			$return_args['msg'] = WPWHPRO()->helpers->translate("arguments is a required parameter. Please define it.", 'action-get_posts-failure' );
+
+			WPWHPRO()->webhook->echo_response_data( $return_args );
+			die();
+		}
+
+		$serialized_args = null;
+		if( WPWHPRO()->helpers->is_json( $args ) ){
+			$serialized_args = json_decode( $args, true );
+		}
+
+		$return = array( 'posts' );
+		if( ! empty( $return_only ) ){
+			$return = array_map( 'trim', explode( ',', $return_only ) );
+		}
+
+		if( ! empty( $serialized_args ) && is_array( $serialized_args ) ){
+			$post_query = new WP_Query( $serialized_args );
+
+			if ( is_wp_error( $post_query ) ) {
+				$return_args['msg'] = WPWHPRO()->helpers->translate( $post_query->get_error_message(), 'action-get_posts-failure' );
+			} else {
+
+				foreach( $return as $single_return ){
+
+					switch( $single_return ){
+						case 'all':
+							$return_args['data'][ $single_return ] = $post_query;
+							break;
+						case 'posts':
+							$return_args['data'][ $single_return ] = $post_query->posts;
+							break;
+						case 'post':
+							$return_args['data'][ $single_return ] = $post_query->post;
+							break;
+						case 'post_count':
+							$return_args['data'][ $single_return ] = $post_query->post_count;
+							break;
+						case 'found_posts':
+							$return_args['data'][ $single_return ] = $post_query->found_posts;
+							break;
+						case 'max_num_pages':
+							$return_args['data'][ $single_return ] = $post_query->max_num_pages;
+							break;
+						case 'current_post':
+							$return_args['data'][ $single_return ] = $post_query->current_post;
+							break;
+						case 'query_vars':
+							$return_args['data'][ $single_return ] = $post_query->query_vars;
+							break;
+						case 'query':
+							$return_args['data'][ $single_return ] = $post_query->query;
+							break;
+						case 'tax_query':
+							$return_args['data'][ $single_return ] = $post_query->tax_query;
+							break;
+						case 'meta_query':
+							$return_args['data'][ $single_return ] = $post_query->meta_query;
+							break;
+						case 'date_query':
+							$return_args['data'][ $single_return ] = $post_query->date_query;
+							break;
+						case 'request':
+							$return_args['data'][ $single_return ] = $post_query->request;
+							break;
+						case 'in_the_loop':
+							$return_args['data'][ $single_return ] = $post_query->in_the_loop;
+							break;
+						case 'current_post':
+							$return_args['data'][ $single_return ] = $post_query->current_post;
+							break;
+					}
+
+				}
+
+				$return_args['msg'] = WPWHPRO()->helpers->translate("Query was successfully executed.", 'action-get_posts-success' );
+				$return_args['success'] = true;
+
+			}
+
+		} else {
+			$return_args['msg'] = WPWHPRO()->helpers->translate("The arguments parameter does not contain a valid json. Please check it first.", 'action-get_posts-failure' );
+		}
+		
+		if( ! empty( $do_action ) ){
+			do_action( $do_action, $return_args, $post_query, $args, $return_only );
+		}
+
+		WPWHPRO()->webhook->echo_response_data( $return_args );
+		die();
+	}
+
+	/**
+	 * Get a single post using get_post
+	 */
+	public function action_get_post() {
+
+		$response_body = WPWHPRO()->helpers->get_response_body();
+		$return_args = array(
+			'success' => false,
+			'msg'     => '',
+            'data' => array()
+		);
+
+		$post_id     = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_id' ) );
+		$return_only     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
+		$thumbnail_size     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'thumbnail_size' );
+		$post_taxonomies     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_taxonomies' );
+		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+		
+		if( empty( $post_id ) ){
+			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the post_id argument. Please define it first.", 'action-get_post-failure' );
+
+			WPWHPRO()->webhook->echo_response_data( $return_args );
+			die();
+		}
+
+		$return = array( 'all' );
+		if( ! empty( $return_only ) ){
+			$return = array_map( 'trim', explode( ',', $return_only ) );
+		}
+
+		$thumbnail_sizes = 'full';
+		if( ! empty( $thumbnail_size ) ){
+			$thumbnail_sizes = array_map( 'trim', explode( ',', $thumbnail_size ) );
+		}
+
+		$post_taxonomies_out = 'post_tag';
+		if( ! empty( $post_taxonomies ) ){
+			$post_taxonomies_out = array_map( 'trim', explode( ',', $post_taxonomies ) );
+		}
+
+		if( ! empty( $post_id ) ){
+			$post = get_post( $post_id );
+			$post_thumbnail = get_the_post_thumbnail_url( $post_id, $thumbnail_sizes );
+			$post_terms = wp_get_post_terms( $post_id, $post_taxonomies_out );
+			$post_meta = get_post_meta( $post_id );
+
+			if ( is_wp_error( $post ) ) {
+				$return_args['msg'] = WPWHPRO()->helpers->translate( $post->get_error_message(), 'action-get_post-failure' );
+			} else {
+
+				foreach( $return as $single_return ){
+
+					switch( $single_return ){
+						case 'all':
+							$return_args['data'][ 'post' ] = $post;
+							$return_args['data'][ 'post_thumbnail' ] = $post_thumbnail;
+							$return_args['data'][ 'post_terms' ] = $post_terms;
+							$return_args['data'][ 'post_meta' ] = $post_meta;
+							break;
+						case 'post':
+							$return_args['data'][ $single_return ] = $post;
+							break;
+						case 'post_thumbnail':
+							$return_args['data'][ $single_return ] = $post_thumbnail;
+							break;
+						case 'post_terms':
+							$return_args['data'][ $single_return ] = $post_terms;
+							break;
+						case 'post_meta':
+							$return_args['data'][ $single_return ] = $post_meta;
+							break;
+					}
+				}
+
+				$return_args['msg'] = WPWHPRO()->helpers->translate("Post was successfully returned.", 'action-get_post-success' );
+				$return_args['success'] = true;
+
+			}
+
+		} else {
+			$return_args['msg'] = WPWHPRO()->helpers->translate("There is an issue with your defined arguments. Please check them first.", 'action-get_post-failure' );
+		}
+		
+		if( ! empty( $do_action ) ){
+			do_action( $do_action, $return_args, $post_id, $thumbnail_size, $post_taxonomies );
 		}
 
 		WPWHPRO()->webhook->echo_response_data( $return_args );
