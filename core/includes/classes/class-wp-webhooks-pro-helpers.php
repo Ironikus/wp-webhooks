@@ -356,7 +356,7 @@ class WP_Webhooks_Pro_Helpers {
 
 		if( strpos( $current_content_type, 'application/json' ) !== false ){
 			if( $this->is_json( $response ) ){
-				$return['content'] = json_decode( $response );
+				$return['content'] = ( json_decode( $response ) !== null ) ? json_decode( $response ) : (object) json_decode( $response, true );
 				$content_evaluated = true;
 			}
         }
@@ -393,8 +393,18 @@ class WP_Webhooks_Pro_Helpers {
 	 * @return bool - True if it is json, otherwise false
 	 */
 	public function is_json( $string ) {
+		
 		json_decode( $string );
-		return (json_last_error() == JSON_ERROR_NONE);
+		if( json_last_error() == JSON_ERROR_NONE ){
+			return true;
+		}
+
+		json_decode( $string, true );
+		if( json_last_error() == JSON_ERROR_NONE ){
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
