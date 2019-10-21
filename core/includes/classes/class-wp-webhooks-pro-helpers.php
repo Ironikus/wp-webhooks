@@ -380,7 +380,18 @@ class WP_Webhooks_Pro_Helpers {
         //If nothing is set, we take the content as it comes
         if( ! $content_evaluated && is_string( $response ) ){
 	        $return['content'] = $response;
-        }
+		}
+		
+		//Validate against our Zapier extension
+		if( isset( $return['content'] ) && is_object( $return['content'] ) && isset( $return['content']->wpwhpro_zapier_arguments ) ){
+			foreach( $return['content']->wpwhpro_zapier_arguments as $zap_key => $zap_val ){
+				$return['content']->{$zap_key} = $zap_val;
+			}
+		} elseif( isset( $return['content'] ) && is_array( $return['content'] ) && isset( $return['content']['wpwhpro_zapier_arguments'] ) ){
+			foreach( $return['content']['wpwhpro_zapier_arguments'] as $zap_key => $zap_val ){
+				$return['content'][ $zap_key ] = $zap_val;
+			}
+		}
 
 		return apply_filters( 'wpwhpro/helpers/validate_response_body', $return, $current_content_type, $response );
 	}

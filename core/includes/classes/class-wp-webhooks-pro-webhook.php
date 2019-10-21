@@ -473,6 +473,7 @@ class WP_Webhooks_Pro_Webhook {
 	 */
 	public function validate_incoming_data(){
 		$webhooks = $this->get_hooks( 'action' );
+		$response_auth_request = ( isset( $_REQUEST['wpwhpro_auth_response'] ) && intval( $_REQUEST['wpwhpro_auth_response'] ) === 1 ) ? true : false;
 		$response_api_key = ! empty( $_REQUEST['wpwhpro_api_key'] ) ? sanitize_key( $_REQUEST['wpwhpro_api_key'] ) : '';
 		$response_ident_value = ! empty( $_REQUEST[$this->webhook_ident_param] ) ? sanitize_key( $_REQUEST[$this->webhook_ident_param] ) : '';
 
@@ -504,6 +505,16 @@ class WP_Webhooks_Pro_Webhook {
 			status_header( 403 );
 			echo json_encode( WPWHPRO()->helpers->translate( 'WP Webhook API Key is missing.', 'webhooks-invalid-license-missing' ) );
 			exit;
+		}
+
+		//Return auth request
+		if( $response_auth_request ){
+			$return_auth = array(
+				'success' => true,
+				'msg' => WPWHPRO()->helpers->translate( 'The authentication was successful', 'webhooks-auth-response-success' ),
+			);
+			WPWHPRO()->webhook->echo_response_data( $return_auth );
+			die();
 		}
 
 		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );

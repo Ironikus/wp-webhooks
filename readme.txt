@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
-Tested up to: 5.2.3
-Stable Tag: 1.1.0
+Tested up to: 5.2.4
+Stable Tag: 1.1.1
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -94,6 +94,11 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.1: October 21, 2019 =
+* Feature: Introduce exclusive Zapier extension (Early access)
+* Feature: Introduce new polling feature for next-level Zapier triggers
+* EARLY ACCESS FOR OUR ZAPIER APP: https://ironikus.com/docs/knowledge-base/integrate-zapier-extension-with-wp-webhooks/
 
 = 1.1.0: October 12, 2019 =
 * Feature: Deactivate and Activate webhook action URL's

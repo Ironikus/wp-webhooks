@@ -5,7 +5,9 @@
     In case you are not familiar with how the plugin works, we created some awesome docs that should help you with getting started: <a href="https://ironikus.com/docs/" title="See the video" target="_blank">Check out our docs</a>
 </p>
 <p></p>
-<h2>More of our free plugins<h2>
+<h2>Early access for our Zapier extension</h2>
+<p>We are so happy to announce our very first Zapier extension! Now you can create your webhook integrations even faster. For more details, <a href="https://ironikus.com/docs/knowledge-base/integrate-zapier-extension-with-wp-webhooks/" target="_blank" title="WP Webhooks Zapier integration">click here</a>.</p>
+<h2>More of our free plugins</h2>
         <p>
             <a href="https://wordpress.org/plugins/wpwh-contact-form-7/" title="Documentation" target="_blank">WP Webhooks - Contact Form 7 Integration</a><br>
             <a href="https://wordpress.org/plugins/wpwh-wp-reset-webhook-integration/" title="Documentation" target="_blank">WP Webhooks - WP Reset Integration</a><br>
@@ -22,7 +24,7 @@
 
 <p></p>
 
-<h2>More interesting links<h2>
+<h2>More interesting links</h2>
         <p>
             <a href="https://ironikus.com/docs/" title="Documentation" target="_blank">Documentation</a><br>
             <a href="https://www.facebook.com/ironikusagency/" title="Facebook" target="_blank">Facebook</a><br>
