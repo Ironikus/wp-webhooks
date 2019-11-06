@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
 Tested up to: 5.2.4
-Stable Tag: 1.1.1
+Stable Tag: 1.1.2
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -94,6 +94,14 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.2: November 06, 2019 =
+* Feature: Add webhook name field (slug) to the webhook trigger URL's
+* Feature: Add webhook name to the webhook trigger headers
+* Tweak: Add additional parameters to the authorization hook
+* Tweak: Optimize webhook description for "get_user" action
+* Fix: Get user response gave success back if no user was found
+* Dev: Adjust WordPress hook priority for incoming data from 10 to 100 
 
 = 1.1.1: October 21, 2019 =
 * Feature: Introduce exclusive Zapier extension (Early access)
