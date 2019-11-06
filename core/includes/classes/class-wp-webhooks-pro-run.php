@@ -137,7 +137,8 @@ class WP_Webhooks_Pro_Run{
 	public function ironikus_add_webhook_trigger(){
         check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
 
-        $webhook_url            = isset( $_REQUEST['webhook_url'] ) ? sanitize_text_field( $_REQUEST['webhook_url'] ) : '';
+		$webhook_url            = isset( $_REQUEST['webhook_url'] ) ? sanitize_text_field( $_REQUEST['webhook_url'] ) : '';
+		$webhook_slug           = isset( $_REQUEST['webhook_slug'] ) ? sanitize_title( $_REQUEST['webhook_slug'] ) : '';
         $webhook_current_url    = isset( $_REQUEST['current_url'] ) ? sanitize_text_field( $_REQUEST['current_url'] ) : '';
         $webhook_group          = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
         $webhook_callback       = isset( $_REQUEST['webhook_callback'] ) ? sanitize_text_field( $_REQUEST['webhook_callback'] ) : '';
@@ -146,7 +147,12 @@ class WP_Webhooks_Pro_Run{
 		$url_parts              = parse_url( $webhook_current_url );
 		parse_str($url_parts['query'], $query_params);
 		$clean_url              = strtok( $webhook_current_url, '?' );
-		$new_webhook            = strtotime( date( 'Y-n-d H:i:s' ) ) . 999 . rand( 10, 9999 );
+		
+		if( ! empty( $webhook_slug ) ){
+			$new_webhook = $webhook_slug;
+		} else {
+			$new_webhook = strtotime( date( 'Y-n-d H:i:s' ) ) . 999 . rand( 10, 9999 );
+		}
 
         if( ! isset( $webhooks[ $new_webhook ] ) ){
             WPWHPRO()->webhook->create( $new_webhook, 'trigger', array( 'group' => $webhook_group, 'webhook_url' => $webhook_url ) );
@@ -157,7 +163,9 @@ class WP_Webhooks_Pro_Run{
 	        $response['webhook_url']        = $webhook_url;
 	        $response['webhook_callback']   = $webhook_callback;
 	        $response['delete_url']         = WPWHPRO()->helpers->built_url( $clean_url, array_merge( $query_params, array( 'wpwhpro_delete' => $new_webhook, ) ) );
-        }
+        } else {
+			$response['msg'] = WPWHPRO()->helpers->translate( 'This key already exists. Please use a different one.', 'wpwhpro-page-actions' );
+		}
 
 
         echo json_encode( $response );
@@ -202,7 +210,7 @@ class WP_Webhooks_Pro_Run{
 	public function ironikus_remove_webhook_trigger(){
         check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
 
-        $webhook        = isset( $_REQUEST['webhook'] ) ? intval( $_REQUEST['webhook'] ) : '';
+        $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
         $webhook_group  = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
 		$webhooks       = WPWHPRO()->webhook->get_hooks( 'trigger', $webhook_group );
 		$response       = array( 'success' => false );
@@ -282,7 +290,7 @@ class WP_Webhooks_Pro_Run{
 	public function ironikus_test_webhook_trigger(){
         check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
 
-        $webhook            = isset( $_REQUEST['webhook'] ) ? intval( $_REQUEST['webhook'] ) : '';
+        $webhook            = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
         $webhook_group      = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
         $webhook_callback   = isset( $_REQUEST['webhook_callback'] ) ? sanitize_text_field( $_REQUEST['webhook_callback'] ) : '';
 		$webhooks           = WPWHPRO()->webhook->get_hooks( 'trigger', $webhook_group );
@@ -311,7 +319,7 @@ class WP_Webhooks_Pro_Run{
 	public function ironikus_save_webhook_trigger_settings(){
 		check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
 
-		$webhook            = isset( $_REQUEST['webhook_id'] ) ? intval( $_REQUEST['webhook_id'] ) : '';
+		$webhook            = isset( $_REQUEST['webhook_id'] ) ? sanitize_title( $_REQUEST['webhook_id'] ) : '';
 		$webhook_group      = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
 		$trigger_settings   = ( isset( $_REQUEST['trigger_settings'] ) && ! empty( $_REQUEST['trigger_settings'] ) ) ? $_REQUEST['trigger_settings'] : '';
 		$response           = array( 'success' => false );

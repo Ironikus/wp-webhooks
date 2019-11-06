@@ -57,6 +57,7 @@
         var webhook_id = $( $this ).attr( 'ironikus-webhook-trigger' );
         var $webhook_callback = $( $this ).attr( 'ironikus-webhook-callback' );
         var webhook_url_val = $( '#ironikus-webhook-url-' + webhook_id ).val();
+        var webhook_slug_val = $( '#ironikus-webhook-slug-' + webhook_id ).val();
         var webhook_current_url = $( '#ironikus-webhook-current-url' ).val();
 
         $.ajax({
@@ -65,6 +66,7 @@
             data : {
                 action : 'ironikus_add_webhook_trigger',
                 webhook_url : webhook_url_val,
+                webhook_slug : webhook_slug_val,
                 webhook_group : webhook_id,
                 webhook_callback : $webhook_callback,
                 current_url : webhook_current_url,
@@ -77,10 +79,10 @@
                     $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
                     $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
 
-                    if( $webhook['success'] != 'false' ){
+                    if( $webhook['success'] != 'false' && $webhook['success'] != false ){
                         $( $this ).css( { 'background': '#00a73f' } );
 
-                        var $webhook_html = '<tr id="ironikus-webhook-id-' + $webhook['webhook'] + '"><td>';
+                        var $webhook_html = '<tr id="ironikus-webhook-id-' + $webhook['webhook'] + '"><td>' + $webhook['webhook'] + '</td><td>';
                         $webhook_html += '<input class="ironikus-webhook-input" type="text" name="ironikus_wp_webhooks_pro_webhook_url" value="' + $webhook['webhook_url'] + '" readonly /><br>';
                         $webhook_html += '</td><td><div class="ironikus-element-actions">';
                         $webhook_html += '<span class="ironikus-delete" ironikus-delete="' + $webhook['webhook'] + '" ironikus-group="' + $webhook['webhook_group'] + '" >Delete</span><br>';
@@ -95,6 +97,8 @@
                         $( '.ironikus-webhook-table.ironikus-group-' + webhook_id + ' > tbody' ).append( $webhook_html );
                     } else {
                         $( $this ).css( { 'background': '#a70000' } );
+                        confirm( $webhook['msg'] );
+                        
                     }
 
                 }, 200);

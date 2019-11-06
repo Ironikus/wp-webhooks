@@ -44,7 +44,11 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
 
 							<table class="ironikus-webhook-table ironikus-group-<?php echo $trigger['trigger']; ?>">
 								<thead>
-								<tr><th style="width:85%">
+								<tr>
+									<th style="width:15%">
+										<?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?>
+									</th>
+									<th style="width:70%">
 										<?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?>
 									</th>
 									<th style="width:15%">
@@ -58,6 +62,9 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
 									<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
 									<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook ) ) ) { continue; } ?>
 									<tr id="ironikus-webhook-id-<?php echo $webhook; ?>">
+										<td>
+											<?php echo $webhook; ?>
+										</td>
 										<td>
 											<input class="ironikus-webhook-input" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo $webhook_data['webhook_url']; ?>" readonly /><br>
 										</td>
@@ -176,7 +183,8 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
 							</table>
 
 							<div class="ironikus-single-webhook-trigger-handler">
-								<input id="ironikus-webhook-url-<?php echo $trigger['trigger']; ?>" class="ironikus-webhook-input-new h30" type="text" placeholder="<?php echo WPWHPRO()->helpers->translate( 'Include your wehook url here.', 'wpwhpro-page-triggers' ); ?>" >
+							<input id="ironikus-webhook-slug-<?php echo $trigger['trigger']; ?>" class="ironikus-webhook-input-new h30" type="text" placeholder="<?php echo WPWHPRO()->helpers->translate( 'Webhook slug (Optional)', 'wpwhpro-page-triggers' ); ?>" >
+								<input id="ironikus-webhook-url-<?php echo $trigger['trigger']; ?>" class="ironikus-webhook-input-new h30" type="text" placeholder="<?php echo WPWHPRO()->helpers->translate( 'Include your wehook url here', 'wpwhpro-page-triggers' ); ?>" >
 								<p class="ironikus-save h30" ironikus-webhook-callback="<?php echo !empty( $trigger['callback'] ) ? $trigger['callback'] : ''; ?>" ironikus-webhook-trigger="<?php echo $trigger['trigger']; ?>" >
 									<span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Add', 'wpwhpro-page-triggers' ); ?></span>
 									<img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
