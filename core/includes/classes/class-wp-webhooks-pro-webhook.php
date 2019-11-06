@@ -41,7 +41,7 @@ class WP_Webhooks_Pro_Webhook {
 			add_action( 'plugins_loaded', array( $this, 'initialize_default_webhook' ), 10 );
 		}
 
-		add_action( 'init', array( $this, 'validate_incoming_data' ), 10 );
+		add_action( 'init', array( $this, 'validate_incoming_data' ), 100 );
 	}
 
 	/**
