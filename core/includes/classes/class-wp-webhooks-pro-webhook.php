@@ -572,6 +572,7 @@ class WP_Webhooks_Pro_Webhook {
 		);
 		$response_content_type_slug = 'json';
 		$response_content_type = 'application/json';
+		$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : '';
 
 		//Required settings
 		if( is_array($webhook) && isset( $webhook['settings'] ) && ! empty( $webhook['settings'] ) ) {
@@ -689,6 +690,7 @@ class WP_Webhooks_Pro_Webhook {
 		$http_args = apply_filters( 'wpwhpro/admin/webhooks/webhook_http_args', array_merge( $http_args, $args ), $args, $url );
 
 		$http_args['headers']['X-WP-Webhook-Source'] = home_url( '/' );
+		$http_args['headers']['X-WP-Webhook-Name'] = $webhook_name;
 
 		$secret_key = get_option( 'wpwhpro_trigger_secret' );
 		if( ! empty( $secret_key ) ){
