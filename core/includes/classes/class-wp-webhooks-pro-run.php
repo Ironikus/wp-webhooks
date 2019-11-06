@@ -831,6 +831,7 @@ $return_args = array(
 		?>
 		<p><?php echo WPWHPRO()->helpers->translate( 'This webhook uses the get_user_by() function to return a user. To learn more about this function, please check the official WordPress docs:', 'action-get_user-content' ); ?> <a href="https://developer.wordpress.org/reference/functions/get_user_by/" title="get_user_by" target="_blank">https://developer.wordpress.org/reference/functions/get_user_by/</a></p>
 		<p><?php echo WPWHPRO()->helpers->translate( 'For the user_value, you can set by default the user id. It is also possible to set an email, the user login or the slug. If you choose a different parameter for the value_type argument, you can also grab the user through the other values.', 'action-get_user-content' ); ?> </p>
+		<p><?php echo WPWHPRO()->helpers->translate( 'Possible values for the value_type argument are:', 'action-get_user-content' ); ?><strong>id, ID, slug, email, login</strong></p>
 		<?php
 		$description = ob_get_clean();
 
@@ -1472,9 +1473,14 @@ $return_args = array(
 				$return_args['msg'] = WPWHPRO()->helpers->translate( $user->get_error_message(), 'action-get_user-failure' );
 			} else {
 
-				$return_args['msg'] = WPWHPRO()->helpers->translate("User was successfully returned.", 'action-get_users-success' );
-				$return_args['success'] = true;
-				$return_args['data'] = $user;
+				if( ! empty( $user ) ){
+					$return_args['msg'] = WPWHPRO()->helpers->translate("User was successfully returned.", 'action-get_user-success' );
+					$return_args['success'] = true;
+					$return_args['data'] = $user;
+				} else {
+					$return_args['data'] = $user;
+					$return_args['msg'] = WPWHPRO()->helpers->translate("No user found.", 'action-get_user-success' );
+				}
 
 			}
 
