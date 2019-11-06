@@ -512,6 +512,8 @@ class WP_Webhooks_Pro_Webhook {
 			$return_auth = array(
 				'success' => true,
 				'msg' => WPWHPRO()->helpers->translate( 'The authentication was successful', 'webhooks-auth-response-success' ),
+				'domain' => home_url(),
+				'name' => ( ! empty( $response_ident_value ) ) ? $response_ident_value : 'none'
 			);
 			WPWHPRO()->webhook->echo_response_data( $return_auth );
 			die();
