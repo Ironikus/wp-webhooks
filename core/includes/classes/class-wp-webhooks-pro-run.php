@@ -2128,26 +2128,26 @@ $return_args = array(
 		$available_triggers = $active_webhooks['triggers'];
 
 		if( isset( $available_triggers['create_user'] ) ){
-			add_action( 'user_register', array( $this, 'ironikus_trigger_user_register' ), 10, 1 );
+			add_action( 'user_register', array( $this, 'ironikus_trigger_user_register_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_user_create', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
         }
 
 		if( isset( $available_triggers['login_user'] ) ){
-			add_action( 'wp_login', array( $this, 'ironikus_trigger_user_login' ), 10, 2 );
+			add_action( 'wp_login', array( $this, 'ironikus_trigger_user_login_init' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_user_login', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
         }
 
 		if( isset( $available_triggers['update_user'] ) ){
-			add_action( 'profile_update', array( $this, 'ironikus_trigger_user_update' ), 10, 2 );
+			add_action( 'profile_update', array( $this, 'ironikus_trigger_user_update_init' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_user_update', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
         }
 
 		if( isset( $available_triggers['post_create'] ) ){
-			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_create' ), 10, 3 );
+			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_create_init' ), 10, 3 );
         }
 
 		if( isset( $available_triggers['post_update'] ) ){
-			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_update' ), 10, 3 );
+			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_update_init' ), 10, 3 );
         }
 
 		if( isset( $available_triggers['post_create'] ) || isset( $available_triggers['post_update'] ) ){
@@ -2155,7 +2155,7 @@ $return_args = array(
         }
 
 		if( isset( $available_triggers['post_delete'] ) ){
-			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete' ), 10, 3 );
+			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
         }
 
@@ -2398,6 +2398,9 @@ $return_args = array(
 	 *
 	 * @param - §user_id - The id of the current user
 	 */
+	public function ironikus_trigger_user_register_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_user_register' ), func_get_args() );
+	}
 	public function ironikus_trigger_user_register( $user_id ){
 		$webhooks               = WPWHPRO()->webhook->get_hooks( 'trigger', 'create_user' );
 		$user_data              = (array) get_user_by( 'id', $user_id );
@@ -2405,7 +2408,7 @@ $return_args = array(
 		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
         }
 
         do_action( 'wpwhpro/webhooks/trigger_user_register', $user_id, $user_data, $response_data );
@@ -2450,6 +2453,9 @@ $return_args = array(
 	/*
 	 * Register the user login trigger logic
 	 */
+	public function ironikus_trigger_user_login_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_user_login' ), func_get_args() );
+	}
 	public function ironikus_trigger_user_login( $user_login, $user_obj ){
 
 		$user_id = 0;
@@ -2467,7 +2473,7 @@ $return_args = array(
 		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_user_login', $user_id, $user_data, $response_data );
@@ -2514,6 +2520,9 @@ $return_args = array(
 	/*
 	 * Register the user update trigger logic
 	 */
+	public function ironikus_trigger_user_update_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_user_update' ), func_get_args() );
+	}
 	public function ironikus_trigger_user_update( $user_id, $old_data ){
 		$webhooks                   = WPWHPRO()->webhook->get_hooks( 'trigger', 'update_user' );
 		$user_data                  = (array) get_user_by( 'id', $user_id );
@@ -2522,7 +2531,7 @@ $return_args = array(
 		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_user_update', $user_id, $user_data, $response_data );
@@ -2782,6 +2791,9 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 	 *
 	 * @since 1.2
 	 */
+	public function ironikus_trigger_post_create_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_post_create' ), func_get_args() );
+	}
 	public function ironikus_trigger_post_create( $post_id, $post, $update ){
 
 		$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
@@ -2844,6 +2856,9 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 	 *
 	 * @since 1.2
 	 */
+	public function ironikus_trigger_post_update_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_post_update' ), func_get_args() );
+	}
 	public function ironikus_trigger_post_update( $post_id, $post, $update ){
 
 		//Make sure we only fire the create_post on status function not within the update_post webhook
@@ -2889,6 +2904,9 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 	 *
 	 * @since 1.2
 	 */
+	public function ironikus_trigger_post_delete_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_post_delete' ), func_get_args() );
+	}
 	public function ironikus_trigger_post_delete( $post_id ){
 
 		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_delete' );

@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: edd, webhooks, automation, ironikus, webhook
 Requires at least: 4.7
-Tested up to: 5.2.4
-Stable Tag: 1.1.2
+Tested up to: 5.3
+Stable Tag: 1.1.3
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -94,6 +94,12 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.3: November 15, 2019 =
+* Feature: Activate/Deactivate single webbhook triggers
+* Feature: Post-delay webhook triggers. (Triggers are fired before PHP shuts down to catch plugin changes)
+* Feature: Post-delay setting to deactivate the functionality
+* Tweak: Change certain triggers to fire with the whole webhook object
 
 = 1.1.2: November 06, 2019 =
 * Feature: Add webhook name field (slug) to the webhook trigger URL's

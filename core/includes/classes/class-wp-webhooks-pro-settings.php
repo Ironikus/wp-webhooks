@@ -99,6 +99,18 @@ class WP_Webhooks_Pro_Settings{
 			),
 
 			/**
+			 * Deactivate Post Delay
+			 */
+			'wpwhpro_deactivate_post_delay' => array(
+				'id'          => 'wpwhpro_deactivate_post_delay',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Deactivate Post Trigger Delay', 'wpwhpro-fields-reset'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPWHPRO()->helpers->translate('Since version 2.1.4, we delay every trigger until the WordPress "shutdown" hook fires. This allows us to also keep track of all plugin modifications that happen after the initial trigger fires. If you don\'t want that, simply check this box.', 'wpwhpro-fields-reset-tip')
+			),
+
+			/**
 			 * Reset WP Webbhooks Pro
 			 */
 			'wpwhpro_reset_data' => array(
