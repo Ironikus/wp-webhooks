@@ -86,6 +86,7 @@
                         $webhook_html += '<input class="ironikus-webhook-input" type="text" name="ironikus_wp_webhooks_pro_webhook_url" value="' + $webhook['webhook_url'] + '" readonly /><br>';
                         $webhook_html += '</td><td><div class="ironikus-element-actions">';
                         $webhook_html += '<span class="ironikus-delete" ironikus-delete="' + $webhook['webhook'] + '" ironikus-group="' + $webhook['webhook_group'] + '" >Delete</span><br>';
+                        $webhook_html += '<p class="ironikus-status-action active" ironikus-webhook-status="active" ironikus-webhook-group="' + $webhook['webhook_group'] + '" ironikus-webhook-slug="' + $webhook['webhook'] + '">' + 'Deactivate' + '</p>';
                         $webhook_html += '<span class="ironikus-refresh">Refresh for Settings</span>';
 
                         if( $webhook['webhook_callback'] != '' ){
@@ -276,6 +277,7 @@
         }
 
         var $webhook = $( $this ).attr( 'ironikus-webhook-slug' );
+        var $webhook_group = $( $this ).attr( 'ironikus-webhook-group' );
         var $webhook_status = $( $this ).attr( 'ironikus-webhook-status' );
 
         $.ajax({
@@ -285,6 +287,7 @@
                 action : 'ironikus_change_status_webhook_action',
                 webhook : $webhook,
                 webhook_status : $webhook_status,
+                webhook_group : $webhook_group,
                 ironikus_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
@@ -292,7 +295,7 @@
 
                 $all_status_actions.removeClass( 'loading' );
 
-                if( $webhook_response['success'] != 'false' ){
+                if( $webhook_response['success'] != 'false' && $webhook_response['success'] != false ){
                     setTimeout(function(){
                         $( $this ).text( $webhook_response['new_status_name'] );
                         $( $this ).attr( 'ironikus-webhook-status', $webhook_response['new_status'] )

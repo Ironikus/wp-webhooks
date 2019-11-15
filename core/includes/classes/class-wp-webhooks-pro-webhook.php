@@ -644,6 +644,14 @@ class WP_Webhooks_Pro_Webhook {
 
 		}
 
+		//Validate against inactive action webhooks
+		if( isset( $webhook['status'] ) && ! $skip_validation ){
+			if( $webhook['status'] === 'inactive' ){
+				$response['msg'] = WPWHPRO()->helpers->translate( 'The following webhook trigger url is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' );
+				$response['is_valid'] = false;
+			}
+		}
+
 		$response = apply_filters( 'wpwhpro/admin/webhooks/is_valid_trigger_response', $response, $webhook, $data, $args );
 
 		if( $response['is_valid'] === false ){

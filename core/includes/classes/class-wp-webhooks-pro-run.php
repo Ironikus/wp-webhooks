@@ -251,7 +251,8 @@ class WP_Webhooks_Pro_Run{
 	public function ironikus_change_status_webhook_action(){
         check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
 
-        $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
+		$webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
+		$webhook_group 	= isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
         $webhook_status = isset( $_REQUEST['webhook_status'] ) ? sanitize_title( $_REQUEST['webhook_status'] ) : '';
 		$response       = array( 'success' => false, 'new_status' => '', 'new_status_name' => '' );
 
@@ -269,9 +270,15 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		if( ! empty( $webhook ) ){
-			$check = WPWHPRO()->webhook->update( $webhook, 'action', '', array(
-                'status' => $new_status
-			) );
+			if( ! empty( $webhook_group ) ){
+				$check = WPWHPRO()->webhook->update( $webhook, 'trigger', $webhook_group, array(
+					'status' => $new_status
+				) );
+			} else {
+				$check = WPWHPRO()->webhook->update( $webhook, 'action', '', array(
+					'status' => $new_status
+				) );
+			}
 			
 			if( $check ){
 				$response['success'] = true;

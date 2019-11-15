@@ -61,6 +61,14 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
                                 <?php foreach( $all_triggers as $webhook => $webhook_data ) : ?>
 									<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
 									<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook ) ) ) { continue; } ?>
+									<?php
+										$status = 'active';
+										$status_name = 'Deactivate';
+										if( isset( $webhook_data['status'] ) && $webhook_data['status'] == 'inactive' ){
+											$status = 'inactive';
+											$status_name = 'Activate';
+										}
+									?>
 									<tr id="ironikus-webhook-id-<?php echo $webhook; ?>">
 										<td>
 											<?php echo $webhook; ?>
@@ -71,6 +79,7 @@ $current_url_full = WPWHPRO()->helpers->get_current_url();
 										<td>
 											<div class="ironikus-element-actions">
 												<span class="ironikus-delete" ironikus-delete="<?php echo $webhook; ?>" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-triggers' ); ?></span><br>
+												<p class="ironikus-status-action <?php echo $status; ?>" ironikus-webhook-status="<?php echo $status; ?>" ironikus-webhook-group="<?php echo $trigger['trigger']; ?>" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-actions' ); ?></p>
 												<a class="thickbox ironikus-settings-wrapper" title="<?php echo $trigger_name; ?>" href="#TB_inline?height=330&width=800&inlineId=wpwhpro-trigger-settings-<?php echo $webhook; ?>">
 													<span class="ironikus-settings" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-triggers' ); ?></span>
 												</a>
