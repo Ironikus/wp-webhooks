@@ -78,6 +78,8 @@
                 setTimeout(function(){
                     $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
                     $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+                    $( '#ironikus-webhook-url-' + webhook_id ).val( '' );
+                    $( '#ironikus-webhook-slug-' + webhook_id ).val( '' );
 
                     if( $webhook['success'] != 'false' && $webhook['success'] != false ){
                         $( $this ).css( { 'background': '#00a73f' } );
