@@ -2800,11 +2800,35 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 
 	    if( ! $update || ! empty( $temp_post_status_change ) ){
 
+			$tax_output = array();
+			$taxonomies = get_taxonomies( '','names' );
+			if( ! empty( $taxonomies ) ){
+				$tax_terms = wp_get_post_terms( 553, $taxonomies );
+				foreach( $tax_terms as $sk => $sv ){
+
+					if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
+						continue;
+					}
+					
+					if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
+						$tax_output[ $sv->taxonomy ] = array();
+					}
+					
+					if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
+						$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
+					}
+
+					$tax_output[ $sv->taxonomy ][ $sv->slug ] = $sv;
+
+				}
+			}
+
 		    $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_create' );
 		    $data_array = array(
 			    'post_id'   => $post_id,
 			    'post'      => $post,
-			    'post_meta' => get_post_meta( $post_id ),
+				'post_meta' => get_post_meta( $post_id ),
+				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
 
@@ -2866,11 +2890,36 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 
 		//Only call if the create_post function wasn't called before
 	    if( $update && ( empty( $temp_post_status_change ) && ! did_action( 'wpwhpro/webhooks/trigger_post_create_post_status' ) ) ){
+
+			$tax_output = array();
+			$taxonomies = get_taxonomies( '','names' );
+			if( ! empty( $taxonomies ) ){
+				$tax_terms = wp_get_post_terms( 553, $taxonomies );
+				foreach( $tax_terms as $sk => $sv ){
+
+					if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
+						continue;
+					}
+					
+					if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
+						$tax_output[ $sv->taxonomy ] = array();
+					}
+					
+					if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
+						$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
+					}
+
+					$tax_output[ $sv->taxonomy ][ $sv->slug ] = $sv;
+
+				}
+			}
+
 		    $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_update' );
 		    $data_array = array(
 			    'post_id'   => $post_id,
 			    'post'      => $post,
-			    'post_meta' => get_post_meta( $post_id ),
+				'post_meta' => get_post_meta( $post_id ),
+				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
 
