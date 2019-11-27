@@ -3,7 +3,7 @@ Author URI: https://ironikus.com/
 Plugin URI: https://ironikus.com/downloads/wp-webhooks/
 Contributors: ironikus
 Donate link: https://paypal.me/ironikus
-Tags: edd, webhooks, automation, ironikus, webhook
+Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3
 Stable Tag: 1.1.3
