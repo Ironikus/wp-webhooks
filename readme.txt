@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3
-Stable Tag: 1.1.3
+Stable Tag: 1.1.4
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -94,6 +94,10 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.4: November 27, 2019 =
+* Feature: Send post taxonomies along with post creade and update trigger
+* Tweak: Clear input fields after adding new trigger
 
 = 1.1.3: November 15, 2019 =
 * Feature: Activate/Deactivate single webbhook triggers
