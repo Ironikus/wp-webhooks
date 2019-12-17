@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.3
-Stable Tag: 1.1.4
+Tested up to: 5.3.1
+Stable Tag: 1.1.5
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -27,7 +27,8 @@ It's time to automate your WordPress website on a whole new level!
 
 * Create, Delete, Search and Retrieve users via external webhooks on your website
 * Create, Delete, Search and Retrieve posts via external webhooks on your website (Custom post types supported)
-* Send data on login, register, update, new post, update post and more
+* Send data on login, register, update and deletion
+* Send data on new post, update post and delete post
 * Send data on custom WordPress hook calls
 * Add multiple Webhooks for each trigger and also for the actions
 * Test all of the available triggers with a single click
@@ -94,6 +95,11 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.5: December 17, 2019 =
+* Feature: Display new table field for only the API key
+* Feature: Added new webhook trigger that fires after a user was deleted
+* Tweak: Better support for our new Zapier App 2.0.0
 
 = 1.1.4: November 27, 2019 =
 * Feature: Send post taxonomies along with post creade and update trigger
