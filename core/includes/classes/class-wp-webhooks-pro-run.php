@@ -2110,6 +2110,7 @@ $return_args = array(
 		$triggers[] = $this->trigger_create_user_content();
 		$triggers[] = $this->trigger_login_user_content();
 		$triggers[] = $this->trigger_login_user_update();
+		$triggers[] = $this->trigger_user_deleted();
 		$triggers[] = $this->trigger_post_create();
 		$triggers[] = $this->trigger_post_update();
 		$triggers[] = $this->trigger_post_delete();
@@ -2140,6 +2141,11 @@ $return_args = array(
 		if( isset( $available_triggers['update_user'] ) ){
 			add_action( 'profile_update', array( $this, 'ironikus_trigger_user_update_init' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_user_update', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
+		}
+		
+		if( isset( $available_triggers['deleted_user'] ) ){
+			add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 2 );
+			add_filter( 'ironikus_demo_test_deleted_user', array( $this, 'ironikus_send_demo_user_deleted' ), 10, 3 );
         }
 
 		if( isset( $available_triggers['post_create'] ) ){
@@ -2535,6 +2541,74 @@ $return_args = array(
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_user_update', $user_id, $user_data, $response_data );
+	}
+
+	/**
+	 * USER DELETED
+	 */
+
+	/*
+	 * Register the user update trigger as an element
+	 *
+	 * @return array
+	 */
+	public function trigger_user_deleted(){
+
+		$parameter = array(
+			'user_id'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The ID of the deleted user', 'trigger-deleted-user-content' ) ),
+			'reassign'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'ID of the user to reassign posts and links to. Default null, for no reassignment.', 'trigger-deleted-user-content' ) ),
+		);
+
+		ob_start();
+		?>
+        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-deleted-user-content" ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( 'You will receive the user id of the deleted user, as well as the reassignments (In case there have been reassignments.)', 'trigger-deleted-user-content' ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-deleted-user-content' ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-deleted-user-content' ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( 'Please note: If you have a multisite network, this webhook only fires if you delete the user from the whole network and not only from one sub site.', 'trigger-deleted-user-content' ); ?></p>
+		<?php
+		$description = ob_get_clean();
+
+		return array(
+			'trigger'           => 'deleted_user',
+			'name'              => WPWHPRO()->helpers->translate( 'Send Data On User Deletion', 'trigger-deleted-user-content' ),
+			'parameter'         => $parameter,
+			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_user_deleted( array(), '', 'deleted_user' ) ),
+			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user was deleted.', 'trigger-deleted-user-content' ),
+			'description'       => $description,
+			'callback'          => 'test_deleted_user'
+		);
+
+	}
+
+	/*
+	 * Register the user update trigger logic
+	 */
+	public function ironikus_trigger_deleted_user_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_user_deleted' ), func_get_args() );
+	}
+	public function ironikus_trigger_user_deleted( $user_id, $reassign ){
+		$webhooks                   = WPWHPRO()->webhook->get_hooks( 'trigger', 'deleted_user' );
+		$user_data                  = array(
+			'user_id' => $user_id,
+			'reassign' => $reassign,
+		);
+		$response_data = array();
+
+		foreach( $webhooks as $webhook ){
+			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+		}
+
+		do_action( 'wpwhpro/webhooks/trigger_user_deleted', $user_id, $user_data, $response_data );
+	}
+
+	public function ironikus_send_demo_user_deleted( $data, $webhook, $webhook_group ){
+		$data = array(
+			'user_id' => 1234,
+			'reassign' => 1235
+		);
+
+		return $data;
 	}
 
 	/**
