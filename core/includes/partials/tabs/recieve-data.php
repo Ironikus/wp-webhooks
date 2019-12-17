@@ -17,11 +17,14 @@ $actions = WPWHPRO()->webhook->get_actions();
 <table class="ironikus-webhook-table ironikus-webhook-action-table">
     <thead>
         <tr>
-            <th style="width:20%">
+            <th style="width:30%">
                 <?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-actions' ); ?>
             </th>
-            <th style="width:35%">
+            <th style="width:40%">
                 <?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-actions' ); ?>
+            </th>
+            <th style="width:20%">
+                <?php echo WPWHPRO()->helpers->translate( 'Webhook API Key', 'wpwhpro-page-actions' ); ?>
             </th>
             <th style="width:10%">
 		        <?php echo WPWHPRO()->helpers->translate( 'Action', 'wpwhpro-page-actions' ); ?>
@@ -65,6 +68,9 @@ $actions = WPWHPRO()->webhook->get_actions();
             </td>
             <td>
                 <input class="ironikus-webhook-input" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo WPWHPRO()->webhook->built_url( $webhook, $webhook_data['api_key'] ); ?>" readonly /><br>
+            </td>
+            <td>
+                <input class="ironikus-webhook-input" type='text' name='ironikus_wp_webhooks_pro_webhook_api_key' value="<?php echo $webhook_data['api_key']; ?>" readonly /><br>
             </td>
             <td>
                 <div class="ironikus-element-actions">
