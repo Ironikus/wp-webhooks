@@ -2167,7 +2167,7 @@ $return_args = array(
         }
 
 		if( isset( $available_triggers['custom_action'] ) ){
-			add_action( 'wp_webhooks_send_to_webhook', array( $this, 'wp_webhooks_send_to_webhook_action' ), 10, 1 );
+			add_action( 'wp_webhooks_send_to_webhook', array( $this, 'wp_webhooks_send_to_webhook_action' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_custom_action', array( $this, 'ironikus_send_demo_custom_action' ), 10 );
 		}
 
@@ -3175,16 +3175,26 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 	 *
 	 * @since 1.6.4
 	 */
-	public function wp_webhooks_send_to_webhook_action( $data ){
+	public function wp_webhooks_send_to_webhook_action( $data, $webhook_names = array() ){
 
 		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'custom_action' );
 		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
+
+			if( ! empty( $webhook_names ) ){
+				$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : '';
+				if( ! empty( $webhook_name ) ){
+					if( ! in_array( $webhook_name, $webhook_names ) ){
+						continue;
+					}
+				}
+			}
+
 			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data );
 		}
 
-		do_action( 'wpwhpro/webhooks/trigger_post_delete', $data, $response_data );
+		do_action( 'wpwhpro/webhooks/trigger_custom_action', $data, $response_data );
 	}
 
 	/*
