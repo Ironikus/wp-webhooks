@@ -2836,11 +2836,15 @@ $return_args = array(
 $custom_data = array(
     'data_1' => 'value'
 );
+$webhook_names = array(
+	'15792546059992909'
+);
 
-do_action( 'wp_webhooks_send_to_webhook', $custom_data );
+do_action( 'wp_webhooks_send_to_webhook', $custom_data, $webhook_names );
         </pre>
         <p><?php echo WPWHPRO()->helpers->translate( "As soon as this action fires, it will instantly be sent th the specified webhook urls within this webhook trigger.", "trigger-custom-action" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please don't forget to set your custom webhook url above so that the webhook works.", "trigger-custom-action" ); ?></p>
+        <p><?php echo WPWHPRO()->helpers->translate( "If you leave the \$webhook_names argument empty, the trigger fill fire to all webhooks. To send it only to certain webhook endpoints, simply define their webhook name within the array.", "trigger-custom-action" ); ?></p>
+		<p><?php echo WPWHPRO()->helpers->translate( "Please don't forget to set your custom webhook url above so that the webhook works.", "trigger-custom-action" ); ?></p>
 		<?php
 		$description = ob_get_clean();
 
@@ -3180,12 +3184,11 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'custom_action' );
 		$response_data = array();
 
-		foreach( $webhooks as $webhook ){
+		foreach( $webhooks as $webhook_key => $webhook ){
 
 			if( ! empty( $webhook_names ) ){
-				$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : '';
-				if( ! empty( $webhook_name ) ){
-					if( ! in_array( $webhook_name, $webhook_names ) ){
+				if( ! empty( $webhook_key ) ){
+					if( ! in_array( $webhook_key, $webhook_names ) ){
 						continue;
 					}
 				}
