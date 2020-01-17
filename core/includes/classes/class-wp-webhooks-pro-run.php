@@ -1284,7 +1284,7 @@ $return_args = array(
         }
 
         //Auto generate on new user
-        if( ! empty( $user_pass ) ){
+        if( empty( $user_pass ) ){
             $user_data['user_pass'] = wp_generate_password( 32, true, false );
         }
 
