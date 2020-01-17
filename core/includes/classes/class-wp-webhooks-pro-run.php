@@ -2149,6 +2149,7 @@ $return_args = array(
         }
 
 		if( isset( $available_triggers['post_create'] ) ){
+			add_action( 'add_attachment', array( $this, 'ironikus_trigger_post_create_attachment_init' ), 10, 1 );
 			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_create_init' ), 10, 3 );
         }
 
@@ -2947,6 +2948,28 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data );
 
 		    do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post, $response_data );
         }
+	}
+
+	/*
+	 * Trigger webhook to fire as well on attachment creation
+	 * 
+	 * This is a related issue to the already mentioned one
+	 * here: https://github.com/Ironikus/wp-webhooks/issues/2
+	 *
+	 * @since 2.1.8
+	 */
+	public function ironikus_trigger_post_create_attachment_init( $post_id ){
+
+		if( empty(  $post_id ) || ! is_numeric( $post_id ) ){
+			return;
+		}
+
+		$post = get_post( $post_id );
+		if( empty( $post ) ){
+			$post = array();
+		}
+
+		$this->ironikus_trigger_post_create_init( $post_id, $post, false );
 	}
 
 	/*
