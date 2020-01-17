@@ -3,7 +3,7 @@
  * Plugin Name: WP Webhooks
  * Plugin URI: https://ironikus.com/downloads/wp-webhooks/
  * Description: Automate your WordPress system using webhooks
- * Version: 1.1.5
+ * Version: 1.1.6
  * Author: Ironikus
  * Author URI: https://ironikus.com/
  * License: GPL2
@@ -19,7 +19,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 define( 'WPWH_NAME',           'WP Webhooks' );
 
 // Plugin version.
-define( 'WPWH_VERSION',        '1.1.5' );
+define( 'WPWH_VERSION',        '1.1.6' );
 
 // Determines if the plugin is loaded
 define( 'WPWH_SETUP',          true );

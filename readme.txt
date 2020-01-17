@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3.2
-Stable Tag: 1.1.5
+Stable Tag: 1.1.6
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -47,6 +47,7 @@ On wordpress.org you will also find more free extensions to equip your favorite 
 * [Contact Form 7 Integration](https://wordpress.org/plugins/wpwh-contact-form-7/)
 * [Manage Taxonomy Terms](https://wordpress.org/plugins/wp-webhooks-manage-taxonomy-terms/)
 * [WP Reset Integration](https://wordpress.org/plugins/wpwh-wp-reset-webhook-integration/)
+* [WP Webhook Comments](https://wordpress.org/plugins/wp-webhooks-comments/)
 
 = The best Pro version you have ever seen! =
 
@@ -95,6 +96,13 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.6: January 17, 2020 =
+* Feature: Allow the custom webhook trigger to send data only to certain webhooks using the secondary $webhook_names variable: do_action( 'wp_webhooks_send_to_webhook', $custom_data, $webhook_names );
+* Tweak: Optimize webhook descriptions for certain triggers and actions
+* Fix: Correct password creation logic for creating a user
+* Fix: Triggers didn't fire on creating an attachment
+* Fix: The custom action trigger contained a custom action that was fired as well on post deletion
 
 = 1.1.5: December 17, 2019 =
 * Feature: Display new table field for only the API key
