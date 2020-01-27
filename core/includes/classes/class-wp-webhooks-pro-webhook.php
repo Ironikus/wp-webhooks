@@ -404,7 +404,7 @@ class WP_Webhooks_Pro_Webhook {
 	public function echo_response_data( $args = array() ){
 
 		$response_body = WPWHPRO()->helpers->get_response_body();
-		$response_type = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'response_type' );
+		$response_type = sanitize_title( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'response_type' ) );
 
 		if( empty( $response_type ) ){
 			$response_type = 'json';
@@ -481,11 +481,16 @@ class WP_Webhooks_Pro_Webhook {
 			return;
 		}
 
+		//Setup default response
+		$return = array(
+			'success' => false
+		);
+
 		//Validate against inactive action webhooks
 		if( isset( $webhooks[ $response_ident_value ] ) && isset( $webhooks[ $response_ident_value ]['status'] ) ){
 			if( $webhooks[ $response_ident_value ]['status'] === 'inactive' ){
-				status_header( 403 );
-				echo json_encode( WPWHPRO()->helpers->translate( 'Your current webhook is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' ) );
+				$return['msg'] = WPWHPRO()->helpers->translate( 'Your current webhook is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' );
+				WPWHPRO()->webhook->echo_response_data( $return );
 				exit;
 			}
 		}
@@ -497,13 +502,13 @@ class WP_Webhooks_Pro_Webhook {
 
 		if( isset( $webhooks[ $response_ident_value ] ) ){
 			if( $webhooks[ $response_ident_value ]['api_key'] != $response_api_key ){
-				status_header( 403 );
-				echo json_encode( WPWHPRO()->helpers->translate( 'WP Webhook API Key not valid.', 'webhooks-invalid-license-invalid' ) );
+				$return['msg'] = WPWHPRO()->helpers->translate( 'WP Webhook API Key not valid.', 'webhooks-invalid-license-invalid' );
+				WPWHPRO()->webhook->echo_response_data( $return );
 				exit;
 			}
 		} else{
-			status_header( 403 );
-			echo json_encode( WPWHPRO()->helpers->translate( 'WP Webhook API Key is missing.', 'webhooks-invalid-license-missing' ) );
+			$return['msg'] = WPWHPRO()->helpers->translate( 'WP Webhook API Key is missing.', 'webhooks-invalid-license-missing' );
+			WPWHPRO()->webhook->echo_response_data( $return );
 			exit;
 		}
 
