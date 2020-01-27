@@ -549,8 +549,10 @@
 
         $html_action += '<div class="wpwhpro-data-mapping-actions">';
         $html_action += '<div class="wpwhpro-add-row-button-text wpwhpro-button btn-blue">' + $args['text']['add_button_text'] + '</div>';
-        $html_action += '';
-        $html_action += '';
+        $html_action += '<div class="wpwhpro-data-mapping-imexport">';
+        $html_action += '<div class="wpwhpro-import-data wpwhpro-button btn-blue">' + $args['text']['import_button_text'] + '</div>';
+        $html_action += '<div class="wpwhpro-export-data wpwhpro-button btn-blue">' + $args['text']['export_button_text'] + '</div><p id="wpwhpro-export-data-dialogue" style="display:none !important;"></p>';
+        $html_action += '</div>';
         $html_action += '</div>';
 
         //Map settings
@@ -706,6 +708,47 @@
         $( '#wpwhpro-data-editor' ).append( $single_row );
         
         reload_sortable();
+    });
+
+    // Json editor logic
+    $( document ).on( "click", ".wpwhpro-import-data", function() {
+        var $this = this;
+        var $json = prompt("Include the exported JSON here. (This will append the new fields to the existing mapping template.)", '{"myjson": "myvalue"}');
+        var $mapping_response = $.parseJSON( $json );
+        var $html_table = '';
+
+        if ( ! $.isEmptyObject( $mapping_response ) ) {
+
+            //Clear empty text ares
+            if( $("#wpwhpro-data-editor .wpwhpro-empty").length ){
+                $( '#wpwhpro-data-editor' ).html( '' );
+            }
+
+            $.each( $mapping_response, function( index, value ) {
+                $html_table += get_table_single_row_layout( value );
+            });
+
+        }
+
+        $( '#wpwhpro-data-editor' ).append( $html_table );
+        reload_sortable();
+    });
+
+    // Json editor logic
+    $( document ).on( "click", ".wpwhpro-export-data", function() {
+        var $this = this;
+        var $template_json = create_template_json();
+        var $button_text = $( $this ).html();
+        
+        $( '#wpwhpro-export-data-dialogue' ).text( JSON.stringify( $template_json ) );
+        wpwhpro_copy_to_clipboard( '#wpwhpro-export-data-dialogue' );
+
+        $( $this ).html( 'Copied!' );
+        alert( 'Copied!' );
+
+        setTimeout(function(){
+            $( $this ).html( $button_text );
+        }, 2700);
     });
 
     // delete single key logic
@@ -874,6 +917,16 @@
         $('#wpwhpro-log-json').jsonBrowse( $.parseJSON( $log_json ) );
 
      });
+
+     function wpwhpro_copy_to_clipboard( element ) {
+        var $temp = $("<input>");
+        var $json = $(element).text();
+        $("body").append($temp);
+        $temp.val($json).select();
+        document.execCommand("copy");
+        $temp.remove();
+        console.log($json);
+      }
 
 })( jQuery );
 

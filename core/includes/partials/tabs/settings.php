@@ -89,13 +89,11 @@ if( $reload_location ){
 
 		?>
 			<tr valign="top">
-				<td>
-					<input id="<?php echo $setting['id']; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-				</td>
-				<td scope="row" valign="top">
+				<td class="settings-input" scope="row" valign="top">
 					<label for="<?php echo $setting_name; ?>">
 						<strong><?php echo $setting['label']; ?></strong>
 					</label>
+					<input id="<?php echo $setting['id']; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
 				</td>
 				<td>
 					<p class="description">

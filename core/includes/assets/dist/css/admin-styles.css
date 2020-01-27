@@ -315,6 +315,12 @@ body {
 .wpwhpro-settings-table input[type=text] {
   width: 200px; }
 
+.wpwhpro-settings-table .settings-input {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+
 .wpwhpro-logs .wpwhpro-log-action-wrapper {
   margin-top: 40px; }
 
@@ -428,7 +434,16 @@ body {
   #wpwhpro-data-mapping-wrapper .wpwhpro-data-mapping-actions {
     display: -ms-flexbox;
     display: flex;
-    margin-top: 20px; }
+    margin-top: 20px;
+    -ms-flex-align: center;
+        align-items: center;
+    -ms-flex-pack: justify;
+        justify-content: space-between; }
+    #wpwhpro-data-mapping-wrapper .wpwhpro-data-mapping-actions .wpwhpro-data-mapping-imexport {
+      display: -ms-flexbox;
+      display: flex; }
+      #wpwhpro-data-mapping-wrapper .wpwhpro-data-mapping-actions .wpwhpro-data-mapping-imexport div {
+        margin-left: 10px; }
 
 #wpwhpro-data-editor {
   overflow: auto;
