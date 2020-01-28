@@ -13,6 +13,7 @@
 	<li>Delete posts</li>
 	<li>IP Whitelist feature for enhanced security</li>
 	<li>In-plugin support</li>
+	<li>A loooooooot of more features, extensions and possibilities</li>
 </ol>
 
 <h3><a href="https://ironikus.com/compare-wp-webhooks-pro/" target="_blank" title="Compare WP Webhooks Pro">Compare WP Webhooks with WP Webhooks Pro here</a></h3>

@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3.2
-Stable Tag: 1.1.6
+Stable Tag: 1.1.7
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -96,6 +96,11 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.7: January 27, 2020 =
+* Feature: The webhook authentication process is now also fully JSON ready and returns a JSON as a response
+* Tweak: A failed authentication now also returns a 200 error code instead of 403 
+* Tweak: Settings layout is now better readable
 
 = 1.1.6: January 17, 2020 =
 * Feature: Allow the custom webhook trigger to send data only to certain webhooks using the secondary $webhook_names variable: do_action( 'wp_webhooks_send_to_webhook', $custom_data, $webhook_names );
