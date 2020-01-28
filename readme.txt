@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3.2
-Stable Tag: 1.1.7
+Stable Tag: 1.1.8
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -96,6 +96,10 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 1.1.8: January 27, 2020 =
+* Fix: Throw 403 http error accordingly on authentications
+* Tweak: Optimize error messages for authentication
 
 = 1.1.7: January 27, 2020 =
 * Feature: The webhook authentication process is now also fully JSON ready and returns a JSON as a response

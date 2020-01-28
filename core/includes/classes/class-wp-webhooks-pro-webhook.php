@@ -489,7 +489,8 @@ class WP_Webhooks_Pro_Webhook {
 		//Validate against inactive action webhooks
 		if( isset( $webhooks[ $response_ident_value ] ) && isset( $webhooks[ $response_ident_value ]['status'] ) ){
 			if( $webhooks[ $response_ident_value ]['status'] === 'inactive' ){
-				$return['msg'] = WPWHPRO()->helpers->translate( 'Your current webhook is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' );
+				status_header( 403 );
+				$return['msg'] = WPWHPRO()->helpers->translate( 'Your current WP Webhooks webhook is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' );
 				WPWHPRO()->webhook->echo_response_data( $return );
 				exit;
 			}
@@ -502,12 +503,14 @@ class WP_Webhooks_Pro_Webhook {
 
 		if( isset( $webhooks[ $response_ident_value ] ) ){
 			if( $webhooks[ $response_ident_value ]['api_key'] != $response_api_key ){
-				$return['msg'] = WPWHPRO()->helpers->translate( 'WP Webhook API Key not valid.', 'webhooks-invalid-license-invalid' );
+				status_header( 403 );
+				$return['msg'] = WPWHPRO()->helpers->translate( 'The given WP Webhooks Pro API Key is not valid, please enter a valid API key and try again.', 'webhooks-invalid-license-invalid' );
 				WPWHPRO()->webhook->echo_response_data( $return );
 				exit;
 			}
 		} else{
-			$return['msg'] = WPWHPRO()->helpers->translate( 'WP Webhook API Key is missing.', 'webhooks-invalid-license-missing' );
+			status_header( 403 );
+			$return['msg'] = WPWHPRO()->helpers->translate( 'The given WP Webhooks Pro API Key is missing, please add it first.', 'webhooks-invalid-license-missing' );
 			WPWHPRO()->webhook->echo_response_data( $return );
 			exit;
 		}
