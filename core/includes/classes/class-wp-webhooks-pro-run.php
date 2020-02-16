@@ -629,6 +629,7 @@ class WP_Webhooks_Pro_Run{
 		switch($tab){
 			case 'pro':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
+				break;
 			case 'send-data':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/send-data.php' );
 				break;
