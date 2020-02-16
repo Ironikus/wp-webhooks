@@ -10,174 +10,145 @@ $actions = WPWHPRO()->webhook->get_actions( false );
 $active_webhooks = WPWHPRO()->settings->get_active_webhooks();
 $current_url_full = WPWHPRO()->helpers->get_current_url();
 
-$reload_location = false;
-
-if( isset( $_POST['ironikus_update_settings'] ) ) {
-	if( ! wp_verify_nonce( $_POST['ironikus_wpwhpro_settings_nonce'], 'ironikus_wpwhpro_settings' ) ) {
-		return;
-	}
-
-	// START General Settings
-	foreach( $settings as $settings_name => $setting ){
-
-		$value = '';
-
-		if( $setting['type'] == 'checkbox' ){
-			if( ! isset( $_POST[ $settings_name ] ) ){
-				$value = 'no';
-			} else {
-				$value = 'yes';
-			}
-		} elseif( $setting['type'] == 'text' ){
-			if( isset( $_POST[ $settings_name ] ) ){
-				$value = sanitize_title( $_POST[ $settings_name ] );
-			}
-		}
-
-		update_option( $settings_name, $value );
-		$settings[ $settings_name ][ 'value' ] = $value;
-	}
-	// END General Settings
-
-	// START Trigger Settings
-	foreach( $triggers as $trigger ){
-		if( isset( $_POST[ 'wpwhpropt_' . $trigger['trigger'] ] ) ){
-			$active_webhooks['triggers'][ $trigger['trigger'] ] = array();
-		} else {
-			unset( $active_webhooks['triggers'][ $trigger['trigger'] ] );
-		}
-	}
-	// END Trigger Settings
-
-	// START Action Settings
-	foreach( $actions as $action ){
-		if( isset( $_POST[ 'wpwhpropa_' . $action['action'] ] ) ){
-			$active_webhooks['actions'][ $action['action'] ] = array();
-		} else {
-			unset( $active_webhooks['actions'][ $action['action'] ] );
-		}
-	}
-	// END Action Settings
-	update_option( WPWHPRO()->settings->get_active_webhooks_ident(),  $active_webhooks );
-	$reload_location = true;
-
+if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 	echo WPWHPRO()->helpers->create_admin_notice( 'The settings are successfully updated. Please refresh the page.', 'success', true );
-}
-
-//Reload the page
-if( $reload_location ){
-	echo '<script type="text/javascript">window.location = window.location.href;location.reload();</script>';
 }
 
 ?>
 
-<h2><?php echo WPWHPRO()->helpers->translate('Global Settings', 'admin-settings'); ?></h2>
+<div class="ironikus-settings-wrapper">
 
-<p>
-	<?php echo WPWHPRO()->helpers->translate( 'Here you can configure the global settings for our plugin, as well as enable certain features to extend the possibilities for your site.', 'admin-settings' ); ?>
-</p>
+	<h2><?php echo WPWHPRO()->helpers->translate('Global Settings', 'admin-settings'); ?></h2>
 
-<form method="post" action="">
+	<div class="sub-text">
+		<?php echo WPWHPRO()->helpers->translate( 'Here you can configure the global settings for our plugin, as well as enable certain features to extend the possibilities for your site.', 'admin-settings' ); ?>
+	</div>
 
-	<table class="wpwhpro-settings-table form-table">
-		<tbody>
+	<form id="ironikus-main-settings-form" method="post" action="">
 
-		<?php foreach( $settings as $setting_name => $setting ) :
+		<table class="table wpwhpro-settings-table form-table">
+			<tbody>
 
-			$is_checked = ( $setting['type'] == 'checkbox' && $setting['value'] == 'yes' ) ? 'checked' : '';
-			$value = ( $setting['type'] != 'checkbox' ) ? $setting['value'] : '1';
+			<?php foreach( $settings as $setting_name => $setting ) :
 
-		?>
-			<tr valign="top">
-				<td class="settings-input" scope="row" valign="top">
-					<label for="<?php echo $setting_name; ?>">
-						<strong><?php echo $setting['label']; ?></strong>
-					</label>
-					<input id="<?php echo $setting['id']; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-				</td>
-				<td>
-					<p class="description">
-						<?php echo $setting['description']; ?>
-					</p>
-				</td>
-			</tr>
-		<?php endforeach; ?>
-
-		</tbody>
-	</table>
-
-	<?php submit_button( WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ) ); ?>
-
-    <h2><?php echo WPWHPRO()->helpers->translate('Activate "Send Data" Triggers', 'admin-settings'); ?></h2>
-
-    <p>
-		<?php echo WPWHPRO()->helpers->translate( 'This is a list of all available data triggers, that are currently registered on your site. To use one, just check the box and click save. After that you will be able to use the trigger within the "Send Data" tab.', 'admin-settings' ); ?>
-    </p>
-    <table class="wpwhpro-settings-table form-table">
-        <tbody>
-
-		<?php foreach( $triggers as $trigger ) :
-
-			$ident = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
-			$is_checked = isset( $active_webhooks['triggers'][ $trigger['trigger'] ] ) ?  'checked' : '';
+				$is_checked = ( $setting['type'] == 'checkbox' && $setting['value'] == 'yes' ) ? 'checked' : '';
+				$value = ( $setting['type'] != 'checkbox' ) ? $setting['value'] : '1';
+				$is_checkbox = ( $setting['type'] == 'checkbox' ) ? true : false;
 
 			?>
-            <tr valign="top">
-                <td>
-                    <input id="wpwhpropt_<?php echo $trigger['trigger']; ?>" name="wpwhpropt_<?php echo $trigger['trigger']; ?>" type="checkbox" class="regular-text" value="1" <?php echo $is_checked; ?> />
-                </td>
-                <td scope="row" valign="top">
-                    <label for="wpwhpropt_<?php echo $trigger['trigger']; ?>">
-                        <strong><?php echo $ident; ?></strong>
-                    </label>
-                </td>
-                <td>
-                    <p class="description">
-						<?php echo $trigger['short_description']; ?>
-                    </p>
-                </td>
-            </tr>
-		<?php endforeach; ?>
+				<tr valign="top">
+					<td class="settings-input" >
+						<label for="<?php echo $setting_name; ?>">
+							<strong><?php echo $setting['label']; ?></strong>
+						</label>
+						<?php if( $is_checkbox ) : ?>
+							<label class="switch ">
+								<input id="<?php echo $setting['id']; ?>" class="default primary" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+								<span class="slider round"></span>
+							</label>
+						<?php else : ?>
+							<input id="<?php echo $setting['id']; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+						<?php endif; ?>
+					</td>
+					<td>
+						<p class="description">
+							<?php echo $setting['description']; ?>
+						</p>
+					</td>
+				</tr>
+			<?php endforeach; ?>
 
-        </tbody>
-    </table>
-	<?php submit_button( WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ) ); ?>
+			</tbody>
+		</table>
 
-	<h2><?php echo WPWHPRO()->helpers->translate('Activate "Recieve Data" Actions', 'admin-settings'); ?></h2>
+		<p class="btn btn-primary h30 ironikus-submit-settings-data">
+			<span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ); ?></span>
+			<img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
+		</p>
 
-	<p>
-		<?php echo WPWHPRO()->helpers->translate( 'This is a list of all available action webhooks registered on your site. To use one, just check the box and click save. After that you will be able to use the action at the Recieve Data tab.', 'admin-settings' ); ?>
-	</p>
-	<table class="wpwhpro-settings-table form-table">
-		<tbody>
+		<h2><?php echo WPWHPRO()->helpers->translate('Activate "Send Data" Triggers', 'admin-settings'); ?></h2>
 
-		<?php foreach( $actions as $action ) :
+		<div class="sub-text">
+			<?php echo WPWHPRO()->helpers->translate( 'This is a list of all available data triggers, that are currently registered on your site. To use one, just check the box and click save. After that you will be able to use the trigger within the "Send Data" tab.', 'admin-settings' ); ?>
+		</div>
+		<table class="table wpwhpro-settings-table form-table">
+			<tbody>
 
-			$is_checked = isset( $active_webhooks['actions'][ $action['action'] ] ) ?  'checked' : '';
+			<?php foreach( $triggers as $trigger ) :
 
-			?>
-			<tr valign="top">
-				<td>
-					<input id="wpwhpropa_<?php echo $action['action']; ?>" name="wpwhpropa_<?php echo $action['action']; ?>" type="checkbox" class="regular-text" value="1" <?php echo $is_checked; ?> />
-				</td>
-				<td scope="row" valign="top">
-					<label for="wpwhpropa_<?php echo $action['action']; ?>">
-						<strong><?php echo $action['action']; ?></strong>
-					</label>
-				</td>
-				<td>
-					<p class="description">
-						<?php echo $action['short_description']; ?>
-					</p>
-				</td>
-			</tr>
-		<?php endforeach; ?>
+				$ident = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
+				$is_checked = isset( $active_webhooks['triggers'][ $trigger['trigger'] ] ) ?  'checked' : '';
 
-		</tbody>
-	</table>
+				?>
+				<tr valign="top">
+					<td class="action-button-toggle">
+						<label class="switch ">
+							<input id="wpwhpropt_<?php echo $trigger['trigger']; ?>" class="regular-text default primary" name="wpwhpropt_<?php echo $trigger['trigger']; ?>" type="checkbox" class="regular-text" value="1" <?php echo $is_checked; ?> />
+							<span class="slider round"></span>
+						</label>
+					</td>
+					<td scope="row" valign="top">
+						<label for="wpwhpropt_<?php echo $trigger['trigger']; ?>">
+							<strong><?php echo $ident; ?></strong>
+						</label>
+					</td>
+					<td>
+						<p class="description">
+							<?php echo $trigger['short_description']; ?>
+						</p>
+					</td>
+				</tr>
+			<?php endforeach; ?>
 
-	<input type="hidden" name="ironikus_update_settings" value="yes">
-	<?php wp_nonce_field( 'ironikus_wpwhpro_settings', 'ironikus_wpwhpro_settings_nonce' ); ?>
-	<?php submit_button( WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ) ); ?>
+			</tbody>
+		</table>
+		<p class="btn btn-primary h30 ironikus-submit-settings-data">
+			<span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ); ?></span>
+			<img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
+		</p>
 
-</form>
+		<h2><?php echo WPWHPRO()->helpers->translate('Activate "Recieve Data" Actions', 'admin-settings'); ?></h2>
+
+		<div class="sub-text">
+			<?php echo WPWHPRO()->helpers->translate( 'This is a list of all available action webhooks registered on your site. To use one, just check the box and click save. After that you will be able to use the action at the Recieve Data tab.', 'admin-settings' ); ?>
+		</div>
+		<table class="table wpwhpro-settings-table form-table">
+			<tbody>
+
+			<?php foreach( $actions as $action ) :
+
+				$is_checked = isset( $active_webhooks['actions'][ $action['action'] ] ) ?  'checked' : '';
+
+				?>
+				<tr valign="top">
+					<td class="action-button-toggle">
+						<label class="switch ">
+							<input id="wpwhpropa_<?php echo $action['action']; ?>" class="regular-text default primary" name="wpwhpropa_<?php echo $action['action']; ?>" type="checkbox" class="regular-text" value="1" <?php echo $is_checked; ?> />
+							<span class="slider round"></span>
+						</label>
+					</td>
+					<td scope="row" valign="top">
+						<label for="wpwhpropa_<?php echo $action['action']; ?>">
+							<strong><?php echo $action['action']; ?></strong>
+						</label>
+					</td>
+					<td>
+						<p class="description">
+							<?php echo $action['short_description']; ?>
+						</p>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+
+			</tbody>
+		</table>
+
+		<input type="hidden" name="ironikus_update_settings" value="yes">
+		<p class="btn btn-primary h30 ironikus-submit-settings-data">
+			<span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ); ?></span>
+			<img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
+		</p>
+
+	</form>
+
+</div>
