@@ -613,7 +613,7 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		$tabs['settings']       = WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' );
-		$tabs['license']        = WPWHPRO()->helpers->translate( 'License', 'admin-menu' );
+		$tabs['pro']            = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
 		return $tabs;
 

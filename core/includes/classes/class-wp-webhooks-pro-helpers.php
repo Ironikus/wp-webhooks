@@ -521,7 +521,7 @@ class WP_Webhooks_Pro_Helpers {
 
 		$content = str_replace(
 			array( '%home_url%', '%admin_url%', '%product_version%', '%product_name%', '%user_name%' ),
-			array( home_url(), get_admin_url(), WPWHPRO_VERSION, WPWHPRO_NAME, $user_name ),
+			array( home_url(), get_admin_url(), WPWH_VERSION, WPWH_NAME, $user_name ),
 			$content
 		);
 
