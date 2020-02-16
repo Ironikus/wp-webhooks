@@ -5,6 +5,9 @@
 
 $heading = '';
 $current_content = '';
+$plugin_name = WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-page-title' );
+$plugin_name = str_replace( 'Pro', '<span class="golden">Pro</span>', $plugin_name );
+
 /**
  * Filter the menu tab items. You can extend here your very own tabs
  * as well.
@@ -47,7 +50,7 @@ if( isset( $_GET['wpwhprovrs'] ) && $_GET['wpwhprovrs'] != 'home' ){
 	do_action( 'wpwhpro/admin/settings/menu/place_content', $active_val );
 	$current_content = ob_get_clean();
 
-	$current_content = ! empty( $current_content ) ? $current_content : WPWHPRO()->helpers->translate( 'Welcome to WP Webhook! Currently we are not able to show you the newest informations.', 'admin-backend' ) ;
+	$current_content = ! empty( $current_content ) ? $current_content : WPWHPRO()->helpers->translate( 'Welcome to WP Webhooks! Currently we are not able to show you the newest informations.', 'admin-backend' ) ;
 }
 
 if( is_array( $menu_endpoints ) ){
@@ -64,15 +67,15 @@ if( is_array( $menu_endpoints ) ){
 			$title = apply_filters( 'wpwhpro/admin/settings/element/filter_title', $title, $hook_name );
 
 			if( $active_val == $hook_name ){
-				$heading .= '<a class="ironikus-setting-single-tab active ' . $hook_name . '">' . $title . '</a>';
+				$heading .= '<li class="nav-item active"><a class="nav-link ironikus-setting-single-tab active ' . $hook_name . '">' . $title . '</a></li>';
 			} else {
-				$heading .= '<a class="ironikus-setting-single-tab ' . $hook_name . '" href="?page=' . $this->page_name . '&wpwhprovrs=' . $hook_name . '">' . $title . '</a>';
+				$heading .= '<li class="nav-item"><a class="nav-link ironikus-setting-single-tab ' . $hook_name . '" href="?page=' . $this->page_name . '&wpwhprovrs=' . $hook_name . '">' . $title . '</a></li>';
 			}
 		}
 
 	}
 } else {
-	$heading = '<a class="ironikus-setting-single-tab" href="?page=' . $this->page_name . '">' . WPWHPRO()->helpers->translate( $subs_origin['home'], 'admin-backend' ) . '</a>';
+	$heading = '<li class="nav-item active"><a class="nav-link ironikus-setting-single-tab" href="?page=' . $this->page_name . '">' . WPWHPRO()->helpers->translate( $subs_origin['home'], 'admin-backend' ) . '</a></li>';
 }
 
 ?>
@@ -88,12 +91,18 @@ if( is_array( $menu_endpoints ) ){
     }
 </style>
 
-<div class="wrap ironikus-wrap">
-
-    <h1><?php echo WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-page-title' ); ?></h1>
-    <div class='wp-webhooks-pro-action-links'>
-	    <?php echo $heading; ?>
-    </div>
+<div class="ironikus-wrap">
+    <nav class="navbar ironikus-navbar navbar-expand-lg navbar-dark">
+        <div class="navbar-brand"><?php echo $plugin_name; ?></div>
+        <button class="navbar-toggler justify-content-end" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <?php echo $heading; ?>
+            </ul>
+        </div>
+    </nav>
 
 	<div class="ironikus-setting-content">
         <?php echo $current_content; ?>
