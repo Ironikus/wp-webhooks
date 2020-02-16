@@ -35,12 +35,12 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		public $helpers;
 
 		/**
-		 * WPWHPRO Post Delay Object.
+		 * WPWHPRO SQL Object.
 		 *
-		 * @var object|WP_Webhooks_Pro_Post_Delay
-		 * @since 1.1.3
+		 * @var object|WP_Webhooks_Pro_SQL
+		 * @since 2.0.0
 		 */
-		public $delay;
+		public $sql;
 
 		/**
 		 * WPWHPRO Webhook Object.
@@ -57,6 +57,22 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		 * @since 1.1.1
 		 */
 		public $polling;
+
+		/**
+		 * WPWHPRO Post Delay Object.
+		 *
+		 * @var object|WP_Webhooks_Pro_Post_Delay
+		 * @since 1.1.3
+		 */
+		public $delay;
+
+		/**
+		 * WPWHPRO Authentication Object.
+		 *
+		 * @var object|WP_Webhooks_Pro_Authentication
+		 * @since 2.0.0
+		 */
+		public $auth;
 
 		/**
 		 * Throw error on object clone.
@@ -98,7 +114,9 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 				self::$instance->includes();
 				self::$instance->helpers        = new WP_Webhooks_Pro_Helpers();
 				self::$instance->settings       = new WP_Webhooks_Pro_Settings();
+				self::$instance->sql            = new WP_Webhooks_Pro_SQL();
 				self::$instance->delay			= new WP_Webhooks_Pro_Post_Delay();
+				self::$instance->auth			= new WP_Webhooks_Pro_Authentication();
 				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
 				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();
 
@@ -124,7 +142,9 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		private function includes() {
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-helpers.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-settings.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-sql.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-post-delay.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-auth.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-webhook.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-polling.php';
 

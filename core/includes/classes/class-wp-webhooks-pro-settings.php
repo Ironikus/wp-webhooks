@@ -63,6 +63,8 @@ class WP_Webhooks_Pro_Settings{
 		$this->required_trigger_settings     = $this->load_required_trigger_settings();
 		$this->default_trigger_settings     = $this->load_default_trigger_settings();
 		$this->required_action_settings     = $this->load_required_action_settings();
+		$this->authentication_methods     = $this->load_authentication_methods();
+		$this->authentication_table_data   = $this->setup_authentication_table_data();
 		$this->action_nonce        = array(
 			'action' => 'ironikus_wpwhpro_actions',
 			'arg'    => 'ironikus_wpwhpro_actions_nonce'
@@ -71,11 +73,54 @@ class WP_Webhooks_Pro_Settings{
 		$this->active_webhooks      = $this->setup_active_webhooks();
 	}
 
+	/**
+	 * Setup the authentication table data 
+	 *
+	 * @return array - the authentication table data
+	 */
+	public function setup_authentication_table_data(){
+
+		$data = array();
+		$table_name = 'wpwhpro_authentication';
+		$data['table_name'] = $table_name;
+
+		$data['sql_create_table'] = "
+		  CREATE TABLE {prefix}$table_name (
+		  id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		  name VARCHAR(100),
+		  auth_type VARCHAR(100),
+		  template LONGTEXT,
+		  log_time DATETIME
+		) {charset_collate};";
+		$data['sql_drop_table'] = "DROP TABLE {prefix}$table_name;";
+
+		return $data;
+
+	}
+
+	/**
+	 * Load the default settings for the main settings page
+	 * of our plugin.
+	 *
+	 * @return array - an array of all available settings
+	 */
 	private function load_default_settings(){
 		$fields = array(
 
 			/**
-			 * DEACTIVATE SHORTCODE
+			 * Activate authentication
+			 */
+			'wpwhpro_activate_authentication' => array(
+				'id'          => 'wpwhpro_activate_authentication',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Activate Authentication', 'wpwhpro-fields-activate-authentication'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPWHPRO()->helpers->translate('This allows you to authenticate certain webhook triggers in case you want to send data to API that requires authentication.', 'wpwhpro-fields-activate-authentication-tip')
+			),
+
+			/**
+			 * ACTIVATE TRANSLATIONS
 			 */
 			'wpwhpro_activate_translations' => array(
 				'id'          => 'wpwhpro_activate_translations',
@@ -88,6 +133,8 @@ class WP_Webhooks_Pro_Settings{
 
 			/**
 			 * SET TRIGGER SECRET
+			 * 
+			 * todo - deprecate
 			 */
 			'wpwhpro_trigger_secret' => array(
 				'id'          => 'wpwhpro_trigger_secret',
@@ -140,6 +187,12 @@ class WP_Webhooks_Pro_Settings{
 		return apply_filters('wpwhpro/settings/fields', $fields);
 	}
 
+	/**
+	 * Load the strictly necessary trigger settings
+	 * to any available trigger.
+	 *
+	 * @return array - the trigger settings
+	 */
 	private function load_required_trigger_settings(){
 		$fields = array(
 
@@ -155,17 +208,31 @@ class WP_Webhooks_Pro_Settings{
 				'placeholder' => '',
 				'default_value' => '',
 				'description' => WPWHPRO()->helpers->translate('Set a custom response type for the data that gets send to the specified URL. Default is JSON.', 'wpwhpro-fields-trigger-required-settings')
-			)
+			),
+			'wpwhpro_trigger_authentication' => array(
+				'id'          => 'wpwhpro_trigger_authentication',
+				'type'        => 'select',
+				'label'       => WPWHPRO()->helpers->translate('Add authentication template', 'wpwhpro-fields-trigger-required-settings'),
+				'choices'     => array(
+					//Settings are loaded dynamically within the send-data.php page
+					'0' => WPWHPRO()->helpers->translate('Choose...', 'wpwhpro-fields-trigger-required-settings')
+				),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Set a custom authentication template in case the other endpoint requires authentication.', 'wpwhpro-fields-trigger-required-settings')
+			),
 
 		);
 
 		return apply_filters('wpwhpro/settings/required_trigger_settings', $fields);
 	}
 
-	/*
-	 * Return the default filter settings
+	/**
+	 * Load the default trigger settings. 
+	 * 
+	 * These settings can be loaded optionally with every single webhook trigger.
 	 *
-	 * @since 1.6.4
+	 * @return array - the default trigger settings
 	 */
 	private function load_default_trigger_settings(){
 		$fields = array(
@@ -222,6 +289,104 @@ class WP_Webhooks_Pro_Settings{
 		return apply_filters('wpwhpro/settings/required_action_settings', $fields);
 	}
 
+	/**
+	 * Load all available authentication methods
+	 *
+	 * @return array - the action settings
+	 */
+	private function load_authentication_methods(){
+		$methods = array(
+			//APi Key Authentication
+			'api_key' => array(
+				'name' => WPWHPRO()->helpers->translate('API Key', 'wpwhpro-fields-authentication-settings'),
+				'description' => WPWHPRO()->helpers->translate('Add an API key to your request header/body', 'wpwhpro-fields-authentication-settings'),
+				'fields' => array(
+	
+					'wpwhpro_auth_api_key_key' => array(
+						'id'          => 'wpwhpro_auth_api_key_key',
+						'type'        => 'text',
+						'label'       => WPWHPRO()->helpers->translate('Key', 'wpwhpro-fields-authentication-settings'),
+						'placeholder' => '',
+						'default_value' => '',
+						'description' => WPWHPRO()->helpers->translate('Set the key you have to use to recognize the API key from the other endpoint.', 'wpwhpro-fields-authentication-settings')
+					),
+		
+					'wpwhpro_auth_api_key_value' => array(
+						'id'          => 'wpwhpro_auth_api_key_value',
+						'type'        => 'text',
+						'label'       => WPWHPRO()->helpers->translate('Value', 'wpwhpro-fields-authentication-settings'),
+						'placeholder' => '',
+						'default_value' => '',
+						'description' => WPWHPRO()->helpers->translate('This is the field you can include your API key. ', 'wpwhpro-fields-authentication-settings')
+					),
+	
+					'wpwhpro_auth_api_key_add_to' => array(
+						'id'          => 'wpwhpro_auth_api_key_add_to',
+						'type'        => 'select',
+						'label'       => WPWHPRO()->helpers->translate('Add to', 'wpwhpro-fields-authentication-settings'),
+						'choices'     => array(
+							'header' => WPWHPRO()->helpers->translate('Header', 'wpwhpro-fields-authentication-settings'),
+							'body' => WPWHPRO()->helpers->translate('Body', 'wpwhpro-fields-authentication-settings'),
+							'both' => WPWHPRO()->helpers->translate('Header & Body', 'wpwhpro-fields-authentication-settings'),
+						),
+						'placeholder' => '',
+						'default_value' => '',
+						'description' => WPWHPRO()->helpers->translate('Choose where you want to place the API Key within the request.', 'wpwhpro-fields-authentication-settings')
+					),
+		
+				),
+			),
+
+			//Bearer Token Authentication
+			'bearer_token' => array(
+				'name' => WPWHPRO()->helpers->translate('Bearer Token', 'wpwhpro-fields-authentication-settings'),
+				'description' => WPWHPRO()->helpers->translate('Authenticate yourself on an external API using a Bearer token.', 'wpwhpro-fields-authentication-settings'),
+				'fields' => array(
+					'wpwhpro_auth_bearer_token_token' => array(
+						'id'          => 'wpwhpro_auth_bearer_token_token',
+						'type'        => 'text',
+						'label'       => WPWHPRO()->helpers->translate('Token', 'wpwhpro-fields-authentication-settings'),
+						'placeholder' => '',
+						'default_value' => '',
+						'description' => WPWHPRO()->helpers->translate('Add the bearer token you recieved from the other endpoint here. Please add only the token, without the "Bearer " in front.', 'wpwhpro-fields-authentication-settings')
+					),
+				),
+			),
+
+			//Bearer Token Authentication
+			'basic_auth' => array(
+				'name' => WPWHPRO()->helpers->translate('Basic Auth', 'wpwhpro-fields-authentication-settings'),
+				'description' => WPWHPRO()->helpers->translate('Authenticate yourself on an external API using Basic Authentication.', 'wpwhpro-fields-authentication-settings'),
+				'fields' => array(
+					'wpwhpro_auth_basic_auth_username' => array(
+						'id'          => 'wpwhpro_auth_basic_auth_username',
+						'type'        => 'text',
+						'label'       => WPWHPRO()->helpers->translate('Username', 'wpwhpro-fields-authentication-settings'),
+						'placeholder' => '',
+						'default_value' => '',
+						'description' => WPWHPRO()->helpers->translate('Add the username you want to use for the authentication.', 'wpwhpro-fields-authentication-settings')
+					),
+					'wpwhpro_auth_basic_auth_password' => array(
+						'id'          => 'wpwhpro_auth_basic_auth_password',
+						'type'        => 'text',
+						'label'       => WPWHPRO()->helpers->translate('Password', 'wpwhpro-fields-authentication-settings'),
+						'placeholder' => '',
+						'default_value' => '',
+						'description' => WPWHPRO()->helpers->translate('Add the password you want to use for the authentication.', 'wpwhpro-fields-authentication-settings')
+					),
+				),
+			),
+
+		);
+
+		return apply_filters('wpwhpro/settings/authentication_methods', $methods);
+	}
+
+	/**
+	 * Initialize all available, active webhooks
+	 *
+	 * @return array - active webhooks
+	 */
 	public function setup_active_webhooks(){
 
 		$webhooks = get_option( $this->active_webhook_ident_param );
@@ -236,7 +401,7 @@ class WP_Webhooks_Pro_Settings{
 		return $webhooks;
 	}
 
-	/**
+	/*
 	 * ######################
 	 * ###
 	 * #### TRANSLATEABLE STRINGS
@@ -244,6 +409,11 @@ class WP_Webhooks_Pro_Settings{
 	 * ######################
 	 */
 
+	 /**
+	  * Default settings that are used multiple times throughout the page
+	  *
+	  * @return array - the default settings
+	  */
 	private function load_default_strings(){
 		$trans_arr = array(
 			'sufficient-permissions'    => 'You do not have sufficient permissions to access this page.',
@@ -303,6 +473,18 @@ class WP_Webhooks_Pro_Settings{
 		 * Filter the page title based on your needs.
 		 */
 		return apply_filters( 'wpwhpro/admin/settings/page_title', $this->page_title );
+	}
+
+	/**
+	 * Return the authentication table data
+	 *
+	 * @return string - the log table data
+	 */
+	public function get_authentication_table_data(){
+		/*
+		 * Filter the authentication table data based on your needs.
+		 */
+		return apply_filters( 'wpwhpro/admin/settings/authentication_table_data', $this->authentication_table_data );
 	}
 
 	/**
@@ -398,6 +580,18 @@ class WP_Webhooks_Pro_Settings{
 	}
 
 	/**
+	 * Return all available authentication methods
+	 *
+	 * @since 3.0.0
+	 * @return array - all available authentication methods
+	 */
+	public function get_authentication_methods(){
+
+		return $this->authentication_methods;
+
+	}
+
+	/**
 	 * Return the active webhook ident
 	 *
 	 * @return string - the active webhook ident
@@ -410,6 +604,8 @@ class WP_Webhooks_Pro_Settings{
 
 	/**
 	 * Return the currently active webhooks
+	 * 
+	 * @param string $type - wether you want to receive active webhooks or triggers
 	 *
 	 * @return array - the active webhooks
 	 */
@@ -465,4 +661,67 @@ class WP_Webhooks_Pro_Settings{
 
 		return apply_filters( 'wpwhpro/admin/settings/get_all_post_statuses', $post_statuses );
 	}
+
+	public function save_settings( $new_settings ){
+		$success = false;
+
+		if( empty( $new_settings ) ) {
+			return $success;
+		}
+
+		$settings = WPWHPRO()->settings->get_settings();
+		$triggers = WPWHPRO()->webhook->get_triggers( '', false );
+		$actions = WPWHPRO()->webhook->get_actions( false );
+		$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
+	
+		// START General Settings
+		foreach( $settings as $settings_name => $setting ){
+	
+			$value = '';
+	
+			if( $setting['type'] == 'checkbox' ){
+				if( ! isset( $new_settings[ $settings_name ] ) ){
+					$value = 'no';
+				} else {
+					$value = 'yes';
+				}
+			} elseif( $setting['type'] == 'text' ){
+				if( isset( $new_settings[ $settings_name ] ) ){
+					$value = sanitize_title( $new_settings[ $settings_name ] );
+				}
+			}
+	
+			update_option( $settings_name, $value );
+			$settings[ $settings_name ][ 'value' ] = $value;
+		}
+		// END General Settings
+	
+		// START Trigger Settings
+		foreach( $triggers as $trigger ){
+			if( isset( $new_settings[ 'wpwhpropt_' . $trigger['trigger'] ] ) ){
+				$active_webhooks['triggers'][ $trigger['trigger'] ] = array();
+			} else {
+				unset( $active_webhooks['triggers'][ $trigger['trigger'] ] );
+			}
+		}
+		// END Trigger Settings
+	
+		// START Action Settings
+		foreach( $actions as $action ){
+			if( isset( $new_settings[ 'wpwhpropa_' . $action['action'] ] ) ){
+				$active_webhooks['actions'][ $action['action'] ] = array();
+			} else {
+				unset( $active_webhooks['actions'][ $action['action'] ] );
+			}
+		}
+		// END Action Settings
+		update_option( WPWHPRO()->settings->get_active_webhooks_ident(),  $active_webhooks );
+
+		$success = true;
+
+		do_action( 'wpwh/admin/settings/settings_saved', $new_settings );
+
+		return $success;
+	 }
+
 }
