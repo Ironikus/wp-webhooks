@@ -53,7 +53,7 @@ class WP_Webhooks_Pro_Post_Delay {
      * @return void
      */
     public function launch_delayed_triggers(){
-        $triggers = $this->post_delay_triggers;
+        $triggers = apply_filters( 'wpwhpro/post_delay/post_delay_triggers', $this->post_delay_triggers );
 
         foreach( $triggers as $trigger ){
             $this->launch_trigger( $trigger );
