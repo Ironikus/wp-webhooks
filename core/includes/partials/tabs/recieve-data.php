@@ -10,20 +10,20 @@ $actions = WPWHPRO()->webhook->get_actions();
 <?php add_ThickBox(); ?>
 <h2><?php echo WPWHPRO()->helpers->translate( 'Receive Data From WP Webhooks Pro', 'wpwhpro-page-actions' ); ?></h2>
 
-<p>
+<div>
 	<?php echo sprintf(WPWHPRO()->helpers->translate( 'Use the webhook url down below to connect your specified with your site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-actions' ), 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=notice-recieve-data-docs&utm_campaign=WP%20Webhooks%20Pro'); ?>
-</p>
+</div>
 
-<table class="ironikus-webhook-table ironikus-webhook-action-table">
-    <thead>
+<table class="table ironikus-webhook-table ironikus-webhook-action-table">
+    <thead class="thead-dark">
         <tr>
-            <th style="width:30%">
+            <th style="width:20%">
                 <?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-actions' ); ?>
             </th>
-            <th style="width:40%">
+            <th style="width:45%">
                 <?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-actions' ); ?>
             </th>
-            <th style="width:20%">
+            <th style="width:25%">
                 <?php echo WPWHPRO()->helpers->translate( 'Webhook API Key', 'wpwhpro-page-actions' ); ?>
             </th>
             <th style="width:10%">
@@ -74,8 +74,10 @@ $actions = WPWHPRO()->webhook->get_actions();
             </td>
             <td>
                 <div class="ironikus-element-actions">
-                    <p class="ironikus-delete-action" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-actions' ); ?></p>
-                    <p class="ironikus-status-action <?php echo $status; ?>" ironikus-webhook-status="<?php echo $status; ?>" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-actions' ); ?></p>
+                    <span class="ironikus-delete-action" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-actions' ); ?></span>
+                    <br>
+                    <span class="ironikus-status-action <?php echo $status; ?>" ironikus-webhook-status="<?php echo $status; ?>" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-actions' ); ?></span>
+                    <br>
                     <a class="thickbox ironikus-action-settings-wrapper" title="<?php echo $webhook; ?>" href="#TB_inline?height=330&width=800&inlineId=wpwhpro-action-settings-<?php echo $webhook; ?>">
                         <span class="ironikus-settings"><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-actions' ); ?></span>
                     </a>
@@ -160,7 +162,7 @@ $actions = WPWHPRO()->webhook->get_actions();
                                             </tbody>
                                         </table>
                                         <div class="ironikus-single-webhook-action-handler">
-                                            <p class="h30 ironikus-actions-submit-data-mapping-form" id="<?php echo $webhook; ?>" webhook-id="<?php echo $webhook; ?>" >
+                                            <p class="btn btn-primary h30 ironikus-actions-submit-settings-form" id="<?php echo $webhook; ?>" webhook-id="<?php echo $webhook; ?>" >
                                                 <span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Save Settings', 'wpwhpro-page-actions' ); ?></span>
                                                 <img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
                                             </p>
@@ -168,7 +170,7 @@ $actions = WPWHPRO()->webhook->get_actions();
                                     </form>
                                 <?php else : ?>
                                     <div class="wpwhpro-empty">
-                                        <?php echo WPWHPRO()->helpers->translate( 'For your current webhook are no settings available.', 'wpwhpro-page-triggers' ); ?>
+                                        <?php echo WPWHPRO()->helpers->translate( 'For your current webhook are no settings available.', 'wpwhpro-page-actions' ); ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -182,8 +184,13 @@ $actions = WPWHPRO()->webhook->get_actions();
 </table>
 
 <div class="ironikus-add-wehook-action-handler">
-    <input id="ironikus-webhook-action-name" class="ironikus-webhook-input-new h30" type="text" placeholder="<?php echo WPWHPRO()->helpers->translate( 'Include your wehook name here.', 'wpwhpro-page-actions' ); ?>" >
-    <p class="ironikus-action-save h30" >
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="input-group-webbhook-action-name"><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-actions' ); ?></span>
+        </div>
+        <input id="ironikus-webhook-action-name" class="form-control ironikus-webhook-input-new h30" type="text" aria-describedby="input-group-webbhook-action-name" placeholder="<?php echo WPWHPRO()->helpers->translate( 'my-webhook-name', 'wpwhpro-page-actions' ); ?>" >
+    </div>
+    <p class="btn btn-primary ironikus-action-save h30" >
         <span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Add Webhook', 'wpwhpro-page-actions' ); ?></span>
         <img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
     </p>
@@ -191,43 +198,68 @@ $actions = WPWHPRO()->webhook->get_actions();
 
 <div class="ironikus-webhook-actions">
     <h2><?php echo WPWHPRO()->helpers->translate( 'Available Webhook Actions', 'wpwhpro-page-actions' ); ?></h2>
-    <p style="font-weight:normal;"><?php echo WPWHPRO()->helpers->translate( 'Below you will find a list of all available actions when sending data from your specified service to WordPress.', 'wpwhpro-page-actions' ); ?></p>
+    <div class="mb20" style="font-weight:normal;"><?php echo WPWHPRO()->helpers->translate( 'Below you will find a list of all available actions when sending data from your specified service to WordPress.', 'wpwhpro-page-actions' ); ?></div>
 
     <?php if( ! empty( $actions ) ) : ?>
-        <?php foreach( $actions as $action ) : ?>
-            <div class="accordion irnks-accordion">
-                <div class="accordion__item irnks-accordion-item">
-                    <div class="accordion-header irnks-accordion-header"><?php echo $action['action']; ?></div>
-                    <div class="accordion-body irnks-accordion-body">
-                        <div class="accordion-body__contents">
-                            <?php echo $action['short_description']; ?>
-                        </div>
-                        <div class="accordion irnks-accordion">
-                            <div class="accordion__item irnks-accordion-item">
-                                <div class="accordion-header irnks-accordion-header"><?php echo WPWHPRO()->helpers->translate( 'Accepted Arguments:', 'wpwhpro-page-actions'); ?></div>
-                                <div class="accordion-body irnks-accordion-body">
-                                    <div class="accordion-body__contents ironikus-arguments">
-                                        <ul>
-                                            <?php foreach( $action['parameter'] as $param => $param_data ) : ?>
+        <div class="accordion" id="actionMainData">
+            <?php foreach( $actions as $identkey => $action ) : ?>
+                <div class="card">
+                    <div class="card-header" id="headingactionMainData-<?php echo $identkey; ?>"  data-toggle="collapse" data-target="#collapseactionMainData-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapseactionMainData-<?php echo $identkey; ?>">
+                        <button class="btn btn-link collapsed" type="button">
+                            <?php echo $action['action']; ?>
+                        </button>
+                    </div>
+
+                    <div id="collapseactionMainData-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionMainData-<?php echo $identkey; ?>" data-parent="#actionMainData">
+                        <div class="card-body">
+                            <div class="accordion-body__contents">
+                                <?php echo $action['short_description']; ?>
+                            </div>
+                            <div class="accordion wpwh-action-arguments" id="actionArguments-<?php echo $identkey; ?>">
+                                <div class="card">
+                                    <div class="card-header" id="headingactionArgumentsSub-<?php echo $identkey; ?>"  data-toggle="collapse" data-target="#collapseactionArgumentsSub-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapseactionArgumentsSub-<?php echo $identkey; ?>">
+                                        <button class="btn btn-link collapsed" type="button">
+                                            <?php echo WPWHPRO()->helpers->translate( 'Accepted Arguments', 'wpwhpro-page-actions'); ?>
+                                        </button>
+                                    </div>
+
+                                    <div id="collapseactionArgumentsSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionArgumentsSub-<?php echo $identkey; ?>" data-parent="#actionArguments-<?php echo $identkey; ?>">
+                                        <div class="card-body">
+                                            <ul>
                                                 <li>
                                                     <div class="ironikus-attribute-wrapper">
-                                                        <strong><?php echo $param; echo ( ! empty( $param_data['required'] ) ) ? '<span style="color:red;">*</span>' : '' ?></strong>
-                                                        <?php if( isset( $param_data['short_description'] ) ) : ?>
-                                                            <br>
-                                                            <small><?php echo $param_data['short_description']; ?></small>
-                                                        <?php endif; ?>
+                                                        <strong><?php echo 'action'; echo '<span style="color:red;">*</span>' ?></strong>
+                                                        <br>
+                                                        <small><?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to: ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong></small>
                                                     </div>
                                                 </li>
-                                            <?php endforeach; ?>
-                                        </ul>
+                                                <?php foreach( $action['parameter'] as $param => $param_data ) : ?>
+                                                    <li>
+                                                        <div class="ironikus-attribute-wrapper">
+                                                            <strong><?php echo $param; echo ( ! empty( $param_data['required'] ) ) ? '<span style="color:red;">*</span>' : '' ?></strong>
+                                                            <?php if( isset( $param_data['short_description'] ) ) : ?>
+                                                                <br>
+                                                                <small><?php echo $param_data['short_description']; ?></small>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <?php if( ! empty( $action['returns'] ) || ! empty( $action['returns_code'] ) ) : ?>
-                                <div class="accordion__item irnks-accordion-item">
-                                    <div class="accordion-header irnks-accordion-header"><?php echo WPWHPRO()->helpers->translate( 'Return values:', 'wpwhpro-page-actions'); ?></div>
-                                    <div class="accordion-body irnks-accordion-body">
-                                        <div class="accordion-body__contents ironikus-arguments">
+                                <div class="accordion" id="actionReturnValues-<?php echo $identkey; ?>">
+                                    <div class="card">
+                                        <div class="card-header" id="headingactionReturnValuesSub-<?php echo $identkey; ?>"  data-toggle="collapse" data-target="#collapseactionReturnValuesSub-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapseactionReturnValuesSub-<?php echo $identkey; ?>">
+                                            <button class="btn btn-link collapsed" type="button">
+                                                <?php echo WPWHPRO()->helpers->translate( 'Return values', 'wpwhpro-page-actions'); ?>
+                                            </button>
+                                        </div>
+
+                                        <div id="collapseactionReturnValuesSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionReturnValuesSub-<?php echo $identkey; ?>" data-parent="#actionReturnValues-<?php echo $identkey; ?>">
+                                            <div class="card-body">
                                             <?php if( ! empty( $action['returns'] ) ) : ?>
                                                 <ul>
                                                     <?php foreach( $action['returns'] as $param => $param_data ) : ?>
@@ -243,71 +275,129 @@ $actions = WPWHPRO()->webhook->get_actions();
                                                     <?php endforeach; ?>
                                                 </ul>
 
-	                                            <?php if( ! empty( $action['returns_code'] ) ) : ?>
+                                                <?php if( ! empty( $action['returns_code'] ) ) : ?>
                                                     <p>
-	                                                    <?php echo WPWHPRO()->helpers->translate( 'Here is an example of all the available default fields. The fields may vary based on custom extensions or third party plugins.', 'wpwhpro-page-actions'); ?>
-			                                            <?php echo $action['returns_code']; ?>
+                                                        <?php echo WPWHPRO()->helpers->translate( 'Here is an example of all the available default fields. The fields may vary based on custom extensions or third party plugins.', 'wpwhpro-page-actions'); ?>
+                                                        <?php echo $action['returns_code']; ?>
                                                     </p>
-	                                            <?php endif; ?>
+                                                <?php endif; ?>
                                             <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             <?php endif; ?>
-                            <div class="accordion__item irnks-accordion-item">
-                                <div class="accordion-header irnks-accordion-header"><?php echo WPWHPRO()->helpers->translate( 'Description', 'wpwhpro-page-actions' ); ?></div>
-                                <div class="accordion-body irnks-accordion-body">
-                                    <div class="accordion-body__contents">
-                                        <?php echo $action['description']; ?>
+                            <div class="accordion" id="actionDescription-<?php echo $identkey; ?>">
+                                <div class="card">
+                                    <div class="card-header" id="headingactionDescriptionSub-<?php echo $identkey; ?>"  data-toggle="collapse" data-target="#collapseactionDescriptionSub-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapseactionDescriptionSub-<?php echo $identkey; ?>">
+                                        <button class="btn btn-link collapsed" type="button">
+                                            <?php echo WPWHPRO()->helpers->translate( 'Description', 'wpwhpro-page-actions'); ?>
+                                        </button>
+                                    </div>
+
+                                    <div id="collapseactionDescriptionSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionDescriptionSub-<?php echo $identkey; ?>" data-parent="#actionDescription-<?php echo $identkey; ?>">
+                                        <div class="card-body">
+                                            <?php echo $action['description']; ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="accordion__item irnks-accordion-item">
-                                <div class="accordion-header irnks-accordion-header"><?php echo WPWHPRO()->helpers->translate( 'Test action', 'wpwhpro-page-actions' ); ?></div>
-                                <div class="accordion-body irnks-accordion-body">
-                                    <div class="accordion-body__contents">
-                                        <p>
-	                                        <?php echo WPWHPRO()->helpers->translate( 'Here you can test the specified webhook. Please note, that this test is able to modify the data of your website (Depending on what action you test). Also you will see the response as any webservice recieves it.', 'wpwhpro-page-actions'); ?>
-                                        </p>
-                                        <form method="post" action="<?php echo WPWHPRO()->webhook->built_url( $webhook, $webhook_data['api_key'] ) . '&wpwhpro_direct_test=1'; ?>" target="_blank">
+                            <div class="accordion" id="actionTesting-<?php echo $identkey; ?>">
+                                <div class="card">
+                                    <div class="card-header" id="headingactionTestingSub-<?php echo $identkey; ?>"  data-toggle="collapse" data-target="#collapseactionTestingSub-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapseactionTestingSub-<?php echo $identkey; ?>">
+                                        <button class="btn btn-link collapsed" type="button">
+                                        <?php echo WPWHPRO()->helpers->translate( 'Test action', 'wpwhpro-page-actions' ); ?>
+                                        </button>
+                                    </div>
 
-                                            <table class="wpwhpro-settings-table form-table">
-                                                <tbody>
+                                    <div id="collapseactionTestingSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionTestingSub-<?php echo $identkey; ?>" data-parent="#actionTesting-<?php echo $identkey; ?>">
+                                        <div class="card-body">
+                                            <p>
+                                                <?php echo WPWHPRO()->helpers->translate( 'Here you can test the specified webhook. Please note, that this test is able to modify the data of your website (Depending on what action you test). Also you will see the response as any webservice recieves it.', 'wpwhpro-page-actions'); ?>
+                                            </p>
+                                            <p>
+                                                <?php echo WPWHPRO()->helpers->translate( 'Please choose the webhook you are going to run the test with. Simply select the one you want to use down below.', 'wpwhpro-page-actions'); ?>
+                                                <br>
+                                                <select class="wpwhpro-webhook-actions-webhook-select custom-select-lg" wpwh-identkey="<?php echo $identkey; ?>">
+                                                    <option value="empty"><?php echo WPWHPRO()->helpers->translate( 'Choose...', 'wpwhpro-page-data-mapping' ); ?></option>
+                                                    <?php if( ! empty( $webhooks ) ) : ?>
+                                                        <?php foreach( $webhooks as $subwebhook => $subwebhook_data ) : ?>
+                                                            <option class="<?php echo $subwebhook; ?>" value="<?php echo WPWHPRO()->webhook->built_url( $subwebhook, $subwebhook_data['api_key'] ) . '&wpwhpro_direct_test=1'; ?>"><?php echo $subwebhook; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </p>
+                                            <form id="wpwh-action-testing-form-<?php echo $identkey; ?>" method="post" class="wpwh-actions-testing-form" action="" target="_blank" style="display:none;">
 
-                                                <?php foreach( $action['parameter'] as $param => $param_data ) : ?>
+                                                <table class="wpwhpro-settings-table form-table">
+                                                    <tbody>
 
                                                     <tr valign="top">
                                                         <td>
-                                                            <input id="wpwhprotest_<?php echo $action['action']; ?>_<?php echo $param; ?>" type="text" name="<?php echo $param; ?>" placeholder="<?php echo ( ! empty( $param_data['required'] ) ) ? WPWHPRO()->helpers->translate( 'Required', 'wpwhpro-page-actions') : '' ?>">
+                                                            <input id="wpwhprotest_<?php echo $action['action']; ?>_action" class="form-control" type="text" name="action" value="<?php echo $action['action']; ?>" placeholder="<?php echo WPWHPRO()->helpers->translate( 'Required', 'wpwhpro-page-actions'); ?>">
                                                         </td>
                                                         <td scope="row" valign="top">
-                                                            <label for="wpwhprotest_<?php echo $action['action']; ?>_<?php echo $param; ?>">
-                                                                <strong><?php echo $param; ?></strong>
+                                                            <label for="wpwhprotest_<?php echo $action['action']; ?>_action">
+                                                                <strong>action</strong>
                                                             </label>
                                                         </td>
                                                         <td>
                                                             <p class="description">
-				                                                <?php echo $param_data['short_description']; ?>
+                                                                <?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to: ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong>
                                                             </p>
                                                         </td>
                                                     </tr>
 
-                                                <?php endforeach; ?>
+                                                    <?php foreach( $action['parameter'] as $param => $param_data ) : ?>
 
-                                                </tbody>
-                                            </table>
+                                                        <tr valign="top">
+                                                            <td>
+                                                                <input id="wpwhprotest_<?php echo $action['action']; ?>_<?php echo $param; ?>" class="form-control" type="text" name="<?php echo $param; ?>" placeholder="<?php echo ( ! empty( $param_data['required'] ) ) ? WPWHPRO()->helpers->translate( 'Required', 'wpwhpro-page-actions') : '' ?>">
+                                                            </td>
+                                                            <td scope="row" valign="top">
+                                                                <label for="wpwhprotest_<?php echo $action['action']; ?>_<?php echo $param; ?>">
+                                                                    <strong><?php echo $param; ?></strong>
+                                                                </label>
+                                                            </td>
+                                                            <td>
+                                                                <p class="description">
+                                                                    <?php echo $param_data['short_description']; ?>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
 
-                                            <input type="hidden" name="action" value="<?php echo $action['action']; ?>">
-	                                        <?php submit_button( WPWHPRO()->helpers->translate( 'Test action', 'admin-settings' ) ); ?>
-                                        </form>
+                                                    <?php endforeach; ?>
+
+                                                    <tr valign="top">
+                                                            <td>
+                                                                <input id="wpwhprotest_<?php echo $action['action']; ?>_access_token" class="form-control" type="text" name="access_token">
+                                                            </td>
+                                                            <td scope="row" valign="top">
+                                                                <label for="wpwhprotest_<?php echo $action['action']; ?>_access_token">
+                                                                    <strong>access_token</strong>
+                                                                </label>
+                                                            </td>
+                                                            <td>
+                                                                <p class="description">
+                                                                    <?php echo WPWHPRO()->helpers->translate( 'This is a static input field. You only need to set it in case you activated the access_token functionality within the webhook settings.', 'wpwhpro-page-actions' ); ?>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+
+                                                <input type="submit" name="submit" id="submit" class="btn btn-primary" value="<?php echo WPWHPRO()->helpers->translate( 'Test action', 'admin-settings' ) ?>">
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div
+                    </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        </div>
 	<?php else : ?>
         <div class="wpwhpro-empty">
 		    <?php echo WPWHPRO()->helpers->translate( 'You currently don\'t have any actions activated. Please go to our settings tab and activate some.', 'wpwhpro-page-actions' ); ?>
