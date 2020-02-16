@@ -30,13 +30,13 @@ class WP_Webhooks_Pro_Helpers {
      *
 	 * @var mixed - the current content
 	 */
-	private $incoming_content = false;
+    private $incoming_content = false;
 
 	/**
 	 * WP_Webhooks_Pro_Helpers constructor.
 	 */
     public function __construct() {
-		$this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
+        $this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
     }
 
 	/**
@@ -79,7 +79,7 @@ class WP_Webhooks_Pro_Helpers {
 		if( function_exists( 'icl_t' ) ){
 			return icl_t( (string) 'wp-webhooks-pro', $context, $string );
 		} else {
-			return $front . _x( $string, $context, (string) 'wp-webhooks-pro' );
+			return $front . _x( $string, $context, 'wp-webhooks-pro' );
 		}
 	}
 
@@ -124,26 +124,33 @@ class WP_Webhooks_Pro_Helpers {
 
 		if($is_dismissible !== true){
 			$isit = '';
+			$bs_isit = '';
 		} else {
 			$isit = 'is-dismissible';
+			$bs_isit = 'alert-dismissible fade show';
 		}
 
 
 		switch($type){
 			case 'info':
 				$notice = 'notice-info';
+				$bs_notice = 'alert-info';
 				break;
 			case 'success':
 				$notice = 'notice-success';
+				$bs_notice = 'alert-success';
 				break;
 			case 'warning':
 				$notice = 'notice-warning';
+				$bs_notice = 'alert-warning';
 				break;
 			case 'error':
 				$notice = 'notice-error';
+				$bs_notice = 'alert-danger';
 				break;
 			default:
 				$notice = 'notice-info';
+				$bs_notice = 'alert-info';
 				break;
 		}
 
@@ -151,15 +158,31 @@ class WP_Webhooks_Pro_Helpers {
 			$validated_content = sprintf( $this->translate($content[0], 'create-admin-notice'), $content[1] );
         } else {
 			$validated_content = $this->translate($content, 'create-admin-notice');
-        }
-
-		ob_start();
-		?>
-		<div class="notice <?php echo $notice; ?> <?php echo $isit; ?>">
-			<p><?php echo $validated_content; ?></p>
-		</div>
-		<?php
-		$res = ob_get_clean();
+		}
+		
+		$bootstrap_layout = apply_filters('wpwhpro/helpers/throw_admin_notice_bootstrap', false, $content, $type, $is_dismissible);
+		if( $bootstrap_layout ){
+			ob_start();
+			?>
+			<div class="alert <?php echo $bs_notice; ?> <?php echo $bs_isit; ?>"  role="alert">
+				<p><?php echo $validated_content; ?></p>
+				<?php if( ! empty( $bs_isit ) ) : ?>
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span class="bs-notice-close" aria-hidden="true">&times;</span>
+					</button>
+				<?php endif; ?>
+			</div>
+			<?php
+			$res = ob_get_clean();
+		} else {
+			ob_start();
+			?>
+			<div class="notice <?php echo $notice; ?> <?php echo $isit; ?>">
+				<p><?php echo $validated_content; ?></p>
+			</div>
+			<?php
+			$res = ob_get_clean();
+		}
 
 		return $res;
 	}
@@ -213,15 +236,15 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
-	 * Builds an url out of the mai values
+	 * Builds an url out of the given values
 	 *
 	 * @param $url - the default url to set the params to
 	 * @param $args - the available args
 	 * @return string - the url
 	 */
 	public function built_url( $url, $args ){
-		if(!empty($args)){
-			$url .= '?' . http_build_query($args);
+		if( ! empty( $args ) ){
+			$url .= '?' . http_build_query( $args );
 		}
 
 		return $url;
@@ -248,8 +271,8 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
-	 * Get Parameters from URL string
-	 *
+     * Get Parameters from URL string
+     *
 	 * @param $url - the url
 	 *
 	 * @return array - the parameters of the url
@@ -262,7 +285,7 @@ class WP_Webhooks_Pro_Helpers {
 
 		return empty( $url_parameter ) ? array() : $url_parameter;
 
-	}
+    }
 
 	/**
 	 * Builds an url out of the mai values
@@ -327,7 +350,7 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
-	 * Evaluate the content type and validate it properly
+	 * Evaluate the content type and validate its properly
 	 *
 	 * @return array - the response content and content_type
 	 */
@@ -379,13 +402,13 @@ class WP_Webhooks_Pro_Helpers {
 
         //If nothing is set, we take the content as it comes
         if( ! $content_evaluated && is_string( $response ) ){
-	        if( ! empty( $response ) && is_string( $response ) ){
+			if( ! empty( $response ) && is_string( $response ) ){
 				$return['content'] = $response;
 			} else {
 				$return['content'] = ! empty( $_GET ) ? $_GET : array();
 			}
 		}
-		
+
 		//Validate against our Zapier extension
 		if( isset( $return['content'] ) && is_object( $return['content'] ) && isset( $return['content']->wpwhpro_zapier_arguments ) ){
 			foreach( $return['content']->wpwhpro_zapier_arguments as $zap_key => $zap_val ){
@@ -408,7 +431,7 @@ class WP_Webhooks_Pro_Helpers {
 	 * @return bool - True if it is json, otherwise false
 	 */
 	public function is_json( $string ) {
-		
+
 		json_decode( $string );
 		if( json_last_error() == JSON_ERROR_NONE ){
 			return true;
@@ -498,7 +521,7 @@ class WP_Webhooks_Pro_Helpers {
 
 		$content = str_replace(
 			array( '%home_url%', '%admin_url%', '%product_version%', '%product_name%', '%user_name%' ),
-			array( home_url(), get_admin_url(), WPWH_VERSION, WPWH_NAME, $user_name ),
+			array( home_url(), get_admin_url(), WPWHPRO_VERSION, WPWHPRO_NAME, $user_name ),
 			$content
 		);
 
@@ -534,7 +557,7 @@ class WP_Webhooks_Pro_Helpers {
 	    ob_start();
 	    print_r( $code );
 	    return ob_get_clean();
-    }
+	}
 
 	/**
      * Main value validator
@@ -549,7 +572,7 @@ class WP_Webhooks_Pro_Helpers {
 	 * @param $key
 	 */
 	public function validate_request_value( $content, $key ){
-	    $return = false;
+		$return = false;
 
         if( is_object( $content ) ){
 
@@ -584,10 +607,10 @@ class WP_Webhooks_Pro_Helpers {
 			}
 	        
 		}
-		
+
 		//Validate form url encode strings again
 		if( is_string( $return ) ){
-            $stripslashes = apply_filters( 'wpwhpro/helpers/request_values_stripslashes', true, $return );
+            $stripslashes = apply_filters( 'wpwhpro/helpers/request_values_stripslashes', false, $return );
 			if( $stripslashes ){
 				$return = stripslashes( $return );
 			}
@@ -596,6 +619,12 @@ class WP_Webhooks_Pro_Helpers {
         return apply_filters( 'wpwhpro/helpers/request_return_value', $return, $content, $key );
     }
 
+	/**
+	 * Grab the current user IP from the 
+	 * server variabbles
+	 *
+	 * @return string - The IP address
+	 */
 	public function get_current_ip() {
 		$ipaddress = false;
 		if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) ){
