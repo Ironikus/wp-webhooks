@@ -379,7 +379,11 @@ class WP_Webhooks_Pro_Helpers {
 
         //If nothing is set, we take the content as it comes
         if( ! $content_evaluated && is_string( $response ) ){
-	        $return['content'] = $response;
+	        if( ! empty( $response ) && is_string( $response ) ){
+				$return['content'] = $response;
+			} else {
+				$return['content'] = ! empty( $_GET ) ? $_GET : array();
+			}
 		}
 		
 		//Validate against our Zapier extension
