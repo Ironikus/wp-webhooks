@@ -139,7 +139,7 @@ class WP_Webhooks_Pro_Webhook {
 			$return = array();
 		}
 
-		return $return;
+		return apply_filters( 'wpwhpro/admin/webhooks/get_hooks', $return, $type, $group, $single ) ;
 	}
 
 	/**
@@ -196,6 +196,7 @@ class WP_Webhooks_Pro_Webhook {
 
 		if( empty( $webhook ) || empty( $type ) )
 			return false;
+
 
 		if( isset( $this->webhook_options[ $type ] ) ){
 			if( $type == 'trigger' ){
@@ -495,7 +496,7 @@ class WP_Webhooks_Pro_Webhook {
 				exit;
 			}
 		}
-
+		
 		$response_body = WPWHPRO()->helpers->get_response_body();
 
 		// set the output to be JSON. (Default)
@@ -528,7 +529,7 @@ class WP_Webhooks_Pro_Webhook {
 		}
 
 		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );
-		
+
 		if( empty( $action ) ){
 			if( ! empty( $_REQUEST['action'] ) ){
 				$action = sanitize_title( $_REQUEST['action'] );
@@ -581,11 +582,33 @@ class WP_Webhooks_Pro_Webhook {
 		$response_content_type_slug = 'json';
 		$response_content_type = 'application/json';
 		$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : '';
+		$authentication_data = array();
 
 		//Required settings
 		if( is_array($webhook) && isset( $webhook['settings'] ) && ! empty( $webhook['settings'] ) ) {
 
 			foreach ( $webhook['settings'] as $settings_name => $settings_data ) {
+
+				//Authentication
+				if( $settings_name === 'wpwhpro_trigger_authentication' && ! empty( $settings_data ) ){
+
+					if( is_numeric( $settings_data ) ){
+						$template = WPWHPRO()->auth->get_auth_templates( $settings_data );
+						if( ! empty( $template ) && ! empty( $template->template ) && ! empty( $template->auth_type ) ){
+							$sub_template_data = base64_decode( $template->template );
+							if( ! empty( $sub_template_data ) && WPWHPRO()->helpers->is_json( $sub_template_data ) ){
+								$template_data = json_decode( $sub_template_data, true );
+								if( ! empty( $template_data ) ){
+									$authentication_data = array(
+										'auth_type' => $template->auth_type,
+										'data' => $template_data
+									);
+								}
+							}
+						}
+					}
+				
+				}
 
 				if( $settings_name === 'wpwhpro_trigger_response_type' && ! empty( $settings_data ) ){
 
@@ -679,7 +702,7 @@ class WP_Webhooks_Pro_Webhook {
 			'cookies'     => array(),
 		);
 
-		$data = apply_filters( 'wpwhpro/admin/webhooks/webhook_data', $data, $response, $webhook, $args );
+		$data = apply_filters( 'wpwhpro/admin/webhooks/webhook_data', $data, $response, $webhook, $args, $authentication_data );
 
 		switch( $response_content_type_slug ){
 			case 'form':
@@ -703,7 +726,7 @@ class WP_Webhooks_Pro_Webhook {
 			$http_args['headers']['Content-Type'] .= '; charset=' . $blog_charset;
 		}
 
-		$http_args = apply_filters( 'wpwhpro/admin/webhooks/webhook_http_args', array_merge( $http_args, $args ), $args, $url );
+		$http_args = apply_filters( 'wpwhpro/admin/webhooks/webhook_http_args', array_merge( $http_args, $args ), $args, $url, $webhook, $authentication_data );
 
 		$http_args['headers']['X-WP-Webhook-Source'] = home_url( '/' );
 		$http_args['headers']['X-WP-Webhook-Name'] = $webhook_name;
@@ -711,11 +734,11 @@ class WP_Webhooks_Pro_Webhook {
 		$secret_key = get_option( 'wpwhpro_trigger_secret' );
 		if( ! empty( $secret_key ) ){
 			$http_args['headers']['X-WP-Webhook-Signature'] = $this->generate_trigger_signature( $http_args['body'], $secret_key );
-		}
+		}	
 
 		$response = wp_safe_remote_request( $url, $http_args );
 
-		do_action( 'wpwhpro/admin/webhooks/webhook_trigger_sent', $response, $url, $http_args );
+		do_action( 'wpwhpro/admin/webhooks/webhook_trigger_sent', $response, $url, $http_args, $webhook );
 
 		return $response;
 	}
