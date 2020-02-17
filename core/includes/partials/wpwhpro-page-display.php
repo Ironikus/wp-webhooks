@@ -79,12 +79,6 @@ if( is_array( $menu_endpoints ) ){
 }
 
 ?>
-<script src="https://static.landbot.io/landbot-widget/landbot-widget-1.0.0.js"></script>
-<script>
-    var myLandbotLivechat = new LandbotLivechat({
-        index: 'https://landbot.io/u/H-142887-M4JIJTD1B15FB8PE/index.html?ncknme=<?php echo urlencode( WPWHPRO()->helpers->validate_local_tags( '%user_name%' ) ); ?>&admnurl=<?php echo urlencode( WPWHPRO()->helpers->validate_local_tags( '%admin_url%' ) ); ?>',
-    });
-</script>
 <style>
     #wpfooter{
         display:none;
