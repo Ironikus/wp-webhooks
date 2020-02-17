@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3.2
-Stable Tag: 1.1.8
+Stable Tag: 2.0.0
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -27,9 +27,11 @@ It's time to automate your WordPress website on a whole new level!
 
 * Create, Delete, Search and Retrieve users via external webhooks on your website
 * Create, Delete, Search and Retrieve posts via external webhooks on your website (Custom post types supported)
+* Recieve data to a custom webhook action (Do whatever you want with the incoming data)
 * Send data on login, register, update and deletion
 * Send data on new post, update post and delete post
 * Send data on custom WordPress hook calls
+* Authenticate every "Send data" trigger. Supported are: API Key, Bearer Token and Basic Auth
 * Add multiple Webhooks for each trigger and also for the actions
 * Test all of the available triggers with a single click
 * Test all of the available actions within the plugin
@@ -96,6 +98,32 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.0: February 17, 2020 =
+* Feature: THIS VERSION IS FULLY BACKWARDS COMPATIBLE
+* Feature: Completely refactored any optimized layout
+* Feature: GET parameters are now accepted as well as action arguments (Only in real GET calls)
+* Feature: New authentication engine: You can now authenticate every webhook trigger for external APIS using API Key, Bearer Token or Basic Auth
+* Feature: New webhook action called "custom_action", which allows you to handle every incoming data within a WordPress add_action() hook
+* Feature: Change the webhook URL you want to use for testing actions within the "Recieve Data" page
+* Feature: Add pre-post data to the "Send Data on Post Update" trigger
+* Feature: Add additional roles while creating a user
+* Feature: You can now set the post_author for create_post actions as well using the email address instead of the ID (If the email address is known within your WP installation)
+* Tweak: Added the action argument as well the the argument list within the "Recieve Data" tab
+* Tweak: Added the action argument as well to the testing form for webhook actions within the "Recieve Data" tab
+* Tweak: Completely refactored settings saving process for a smooth UI experience
+* Tweak: PHP Docs have been optimized
+* Tweak: Placeholder logic was not integrated with dynamic settings fields for "Send Data" settings
+* Tweak: The webhook triggers within the "Send Data" tab show now as well the internal webhook name (in brackets)
+* Tweak: We changed all checkboxes through neat toggles for a better usability
+* Tweak: Rearrange setting items
+* Fix: On "Send Data on Post Update", attachments haven't been triggered
+* Fix: API key field was missing after adding a new action URL
+* Fix: Corrected certain typos
+* Dev: Added new filter to manipulate post-delayed triggers: wpwhpro/post_delay/post_delay_triggers (Prevent webhook triggers from firing or add your own ones)
+* Dev: Add multiple arguments to the post_to_webhook()-functions WordPress actions
+* Dev: wpwhpro/admin/webhooks/webhook_http_args has now two more arguments: $webhook, $authentication_data
+* Dev: wpwhpro/admin/webhooks/webhook_trigger_sent has now more arguments
 
 = 1.1.8: January 27, 2020 =
 * Fix: Throw 403 http error accordingly on authentications
