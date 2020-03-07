@@ -7918,6 +7918,8 @@ input:checked + .slider:before {
   margin: 20px 0 40px 0; }
   .ironikus-webhook-triggers .ironikus-single-webhook-trigger-handler .input-group {
     margin-right: 20px; }
+  .ironikus-webhook-triggers .ironikus-single-webhook-trigger-handler .input-group-prepend {
+    margin: 0; }
 
 .ironikus-webhook-triggers .accordion > .card {
   border-bottom: 0;
@@ -7974,6 +7976,12 @@ input:checked + .slider:before {
 .ironikus-add-wehook-action-handler {
   display: -ms-flexbox;
   display: flex; }
+  .ironikus-add-wehook-action-handler .input-group-prepend {
+    margin: 0; }
+  .ironikus-add-wehook-action-handler .input-group-text {
+    color: #fff;
+    background-color: #373841;
+    border: 1px solid #373841; }
   .ironikus-add-wehook-action-handler .ironikus-webhook-input-new {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0; }
@@ -8283,6 +8291,8 @@ input:checked + .slider:before {
   padding: 20px;
   border-radius: 5px;
   margin-top: 20px; }
+  #wpwhpro-authentication-actions .input-group-prepend {
+    margin: 0; }
 
 #wpwhpro-authentication-content-wrapper {
   background: #e6e6e6;
