@@ -185,9 +185,9 @@ $actions = WPWHPRO()->webhook->get_actions();
 
 <div class="ironikus-add-wehook-action-handler">
     <div class="input-group mb-3">
-        <div class="input-group-prepend">
+        <label class="input-group-prepend" for="ironikus-webhook-action-name">
             <span class="input-group-text" id="input-group-webbhook-action-name"><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-actions' ); ?></span>
-        </div>
+        </label>
         <input id="ironikus-webhook-action-name" class="form-control ironikus-webhook-input-new h30" type="text" aria-describedby="input-group-webbhook-action-name" placeholder="<?php echo WPWHPRO()->helpers->translate( 'my-webhook-name', 'wpwhpro-page-actions' ); ?>" >
     </div>
     <p class="btn btn-primary ironikus-action-save h30" >

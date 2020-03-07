@@ -217,15 +217,15 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 
 							<div class="ironikus-single-webhook-trigger-handler">
 								<div class="input-group mb-3">
-									<div class="input-group-prepend">
-										<span class="input-group-text" id="input-group-webbhook-name-<?php echo $identkey; ?>"><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?></span>
-									</div>
+									<label class="input-group-prepend" for="ironikus-webhook-slug-<?php echo $trigger['trigger']; ?>">
+										<span class="input-group-text"><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?></span>
+									</label>
 									<input id="ironikus-webhook-slug-<?php echo $trigger['trigger']; ?>" type="text" class="form-control ironikus-webhook-input-new h30" aria-label="<?php echo WPWHPRO()->helpers->translate( 'Webhook Name (Optional)', 'wpwhpro-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo WPWHPRO()->helpers->translate( 'my-new-webhook', 'wpwhpro-page-triggers' ); ?>">
 								</div>
 								<div class="input-group mb-3">
-									<div class="input-group-prepend">
-										<span class="input-group-text" id="input-group-webbhook-name-<?php echo $identkey; ?>"><?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?></span>
-									</div>
+									<label class="input-group-prepend" for="ironikus-webhook-url-<?php echo $trigger['trigger']; ?>">
+										<span class="input-group-text"><?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?></span>
+									</label>
 									<input id="ironikus-webhook-url-<?php echo $trigger['trigger']; ?>" type="text" class="form-control ironikus-webhook-input-new h30" aria-label="<?php echo WPWHPRO()->helpers->translate( 'Include your webhook url here', 'wpwhpro-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo WPWHPRO()->helpers->translate( 'https://example.com/webbhook/onwzinsze', 'wpwhpro-page-triggers' ); ?>">
 								</div>
 								<p class="btn btn-primary ironikus-save h30" ironikus-webhook-callback="<?php echo !empty( $trigger['callback'] ) ? $trigger['callback'] : ''; ?>" ironikus-webhook-trigger="<?php echo $trigger['trigger']; ?>" >

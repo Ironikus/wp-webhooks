@@ -15,9 +15,9 @@ $auth_methods = WPWHPRO()->settings->get_authentication_methods();
     <div id="wpwhpro-authentication-actions">
         <form id="ironikus-authentication-form" method="post" action="">
             <div class="input-group">
-                <div class="input-group-prepend">
+                <label class="input-group-prepend" for="wpwh-authentication-template">
                     <span class="input-group-text" id="wpwh-authentication-template-label"><?php echo WPWHPRO()->helpers->translate( 'Template name', 'wpwhpro-page-authentication' ); ?></span>
-                </div>
+                </label>
                 <input type="text" class="form-control" id="wpwh-authentication-template" name="wpwh-authentication-template" aria-describedby="wpwh-authentication-template-label" placeholder="<?php echo WPWHPRO()->helpers->translate( 'my-template-name', 'wpwhpro-page-authentication' ); ?>">
             </div>
 
