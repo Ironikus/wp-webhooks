@@ -185,7 +185,7 @@ class WP_Webhooks_Pro_Settings{
 			'wpwhpro_trigger_response_type' => array(
 				'id'          => 'wpwhpro_trigger_response_type',
 				'type'        => 'select',
-				'label'       => WPWHPRO()->helpers->translate('Change the data response type', 'wpwhpro-fields-trigger-required-settings'),
+				'label'       => WPWHPRO()->helpers->translate('Change the data request type', 'wpwhpro-fields-trigger-required-settings'),
 				'choices'     => array(
 					'json' => 'JSON',
 					'xml' => 'XML',
@@ -193,7 +193,25 @@ class WP_Webhooks_Pro_Settings{
 				),
 				'placeholder' => '',
 				'default_value' => '',
-				'description' => WPWHPRO()->helpers->translate('Set a custom response type for the data that gets send to the specified URL. Default is JSON.', 'wpwhpro-fields-trigger-required-settings')
+				'description' => WPWHPRO()->helpers->translate('Set a custom request type for the data that gets send to the specified URL. Default is JSON.', 'wpwhpro-fields-trigger-required-settings')
+			),
+			'wpwhpro_trigger_request_method' => array(
+				'id'          => 'wpwhpro_trigger_request_method',
+				'type'        => 'select',
+				'label'       => WPWHPRO()->helpers->translate('Change the data request method', 'wpwhpro-fields-trigger-required-settings'),
+				'choices'     => array(
+					'POST' => 'POST',
+					'GET' => 'GET',
+					'HEAD' => 'HEAD',
+					'PUT' => 'PUT',
+					'DELETE' => 'DELETE',
+					'TRACE' => 'TRACE',
+					'OPTIONS' => 'OPTIONS',
+					'PATCH' => 'PATCH',
+				),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Set a custom request method for the data that gets send to the specified URL. Default is POST.', 'wpwhpro-fields-trigger-required-settings')
 			),
 			'wpwhpro_trigger_authentication' => array(
 				'id'          => 'wpwhpro_trigger_authentication',

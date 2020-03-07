@@ -583,6 +583,7 @@ class WP_Webhooks_Pro_Webhook {
 			'is_valid' => true,
 		);
 		$response_content_type_slug = 'json';
+		$response_content_type_method = 'POST';
 		$response_content_type = 'application/json';
 		$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : '';
 		$authentication_data = array();
@@ -634,6 +635,39 @@ class WP_Webhooks_Pro_Webhook {
 							//Just for reference
 							$response_content_type_slug = 'json';
 							$response_content_type = 'application/json';
+							break;
+					}
+
+				}
+
+				if( $settings_name === 'wpwhpro_trigger_request_method' && ! empty( $settings_data ) ){
+
+					switch( $settings_data ){
+						case 'GET':
+							$response_content_type_method = 'GET';
+							break;
+						case 'HEAD':
+							$response_content_type_method = 'HEAD';
+							break;
+						case 'PUT':
+							$response_content_type_method = 'PUT';
+							break;
+						case 'DELETE':
+							$response_content_type_method = 'DELETE';
+							break;
+						case 'TRACE':
+							$response_content_type_method = 'TRACE';
+							break;
+						case 'OPTIONS':
+							$response_content_type_method = 'OPTIONS';
+							break;
+						case 'PATCH':
+							$response_content_type_method = 'PATCH';
+							break;
+						case 'POST':
+						default:
+							//Just for reference
+							$response_content_type_method = 'POST';
 							break;
 					}
 
@@ -693,7 +727,7 @@ class WP_Webhooks_Pro_Webhook {
 		}
 
 		$http_args = array(
-			'method'      => 'POST',
+			'method'      => $response_content_type_method,
 			'timeout'     => MINUTE_IN_SECONDS,
 			'redirection' => 0,
 			'httpversion' => '1.0',
