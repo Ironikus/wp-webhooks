@@ -731,7 +731,12 @@ class WP_Webhooks_Pro_Webhook {
 		$http_args['headers']['X-WP-Webhook-Source'] = home_url( '/' );
 		$http_args['headers']['X-WP-Webhook-Name'] = $webhook_name;
 
-		$secret_key = get_option( 'wpwhpro_trigger_secret' );
+		$secret_key = get_option( 'wpwhpro_trigger_secret' ); //deprecated since 3.0.1
+		/*
+		 * Set a custom secret key
+		 * @since 2.0.1
+		 */
+		$secret_key = apply_filters( 'wpwhpro/admin/webhooks/secret_key', $secret_key, $webhook, $args, $authentication_data );
 		if( ! empty( $secret_key ) ){
 			$http_args['headers']['X-WP-Webhook-Signature'] = $this->generate_trigger_signature( $http_args['body'], $secret_key );
 		}	
