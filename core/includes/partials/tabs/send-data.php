@@ -112,7 +112,8 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 												<div class="ironikus-tb-webhook-wrapper">
 													<div class="ironikus-tb-webhook-url">
 														<strong>Webhook url:</strong> <?php echo $webhook_data['webhook_url']; ?>
-														<br><strong>Webhook name:</strong> <?php echo $webhook_data['webhook_name']; ?>
+														<br><strong>Webhook trigger name:</strong> <?php echo $trigger_name; ?>
+														<br><strong>Webhook technical name:</strong> <?php echo $webhook_data['webhook_name']; ?>
 													</div>
 													<div class="ironikus-tb-webhook-settings">
 														<?php if( $settings ) : ?>
