@@ -376,6 +376,9 @@ class WP_Webhooks_Pro_Webhook {
 		//Reset all the webhook settings
 		delete_option( WPWHPRO()->settings->get_webhook_option_key() );
 
+		//Reset authentication
+		WPWHPRO()->auth->delete_table();
+
 	}
 
 	/**
