@@ -41,7 +41,8 @@ It's time to automate your WordPress website on a whole new level!
 * Advanced Developer Hooks
 * Optimized settings page for more control
 * Supports XML, JSON, plain text/HTML and form urlencode
-* Supports Zapier, automate.io and more
+* Supports the following request methods: POST (Default), GET, HEAD, PUT, DELETE, TRACE, OPTIONS, PATCH
+* Supports Zapier, Integromat, automate.io and more
 
 = Free Extensions =
 On wordpress.org you will also find more free extensions to equip your favorite plugins via webhooks.
