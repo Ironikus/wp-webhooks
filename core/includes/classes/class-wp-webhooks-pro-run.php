@@ -1095,11 +1095,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-		<p><?php echo WPWHPRO()->helpers->translate( 'This webhook uses the get_user_by() function to return a user. To learn more about this function, please check the official WordPress docs:', 'action-get_user-content' ); ?> <a href="https://developer.wordpress.org/reference/functions/get_user_by/" title="get_user_by" target="_blank">https://developer.wordpress.org/reference/functions/get_user_by/</a></p>
-		<p><?php echo WPWHPRO()->helpers->translate( 'For the user_value, you can set by default the user id. It is also possible to set an email, the user login or the slug. If you choose a different parameter for the value_type argument, you can also grab the user through the other values.', 'action-get_user-content' ); ?> </p>
-		<p><?php echo WPWHPRO()->helpers->translate( 'Possible values for the value_type argument are:', 'action-get_user-content' ); ?><strong>id, ID, slug, email, login</strong></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-get_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -2236,7 +2232,7 @@ $return_args = array(
 		}
 
 		if( ! empty( $do_action ) ){
-			do_action( $do_action, $post_data, $post_id );
+			do_action( $do_action, $post_data, $post_id, $return_args );
 		}
 
 		WPWHPRO()->webhook->echo_response_data( $return_args );
