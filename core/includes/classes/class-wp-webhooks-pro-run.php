@@ -1867,6 +1867,7 @@ $return_args = array(
 		$user_value     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_value' );
 		$value_type     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'value_type' );
 		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+		$user = null;
 		
 		if( empty( $user_value ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the user_value argument. Please define it first.", 'action-get_user-failure' );
@@ -1902,7 +1903,7 @@ $return_args = array(
 		}
 		
 		if( ! empty( $do_action ) ){
-			do_action( $do_action, $return_args, $user_value, $value_type );
+			do_action( $do_action, $return_args, $user_value, $value_type, $user );
 		}
 
 		WPWHPRO()->webhook->echo_response_data( $return_args );
