@@ -947,30 +947,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-		<p><?php echo WPWHPRO()->helpers->translate( "To get started, you need to set an email address. All the other values are optional and just extend the creation of the user. We would still recommend to set the attribute <strong>user_login</strong>, since this will be the name a user can log in with.", "action-create-user-content" ); ?></p>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( 'This is an example on how you can include additional user roles using JSON. You need to define the role slug as the key and as the value either "add" or "remove".', 'action-update-user-content' ); ?>
-        <br>
-        <pre>
-{
-  "editor": "add",
-  "custom-role": "add",
-  "custom-role-1": "remove"
-}
-		</pre>
-		<br>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( 'This is an example on how you can include additional user roles using only text. To do so, you need to first define the role. Separate the action by a ":" and multiple roles via semicolon ";". Please refer to the example below.', 'action-update-user-content' ); ?>
-        <br>
-        <pre>
-editor:add;custom-role:add;custom-role-1:remove
-}
-		</pre>
-		<br>
-		<p><?php echo WPWHPRO()->helpers->translate( 'With the send_email parameter set to "yes", you can send a user notification mail to the defined user_email.', 'action-update-user-content' ); ?></p>
-		<p><?php echo WPWHPRO()->helpers->translate( 'With the do_action parameter, you can fire a custom action at the end of the process. Just add your custom action via wordpress hook. We pass the following parameters with the action: $user_data, $user_id, $user_meta', 'action-create-user-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-create_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1177,28 +1154,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "This hook enables you to create posts with all of their settings, taxonomies and meta values. Custom post types are supported as well.", "action-create-post-content" ); ?></p>
-        <br><br>
-        <strong><?php echo WPWHPRO()->helpers->translate( 'Create custom taxonomy values', 'action-create-post-content' ); ?></strong>
-        <pre>term_name_1,value_1:value_2:value_3;term_name_2,value_1:value_2:value_3</pre>
-		<?php echo WPWHPRO()->helpers->translate( 'To separate the taxonomy key from the values, you can use a comma ",". In case you have multiple values per taxonomy, you can separate them via a double point ":". To separate multiple taxonomy settings from each other, easily separate them with a semicolon ";" (It is not necessary to set a semicolon at the end of the last one)', 'action-create-post-content' ); ?>
-        <br><br>
-        <strong><?php echo WPWHPRO()->helpers->translate( 'Delete whole related taxonomy', 'action-create-post-content' ); ?></strong>
-        <pre>ironikus-remove-all;term_name_1;term_name_2</pre>
-		<?php echo WPWHPRO()->helpers->translate( 'To delete all related taxonomy values of a single taxonomy, just add "ironikus-remove-all;" at the beginning. After that, you can define the specified taxonomy ids or slugs, separated with a semicolon ";".', 'action-create-post-content' ); ?>
-        <br><br>
-        <strong><?php echo WPWHPRO()->helpers->translate( 'Delete single related taxonomy value', 'action-create-post-content' ); ?></strong>
-        <pre>ironikus-append;term_name_1,value_1:value_2-ironikus-delete:value_3;term_name_2,value_1:value_2:value_3-ironikus-delete</pre>
-		<?php echo WPWHPRO()->helpers->translate( 'You can delete a single value by setting "ironikus-append" in the beginning, separated with a semicolon, followed by the taxonomy name and the values, in which the value that should be deleted contains a "-ironikus-delete" at the end. This will trigger the deletion of that specific value.', 'action-create-post-content' ); ?>
-        <br><br>
-        <strong><?php echo WPWHPRO()->helpers->translate( 'Append existing taxonomies', 'action-create-post-content' ); ?></strong>
-        <pre>ironikus-append;term_name_1,value_1:value_2:value_3;term_name_2,value_1:value_2:value_3</pre>
-		<?php echo WPWHPRO()->helpers->translate( 'With adding a "ironikus-append" at the beginning, you will append the set taxonomies by your new ones without deleting the old ones. (Affects only post updates).', 'action-create-post-content' ); ?>
-        <br><br>
-        <p><?php echo WPWHPRO()->helpers->translate( 'With the wp_error parameter set to "true", it will send a wp_error object back in case something went wrong with the post.', 'action-update-post-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'With the do_action parameter, you can fire a custom action at the end of the process. Just add your custom action via wordpress hook. We pass the following parameters with the action: $post_data, $post_id, $meta_input', 'action-create-post-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-create_post.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1245,10 +1201,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To delete a post you have to define the post_id parameter.', 'action-delete-post-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'With the do_action parameter, you can fire a custom action at the end of the process. Just add your custom action via wordpress hook. We pass the following parameters with the action: $post, $post_id, $check, $force_delete', 'action-delete-post-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-delete_post.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1292,36 +1245,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-		<p><?php echo WPWHPRO()->helpers->translate( 'To be able to search for posts on your website, it is required to set the "arguments" parameter. In it, you need to define a json construct that represents and preserves the same structure as the WP_Query Parameters. Please see the example below:', 'action-get_posts-content' ); ?></p>
-		<pre>
-{"post_type":"post","posts_per_page":8}
-</pre>
-	<p><?php echo WPWHPRO()->helpers->translate( 'The example above will filter the posts for the post type "post" and returns max five posts within one request.', 'action-get_posts-content' ); ?>
-	<br><?php echo WPWHPRO()->helpers->translate( 'For more information, please visit the official WordPress WP_Query reference site:', 'action-get_posts-content' ); ?> <a href="https://developer.wordpress.org/reference/classes/wp_query/" title="WP_User_Query" target="_blank">https://developer.wordpress.org/reference/classes/wp_query/</a></p>
-	<p><?php echo WPWHPRO()->helpers->translate( 'You can also manipulate the output of the query using the return_only parameter. This allows you to output only certain values. Here is an example for that:', 'action-get_posts-content' ); ?></p>
-		<pre>
-posts,post_count,found_posts,max_num_pages
-</pre>
-<p><?php echo WPWHPRO()->helpers->translate( 'Possible values for the return_only argument are:', 'action-get_posts-content' ); ?></p>
-<ul>
-	<li>all</li>
-	<li>posts</li>
-	<li>post</li>
-	<li>post_count</li>
-	<li>found_posts</li>
-	<li>max_num_pages</li>
-	<li>current_post</li>
-	<li>query_vars</li>
-	<li>query</li>
-	<li>tax_query</li>
-	<li>meta_query</li>
-	<li>date_query</li>
-	<li>request</li>
-	<li>in_the_loop</li>
-	<li>current_post</li>
-</ul>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-get_posts.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1367,41 +1291,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-		<p><?php echo WPWHPRO()->helpers->translate( 'This webhook uses multiple functions to fetch the data. Please refer to the documents down below for more information.', 'action-get_post-content' ); ?>
-	<ul>
-		<li><a href="https://developer.wordpress.org/reference/functions/get_post/" title="get_post" target="_blank">https://developer.wordpress.org/reference/functions/get_post/</a></li>
-		<li><a href="https://developer.wordpress.org/reference/functions/wp_get_post_terms/" title="wp_get_post_terms" target="_blank">https://developer.wordpress.org/reference/functions/wp_get_post_terms/</a></li>
-	</ul>
-	</p>
-		<p><?php echo WPWHPRO()->helpers->translate( 'Instead of returning all of the available data, you can also only return certain values. Therefore, simply define the return_only argument and set a single setting or a comma separated list. Here is an example:', 'action-get_post-content' ); ?>
-	<pre>
-post,post_thumbnail,post_terms,post_meta
-</pre>
-
-	<?php echo WPWHPRO()->helpers->translate( 'Possible values are:', 'action-get_post-content' ); ?>
-	<ul>
-		<li>all</li>
-		<li>post</li>
-		<li>post_thumbnail</li>
-		<li>post_terms</li>
-		<li>post_meta</li>
-	</ul>
-	</p>
-	<p><?php echo WPWHPRO()->helpers->translate( 'In case you return a post thumbnail url, you can also define the size of it. This supports all of the registered sizes on your WordPress site. Default: full. Here is a list of all default thumbnail sizes:', 'action-get_post-content' ); ?>
-	<ul>
-		<li><strong>thumbnail</strong> (150px square)</li>
-		<li><strong>medium</strong> (maximum 300px width and height)</li>
-		<li><strong>large</strong> (maximum 1024px width and height)</li>
-		<li><strong>full</strong> (full/original image size you uploaded)</li>
-	</ul>
-	</p>
-	<p><?php echo WPWHPRO()->helpers->translate( 'You can also customize the output of the returned taxonomies. Default is post_tag. This argument accepts a string of a single taxonomy, or a comma separated list of multiple taxonomies. Please see the example down below:', 'action-get_post-content' ); ?>
-	<pre>
-post_tag,custom_taxonomy_1,custom_taxonomy_2
-</pre>
-	</p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-get_post.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1441,41 +1331,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-		<p>
-			<?php echo WPWHPRO()->helpers->translate( 'This webhook allows you to do whatever you like with the incoming data of an external webhook call. You can use it to create fully customized actions and responses of the webhook.', 'action-ironikus-custom_action-content' ); ?>
-			<br>
-			<?php echo WPWHPRO()->helpers->translate( 'Since this webhook requires you to still set the action (to let our plugin know you want to fire a custom_action), you can set the action parameter within the webhook URL you define within your external endpoint. E.g.: &action=custom_action - This way you can avoid modifying their webhook request in the first place.', 'action-ironikus-custom_action-content' ); ?>
-			<br>
-			<?php echo WPWHPRO()->helpers->translate( 'To modify your incoming data based on your needs, you simply create a custom add_filter within your theme or plugin.Down below is an example on how you can do that: ', 'action-ironikus-custom_action-content' ); ?>
-		</p>
-		<pre>add_filter( 'wpwhpro/run/actions/custom_action/return_args', 'wpwh_fire_my_custom_logic', 10, 3 );
-function wpwh_fire_my_custom_logic( $return_args, $identifier, $response_body ){
-
-	//If the identifier doesn't match, do nothing
-	if( $identifier !== 'ilovewebhooks' ){
-		return $return_args;
-	}
-
-	//This is how you can validate the incoming value. This field will return the value for the key user_email
-	$email = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_email' );
-
-	//Include your own logic here....
-
-	//This is what the webhook returns back to the caller of this action (response)
-	//By default, we return an array with success => true and msg -> Some Text
-	return $return_args;
-
-}</pre>
-		<p>
-			<?php echo WPWHPRO()->helpers->translate( 'The custom hook accepts 3 parameters:', 'action-ironikus-custom_action-content' ); ?>
-			<ol>
-				<li><?php echo WPWHPRO()->helpers->translate( '$return_args: This is what the webhook call returns as a response.', 'action-ironikus-custom_action-content' ); ?></li>
-				<li><?php echo WPWHPRO()->helpers->translate( '$identifier: This is the wpwh_identifier you may have set up within the webhook call. (We also allow to set this specific argument within the URL as &wpwh_identifier=my_identifier', 'action-ironikus-custom_action-content' ); ?></li>
-				<li><?php echo WPWHPRO()->helpers->translate( '$response_body: This returns the validated payload of the incoming webhook call. You can use WPWHPRO()->helpers->validate_request_value() to validate single entries (See example)', 'action-ironikus-custom_action-content' ); ?></li>
-			</ol>
-		</p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-custom_action.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1517,9 +1373,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( 'This webhook is for testing purposes only. It does not manipulate any data within the system.', 'action-ironikus-test-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-ironikus_test.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -2614,7 +2468,7 @@ $return_args = array(
 		);
 
 		ob_start();
-			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-create_user.php' );
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-create_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -2858,12 +2712,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-login-user-content" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user object, as well as the user meta, so everything you need will be there.', 'trigger-login-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-login-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-login-user-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-login_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -2925,12 +2774,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-update-user-content" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user object, as well as the user meta, so everything you need will be there.', 'trigger-update-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-create-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-update-user-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-update_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -2982,13 +2826,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-deleted-user-content" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will receive the user id of the deleted user, as well as the reassignments (In case there have been reassignments.)', 'trigger-deleted-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-deleted-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-deleted-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'Please note: If you have a multisite network, this webhook only fires if you delete the user from the whole network and not only from one sub site.', 'trigger-deleted-user-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-deleted_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -3086,12 +2924,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-post-create" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user post id, the full post object, as well as the post meta, so everything you need will be there.', 'trigger-post-create' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-post-create' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the Webhooks Pro response on a demo request, just open your browser console and you will see the object.', 'trigger-post-create' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_create.php' );
 		$description = ob_get_clean();
 
 		$settings = array(
@@ -3161,12 +2994,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-post-update" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user post id, the full post object, as well as the post meta, so everything you need will be there.', 'trigger-post-update' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-post-update' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the Webhooks Pro response on a demo request, just open your browser console and you will see the object.', 'trigger-post-update' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_update.php' );
 		$description = ob_get_clean();
 
 		$settings = array(
@@ -3224,12 +3052,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-post-delete" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve the deleted post id with a successful deletion.', 'trigger-post-delete' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-post-delete' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the Webhooks Pro response on a demo request, just open your browser console and you will see the object.', 'trigger-post-delete' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_delete.php' );
 		$description = ob_get_clean();
 
 		$settings = array(
@@ -3271,23 +3094,7 @@ $return_args = array(
 		$parameter = array();
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "This webhook enables you to send a custom action to a webhook within your code. To do so, you only have to define the action and the data you want to send to it. ", "trigger-custom-action" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( "Down below you will see an example on what it may looks like:", "trigger-custom-action" ); ?></p>
-		<pre>
-$custom_data = array(
-	'data_1' => 'value'
-);
-$webhook_names = array(
-	'15792546059992909'
-);
-
-do_action( 'wp_webhooks_send_to_webhook', $custom_data, $webhook_names );
-        </pre>
-        <p><?php echo WPWHPRO()->helpers->translate( "As soon as this action fires, it will instantly be sent th the specified webhook urls within this webhook trigger.", "trigger-custom-action" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( "If you leave the \$webhook_names argument empty, the trigger fill fire to all webhooks. To send it only to certain webhook endpoints, simply define their webhook name within the array.", "trigger-custom-action" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please don't forget to set your custom webhook url above so that the webhook works.", "trigger-custom-action" ); ?></p>
-        <?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-custom_action.php' );
 		$description = ob_get_clean();
 
 		$settings = array(
