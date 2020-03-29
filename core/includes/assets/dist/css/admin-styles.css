@@ -7871,6 +7871,10 @@ input:checked + .slider:before {
       background: #d04d25 !important; }
   .ironikus-webhook-triggers .card .card-body {
     margin-bottom: 20px; }
+    .ironikus-webhook-triggers .card .card-body pre {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 5px; }
   .ironikus-webhook-triggers .card .btn-link {
     color: #fff;
     pointer-events: none; }
@@ -8004,6 +8008,15 @@ input:checked + .slider:before {
         background: #d04d25 !important; }
     .ironikus-webhook-actions .card .card-body {
       margin-bottom: 20px; }
+      .ironikus-webhook-actions .card .card-body h5 {
+        background: #03A9F4;
+        padding: 2px 5px;
+        color: #fff;
+        border-radius: 5px; }
+      .ironikus-webhook-actions .card .card-body pre {
+        background: #f1f1f1;
+        padding: 10px;
+        border-radius: 5px; }
     .ironikus-webhook-actions .card .btn-link {
       color: #fff;
       pointer-events: none; }
@@ -8040,7 +8053,8 @@ input:checked + .slider:before {
       flex-wrap: wrap; }
   .wpwh-action-arguments .card-body ul li {
     width: 50%;
-    padding: 10px; }
+    padding: 10px;
+    max-width: 250px; }
 
 .wpwhpro-webhook-actions-webhook-select {
   min-width: 200px;
