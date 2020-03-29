@@ -9,7 +9,7 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 <?php add_ThickBox(); ?>
 <div class="ironikus-webhook-triggers">
 	<h2><?php echo WPWHPRO()->helpers->translate( 'Available Webhook Triggers', 'wpwhpro-page-triggers' ); ?></h2>
-	<div class="main-description"><?php echo sprintf( WPWHPRO()->helpers->translate( 'Below you will find a list of all active Webhooks Pro triggers. To use one, you need to define a url that should be triggered to send the available data to. For more information on that, you can checkout our product documentation by clicking <a title="Go to our product documentation" target="_blank" href="%s">here</a>.', 'wpwhpro-page-triggers' ), 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'); ?></div>
+	<div class="main-description"><?php echo sprintf( WPWHPRO()->helpers->translate( 'Below you will find a list of all active %1$s triggers. To use one, you need to define a url that should be triggered to send the available data to. For more information on that, you can checkout our each webhook trigger description or our product documentation by clicking <a title="Go to our product documentation" target="_blank" href="%2$s">here</a>.', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'); ?></div>
 	
 	<?php if( ! empty( $triggers ) ) : ?>
 		<div class="accordion" id="allTriggers">

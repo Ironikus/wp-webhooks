@@ -21,7 +21,7 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 	<h2><?php echo WPWHPRO()->helpers->translate('Global Settings', 'admin-settings'); ?></h2>
 
 	<div class="sub-text">
-		<?php echo WPWHPRO()->helpers->translate( 'Here you can configure the global settings for our plugin, as well as enable certain features to extend the possibilities for your site.', 'admin-settings' ); ?>
+		<?php echo WPWHPRO()->helpers->translate( 'Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site and activate your available webhook actions and triggers.', 'admin-settings' ); ?>
 	</div>
 
 	<form id="ironikus-main-settings-form" method="post" action="">
