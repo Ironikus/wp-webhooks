@@ -1051,6 +1051,18 @@ $return_args = array(
 		);
 
 		ob_start();
+		?>
+        <pre>
+$return_args = array(
+    'success' => false,
+    'msg'     => '',
+    'data' => array()
+);
+        </pre>
+		<?php
+		$returns_code = ob_get_clean();
+
+		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-get_users.php' );
 		$description = ob_get_clean();
 
