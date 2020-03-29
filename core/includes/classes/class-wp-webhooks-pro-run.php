@@ -1019,11 +1019,7 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-		?>
-		<p><?php echo WPWHPRO()->helpers->translate( 'To delete a user you have to define one of the mentioned parameter. Optionally you can define the parameter send_email, which allows you to send a custom notification email to the deleted user email.', 'action-delete-user-content' ); ?></p>
-		<p><?php echo WPWHPRO()->helpers->translate( 'Please note that deleting a user inside of a multisite network, just deletes the user from the current site, but not from every site.', 'action-delete-user-content' ); ?></p>
-		<p><?php echo WPWHPRO()->helpers->translate( 'With the do_action parameter, you can fire a custom action at the end of the process. Just add your custom action via wordpress hook. We pass the following parameters with the action: $user, $user_id, $user_email, $send_email', 'action-delete-user-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-delete_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -1055,30 +1051,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <pre>
-$return_args = array(
-    'success' => false,
-    'msg'     => '',
-    'data' => array()
-);
-        </pre>
-		<?php
-		$returns_code = ob_get_clean();
-
-		ob_start();
-		?>
-		<p><?php echo WPWHPRO()->helpers->translate( 'To be able to search for users on your website, it is required to set the "arguments" parameter. In it, you need to define a json construct that represents and preserves the same structure as the WP_User_Query Parameters. Please see the example below:', 'action-get_users-content' ); ?></p>
-		<pre>
-{"search":"Max","number":5}
-</pre>
-	<p><?php echo WPWHPRO()->helpers->translate( 'The example above will filter the users for the name "Max" and returns max five users with that name.', 'action-get_users-content' ); ?>
-	<br><?php echo WPWHPRO()->helpers->translate( 'For more information, please visit the official WordPress WP_User_Query reference site:', 'action-get_users-content' ); ?> <a href="https://codex.wordpress.org/Class_Reference/WP_User_Query" title="WP_User_Query" target="_blank">https://codex.wordpress.org/Class_Reference/WP_User_Query</a></p>
-	<p><?php echo WPWHPRO()->helpers->translate( 'You can also manipulate the output of the query using the return_only parameter. This allows you to, for example, output either only the search results, the total count, the whole query object or any combination in between. Here is an example:', 'action-get_users-content' ); ?></p>
-		<pre>
-get_total,get_results,all
-</pre>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-get_users.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -2582,6 +2555,8 @@ $return_args = array(
         }
 
 		if( isset( $available_triggers['deleted_user'] ) ){
+			add_action( 'wpmu_delete_user', array( $this, 'ironikus_prepare_user_delete' ), 10, 1 );
+			add_action( 'delete_user', array( $this, 'ironikus_prepare_user_delete' ), 10, 1 );
 			add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_deleted_user', array( $this, 'ironikus_send_demo_user_deleted' ), 10, 3 );
         }
@@ -3020,6 +2995,25 @@ $return_args = array(
 	}
 
 	/*
+	 * Preserve the user data before deletion
+	 *
+	 * @since 2.0.2
+	 */
+	public function ironikus_prepare_user_delete( $user_id ){
+		
+		if( ! isset( $this->pre_action_values['delete_user_user_data'] ) ){
+			$this->pre_action_values['delete_user_user_data'] = array();
+		}
+
+		if( ! isset( $this->pre_action_values['delete_user_user_meta'] ) ){
+			$this->pre_action_values['delete_user_user_meta'] = array();
+		}
+
+		$this->pre_action_values['delete_user_user_data'][ $user_id ] = get_userdata( $user_id );
+		$this->pre_action_values['delete_user_user_meta'][ $user_id ] = get_user_meta( $user_id );
+	}
+
+	/*
 	 * Register the user update trigger logic
 	 */
 	public function ironikus_trigger_deleted_user_init(){
@@ -3030,6 +3024,8 @@ $return_args = array(
 		$user_data                  = array(
 			'user_id' => $user_id,
 			'reassign' => $reassign,
+			'user' => $this->pre_action_values['delete_user_user_data'][ $user_id ],
+			'user_meta' => $this->pre_action_values['delete_user_user_meta'][ $user_id ],
 		);
 		$response_data = array();
 
