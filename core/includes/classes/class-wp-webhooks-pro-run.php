@@ -2602,6 +2602,7 @@ $return_args = array(
         }
 
 		if( isset( $available_triggers['post_delete'] ) ){
+			add_action( 'before_delete_post', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
 			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
         }
@@ -2628,12 +2629,7 @@ $return_args = array(
 		);
 
 		ob_start();
-		?>
-        <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-create-user-content" ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user object, as well as the user meta, so everything you need will be there.', 'trigger-create-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-create-user-content' ); ?></p>
-        <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-create-user-content' ); ?></p>
-		<?php
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/action-create_user.php' );
 		$description = ob_get_clean();
 
 		return array(
@@ -3513,6 +3509,25 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data, $webhook_names );
 	}
 
 	/*
+	 * Preserve the post_before on update_post
+	 *
+	 * @since 2.0.2
+	 */
+	public function ironikus_prepare_post_delete( $post_ID ){
+
+		if( ! isset( $this->pre_action_values['delete_post_post_data'] ) ){
+			$this->pre_action_values['delete_post_post_data'] = array();
+		}
+
+		if( ! isset( $this->pre_action_values['delete_post_post_meta'] ) ){
+			$this->pre_action_values['delete_post_post_meta'] = array();
+		}
+
+		$this->pre_action_values['delete_post_post_data'][ $post_ID ] = get_post( $post_ID );
+		$this->pre_action_values['delete_post_post_meta'][ $post_ID ] = get_post_meta( $post_ID );
+	}
+
+	/*
 	 * Register the post delete trigger logic
 	 *
 	 * @since 1.2
@@ -3523,11 +3538,11 @@ do_action( 'wp_webhooks_send_to_webhook', $custom_data, $webhook_names );
 	public function ironikus_trigger_post_delete( $post_id ){
 
         $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_delete' );
-		$post = get_post( $post_id );
+		$post = $this->pre_action_values['delete_post_post_data'][ $post_id ];
         $data_array = array(
             'post_id' => $post_id,
             'post'      => $post,
-            'post_meta' => get_post_meta( $post_id ),
+            'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
         );
 		$response_data = array();
 
