@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.3.2
-Stable Tag: 2.0.1
+Stable Tag: 2.0.2
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -99,6 +99,16 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.2: March 29, 2020 =
+* Feature: Fully reworked webhook descriptions (You WILL love them!)
+* Feature: Add user data and user meta as well to the deleted_user trigger
+* Tweak: Optimized tab descriptions
+* Tweak: Optimized stylings
+* Tweak: Add post details + meta as well for attachment deletion triggers
+* Fix: Post details + meta haven't been available on the post_delete trigger
+* Dev: Add the $user variable to the do_action argument for the get_user webhook action
+* Dev: Add the $return_args variable to the do_action argument for the create_post webhook action
 
 = 2.0.1: March 08, 2020 =
 * Feature: New webhook trigger setting to change the request method. Supported: POST (Default), GET, HEAD, PUT, DELETE, TRACE, OPTIONS, PATCH
