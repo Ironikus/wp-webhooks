@@ -2603,6 +2603,7 @@ $return_args = array(
 
 		if( isset( $available_triggers['post_delete'] ) ){
 			add_action( 'before_delete_post', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
+			add_action( 'delete_attachment', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
 			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
         }
