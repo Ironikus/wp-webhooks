@@ -1906,11 +1906,11 @@ $return_args = array(
 		}
 
 		if( ! empty( $post_date ) ){
-			$post_data['post_date'] = $post_date;
+			$post_data['post_date'] = date( "Y-m-d H:i:s", strtotime( $post_date ) );
 		}
 
 		if( ! empty( $post_date_gmt ) ){
-			$post_data['post_date_gmt'] = $post_date_gmt;
+			$post_data['post_date_gmt'] = date( "Y-m-d H:i:s", strtotime( $post_date_gmt ) );
 		}
 
 		if( ! empty( $post_content ) ){
