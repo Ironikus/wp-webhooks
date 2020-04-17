@@ -5712,6 +5712,140 @@
         console.log($json);
       }
 
+      /* EXTENSION VIEW */
+      $( ".ironikus-extension-manage" ).on( "click", function() {
+
+        var $this = $( this );
+        var $append_delete = '';
+        var $extension_slug = $( $this ).attr( 'webhook-extension-slug' );
+        var $extension_status = $( $this ).attr( 'webhook-extension-status' );
+        var $extension_download = $( $this ).attr( 'webhook-extension-dl' );
+        var $extension_id = $( $this ).attr( 'webhook-extension-id' );
+        var $extension_version = $( $this ).attr( 'webhook-extension-version' );
+
+        //Prevent from clicking again
+        if( $( $this ).children( '.ironikus-loader' ).hasClass( 'active' ) ){
+            return;
+        }
+
+        $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
+        $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+
+        $.ajax({
+            url : ironikus.ajax_url,
+            type : 'post',
+            data : {
+                action : 'ironikus_manage_extensions',
+                extension_slug : $extension_slug,
+                extension_status : $extension_status,
+                extension_download : $extension_download,
+                extension_id : $extension_id,
+                extension_version : $extension_version,
+                ironikus_nonce: ironikus.ajax_nonce
+            },
+            success : function( $response ) {
+                var $webhook = $.parseJSON( $response );
+
+                console.log($webhook);
+
+                setTimeout(function(){
+                    $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
+                    $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+
+                    if( $webhook['success'] != 'false' && $webhook['success'] != false ){
+                        $( $this ).addClass( $webhook['new_class'] ).removeClass( $webhook['old_class'] );
+                        $( $this ).children( '.ironikus-save-text' ).html( $webhook['new_label'] );
+                        $( $this ).attr( 'webhook-extension-status', $webhook['new_status'] );
+console.log($extension_status);
+                        if( $extension_status == 'uninstalled' ){
+                            $append_delete = '<div class="ironikus-extension-delete" webhook-extension-status="delete" webhook-extension-slug="' + $extension_slug + '" webhook-extension-dl="' + $extension_download + '">';
+                            $append_delete += '<small>' + $webhook['delete_name'] + '</small>';
+                            $append_delete += '</div>';
+                            
+                            $( $this ).next( '.bottom-action-wrapper' ).html( $append_delete );
+                        }
+
+                    } else {
+                        $( $this ).css( { 'background': '#a70000' } );
+                    }
+
+                }, 200);
+                setTimeout(function(){
+                    $( $this ).css( { 'background': '' } );
+                }, 2700);
+            },
+            error: function( errorThrown ){
+                setTimeout(function(){
+                    $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
+                    $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+                    $( $this ).css( { 'background': '#a70000' } );
+                }, 200);
+                setTimeout(function(){
+                    $( $this ).css( { 'background': '' } );
+                }, 2700);
+            }
+        } );
+
+    });
+
+    $( document ).on( "click", ".ironikus-extension-delete", function() {
+
+        var $this = $( this );
+        var $extension_slug = $( $this ).attr( 'webhook-extension-slug' );
+        var $extension_status = $( $this ).attr( 'webhook-extension-status' );
+        var $extension_download = $( $this ).attr( 'webhook-extension-dl' );
+        var $extension_id = $( $this ).attr( 'webhook-extension-id' );
+        var $extension_version = $( $this ).attr( 'webhook-extension-version' );
+
+        //Prevent from clicking again
+        if( ! confirm( 'Are you sure?' ) ){
+            return;
+        }
+
+        $.ajax({
+            url : ironikus.ajax_url,
+            type : 'post',
+            data : {
+                action : 'ironikus_manage_extensions',
+                extension_slug : $extension_slug,
+                extension_status : $extension_status,
+                extension_download : $extension_download,
+                extension_id : $extension_id,
+                extension_version : $extension_version,
+                ironikus_nonce: ironikus.ajax_nonce
+            },
+            success : function( $response ) {
+                var $webhook = $.parseJSON( $response );
+
+                console.log($webhook);
+
+                setTimeout(function(){
+
+                    if( $webhook['success'] != 'false' && $webhook['success'] != false ){
+                        if( confirm( 'Reload required. Want to reload now?' ) ){
+                            reload_wnd();
+                        }
+                    } else {
+                        $( $this ).css( { 'background': '#a70000' } );
+                    }
+
+                }, 200);
+                setTimeout(function(){
+                    $( $this ).css( { 'background': '' } );
+                }, 2700);
+            },
+            error: function( errorThrown ){
+                setTimeout(function(){
+                    $( $this ).css( { 'background': '#a70000' } );
+                }, 200);
+                setTimeout(function(){
+                    $( $this ).css( { 'background': '' } );
+                }, 2700);
+            }
+        } );
+
+    });
+
 })( jQuery );
 
 /**

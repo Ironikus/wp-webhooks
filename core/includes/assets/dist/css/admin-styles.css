@@ -8344,6 +8344,30 @@ input:checked + .slider:before {
   background-color: #bd2130;
   border-color: #b21f2d; }
 
+.wpwh-extensions-wrapper {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap; }
+  .wpwh-extensions-wrapper .single-extension {
+    padding: 0;
+    margin-right: 20px; }
+  .wpwh-extensions-wrapper .ironikus-extension-manage {
+    margin: 0; }
+    .wpwh-extensions-wrapper .ironikus-extension-manage .ironikus-save-text {
+      display: none;
+      pointer-events: none; }
+      .wpwh-extensions-wrapper .ironikus-extension-manage .ironikus-save-text.active {
+        display: block !important; }
+    .wpwh-extensions-wrapper .ironikus-extension-manage .ironikus-loader {
+      display: none;
+      pointer-events: none; }
+      .wpwh-extensions-wrapper .ironikus-extension-manage .ironikus-loader.active {
+        display: block !important; }
+  .wpwh-extensions-wrapper .ironikus-extension-delete {
+    color: #f44336;
+    cursor: pointer; }
+
 .wpwh-whitelist-wrapper .wpwhpro-empty {
   margin-top: 20px; }
 
@@ -8427,8 +8451,7 @@ input:checked + .slider:before {
       display: block !important; }
   .ironikus-save .ironikus-loader, .ironikus-action-save .ironikus-loader, .ironikus-submit-settings-form .ironikus-loader, .ironikus-actions-submit-settings-form .ironikus-loader, .ironikus-submit-settings-data .ironikus-loader, .ironikus-submit-auth-data .ironikus-loader {
     display: none;
-    pointer-events: none;
-    padding-top: 9px; }
+    pointer-events: none; }
     .ironikus-save .ironikus-loader.active, .ironikus-action-save .ironikus-loader.active, .ironikus-submit-settings-form .ironikus-loader.active, .ironikus-actions-submit-settings-form .ironikus-loader.active, .ironikus-submit-settings-data .ironikus-loader.active, .ironikus-submit-auth-data .ironikus-loader.active {
       display: block !important; }
 
