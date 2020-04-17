@@ -1119,8 +1119,6 @@ $return_args = array(
 			'post_name'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post name. Default is the sanitized post title when creating a new post.', 'action-create-post-content' ) ),
 			'to_ping'               => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Space or carriage return-separated list of URLs to ping. Default empty.', 'action-create-post-content' ) ),
 			'pinged'                => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Space or carriage return-separated list of URLs that have been pinged. Default empty.', 'action-create-post-content' ) ),
-			'post_modified'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The date when the post was last modified. Default is the current time.', 'action-create-post-content' ) ),
-			'post_modified_gmt'     => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The date when the post was last modified in the GMT timezone. Default is the current time.', 'action-create-post-content' ) ),
 			'post_parent'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) Set this for the post it belongs to, if any. Default 0.', 'action-create-post-content' ) ),
 			'menu_order'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) The order the post should be displayed in. Default 0.', 'action-create-post-content' ) ),
 			'post_mime_type'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The mime type of the post. Default empty.', 'action-create-post-content' ) ),
