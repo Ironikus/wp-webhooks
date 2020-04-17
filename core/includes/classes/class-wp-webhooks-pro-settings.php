@@ -57,6 +57,7 @@ class WP_Webhooks_Pro_Settings{
 		$this->page_title           = WPWH_NAME;
 		$this->webhook_settings_key = 'ironikus_webhook_webhooks';
 		$this->news_transient_key   = 'ironikus_cached_news';
+		$this->extensions_transient_key   = 'ironikus_cached_extensions';
 		$this->webhook_ident_param  = 'wpwhpro_action';
 		$this->active_webhook_ident_param  = 'wpwhpro_active_webhooks';
 		$this->default_settings     = $this->load_default_settings();
@@ -510,6 +511,17 @@ class WP_Webhooks_Pro_Settings{
 	public function get_news_transient_key(){
 
 		return $this->news_transient_key;
+
+	}
+
+	/**
+	 * Return the extensions transient key
+	 *
+	 * @return string - the extensions transient key
+	 */
+	public function get_extensions_transient_key(){
+
+		return $this->extensions_transient_key;
 
 	}
 

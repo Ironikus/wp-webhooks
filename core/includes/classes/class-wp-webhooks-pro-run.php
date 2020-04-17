@@ -70,6 +70,7 @@ class WP_Webhooks_Pro_Run{
 		add_action( 'wp_ajax_ironikus_save_authentication_template',  array( $this, 'ironikus_save_authentication_template' ) );
 		add_action( 'wp_ajax_ironikus_delete_authentication_template',  array( $this, 'ironikus_delete_authentication_template' ) );
 		add_action( 'wp_ajax_ironikus_save_main_settings',  array( $this, 'ironikus_save_main_settings' ) );
+		add_action( 'wp_ajax_ironikus_manage_extensions',  array( $this, 'ironikus_manage_extensions' ) );
 
 		// Load admin page tabs
 		add_filter( 'wpwhpro/admin/settings/menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
@@ -564,7 +565,234 @@ class WP_Webhooks_Pro_Run{
 
         echo json_encode( $response );
 		die();
+	}
+	
+	/*
+     * Manage WP Webhooks extensions
+     */
+	public function ironikus_manage_extensions(){
+        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+
+        $extension_slug            = isset( $_REQUEST['extension_slug'] ) ? sanitize_text_field( $_REQUEST['extension_slug'] ) : '';
+        $extension_status            = isset( $_REQUEST['extension_status'] ) ? sanitize_text_field( $_REQUEST['extension_status'] ) : '';
+        $extension_download            = isset( $_REQUEST['extension_download'] ) ? sanitize_text_field( $_REQUEST['extension_download'] ) : '';
+        $extension_id            = isset( $_REQUEST['extension_id'] ) ? intval( $_REQUEST['extension_id'] ) : '';
+        $extension_version            = isset( $_REQUEST['extension_version'] ) ? sanitize_text_field( $_REQUEST['extension_version'] ) : '';
+		$response           = array( 'success' => false );
+
+		if( empty( $extension_slug ) || empty( $extension_status ) ){
+			$response['msg'] = WPWHPRO()->helpers->translate('An error occured while doing this action.', 'ajax-settings');
+			return $response;
+		}
+		
+		switch( $extension_status ){
+			case 'activated': //runs when the "Deactivate" button was clicked
+				$response['old_class'] = 'btn-warning';
+				$response['new_class'] = 'btn-success';
+				$response['new_status'] = 'deactivated';
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
+				$response['success'] = $this->manage_extensions_deactivate( $extension_slug );
+				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully deactivated.', 'ajax-settings');
+				break;
+			case 'deactivated': //runs when the "Activate" button was clicked
+				$response['old_class'] = 'btn-success';
+				$response['new_class'] = 'btn-warning';
+				$response['new_status'] = 'activated';
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Deactivate', 'wpwhpro-page-extensions' );
+				$response['success'] = $this->manage_extensions_activate( $extension_slug );
+				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully activated.', 'ajax-settings');
+				break;
+			case 'uninstalled': //runs when the "Install" button was clicked
+				$response['old_class'] = 'btn-primary';
+				$response['new_class'] = 'btn-success';
+				$response['new_status'] = 'deactivated';
+				$response['delete_name'] = WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-extensions' );
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
+				$response['success'] = $this->manage_extensions_install( $extension_slug, $extension_download, $extension_id, $extension_version );
+				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully installed.', 'ajax-settings');
+				break;
+			case 'update_active': //runs when the "Update" button was clicked and the previous status was active
+				$response['old_class'] = 'btn-dark';
+				$response['new_class'] = 'btn-warning';
+				$response['new_status'] = 'activated';
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Deactivate', 'wpwhpro-page-extensions' );
+				$response['success'] = $this->manage_extensions_update( $extension_slug, $extension_download, $extension_id, $extension_version );;
+				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully updated.', 'ajax-settings');
+				break;
+			case 'update_deactive': //runs when the "Update" button was clicked and the previous status was inactive
+				$response['old_class'] = 'btn-dark';
+				$response['new_class'] = 'btn-success';
+				$response['new_status'] = 'deactivated';
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
+				$response['success'] = $this->manage_extensions_update( $extension_slug, $extension_download, $extension_id, $extension_version );;
+				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully updated.', 'ajax-settings');
+				break;
+			case 'delete': //runs when the "Delete" link was clicked
+				$response['old_class'] = 'btn-success';
+				$response['new_class'] = 'btn-primary';
+				$response['new_status'] = 'uninstalled';
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
+				$response['success'] = $this->manage_extension_uninstall( $extension_slug );
+				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully deleted.', 'ajax-settings');
+				break;
+		}
+
+        echo json_encode( $response );
+		die();
     }
+
+	/**
+	 * ######################
+	 * ###
+	 * #### MANAGE EXTENSIONS
+	 * ###
+	 * ######################
+	 */
+
+	 public function manage_extensions_deactivate( $slug ){
+
+		if( empty( $slug ) ){
+			return false;
+		}
+
+		if ( is_plugin_active( $slug ) ) {
+			deactivate_plugins( $slug );    
+		}
+
+		return true;
+	 }
+
+	 public function manage_extensions_activate( $slug ){
+
+		if( empty( $slug ) ){
+			return false;
+		}
+
+		if ( ! WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
+			return false;
+		}
+
+		$activate = activate_plugin( $slug );
+		if (is_null($activate)) {
+			return true;
+		}
+
+		return false;
+	 }
+
+	 public function manage_extensions_install( $slug, $dl, $item_id, $version ){
+
+		if( empty( $slug ) || empty( $dl ) ){
+			return false;
+		}
+
+		if ( WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
+			return false;
+		}
+
+		$check = $this->manage_extension_install( $slug, $dl );
+		
+		return $check;
+	 }
+
+	 public function manage_extension_install( $slug, $dl ){
+
+		@include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		@include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		@include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		@include_once ABSPATH . 'wp-admin/includes/file.php';
+		@include_once ABSPATH . 'wp-admin/includes/misc.php';
+		@include_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-upgrader-skin.php';
+
+		if( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'WP_Webhooks_Upgrader_Skin' ) ){
+			return false;
+		}
+		
+		wp_cache_flush();
+		$skin = new WP_Webhooks_Upgrader_Skin( array( 'plugin' => $slug ) );
+		$upgrader = new Plugin_Upgrader( $skin );
+		$installed = $upgrader->install( $dl );
+		wp_cache_flush();
+
+		if( ! is_wp_error( $installed ) && $installed ) {
+			return true;
+		} else {
+			return false;
+		}
+
+	 }
+
+	 public function manage_extension_uninstall( $slug ){
+
+		if ( ! WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
+			return false;
+		}
+
+		@include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		@include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		@include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		@include_once ABSPATH . 'wp-admin/includes/file.php';
+		@include_once ABSPATH . 'wp-admin/includes/misc.php';
+
+		if( ! function_exists( 'delete_plugins' ) ){
+			return false;
+		}
+
+		if ( is_plugin_active( $slug ) ) {
+			deactivate_plugins( $slug );    
+		}
+		
+		$deleted = delete_plugins( array( $slug ) );
+
+		if( ! is_wp_error( $deleted ) && $deleted ) {
+			return true;
+		} else {
+			return false;
+		}
+
+	 }
+
+	 public function manage_extensions_update( $slug, $dl, $item_id, $version ){
+
+		if( empty( $slug ) || empty( $dl ) ){
+			return false;
+		}
+
+		if ( ! WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
+			return false;
+		}
+
+		$check = $this->manage_extension_update( $slug, $dl );
+		
+		return $check;
+	 }
+
+	 public function manage_extension_update( $slug, $dl ){
+
+		@include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		@include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		@include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		@include_once ABSPATH . 'wp-admin/includes/file.php';
+		@include_once ABSPATH . 'wp-admin/includes/misc.php';
+		@include_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-upgrader-skin.php';
+
+		if( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'WP_Webhooks_Upgrader_Skin' ) ){
+			return false;
+		}
+		
+		wp_cache_flush();
+		$skin = new WP_Webhooks_Upgrader_Skin( array( 'plugin' => $slug ) );
+		$upgrader = new Plugin_Upgrader( $skin );
+		$updated = $upgrader->upgrade( $slug );
+		wp_cache_flush();
+
+		if( ! is_wp_error( $updated ) && $updated ) {
+			return true;
+		} else {
+			return false;
+		}
+
+	 }
 
 	/**
 	 * ######################
@@ -612,6 +840,7 @@ class WP_Webhooks_Pro_Run{
 			$tabs['authentication']  = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
 		}
 
+		$tabs['extensions']       = WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' );
 		$tabs['settings']       = WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' );
 		$tabs['pro']            = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
@@ -641,6 +870,9 @@ class WP_Webhooks_Pro_Run{
 				break;
 			case 'authentication':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/authentication.php' );
+				break;
+			case 'extensions':
+				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/extensions.php' );
 				break;
 			case 'home':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/home.php' );
