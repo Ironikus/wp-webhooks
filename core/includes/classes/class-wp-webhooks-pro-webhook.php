@@ -505,6 +505,15 @@ class WP_Webhooks_Pro_Webhook {
 		// set the output to be JSON. (Default)
 		header( 'Content-Type: application/json' );
 
+		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );
+		if( empty( $action ) ){
+			if( ! empty( $_REQUEST['action'] ) ){
+				$action = sanitize_title( $_REQUEST['action'] );
+			} else {
+				$action = '';
+			}
+		}
+
 		if( isset( $webhooks[ $response_ident_value ] ) ){
 			if( $webhooks[ $response_ident_value ]['api_key'] != $response_api_key ){
 				status_header( 403 );
@@ -529,16 +538,6 @@ class WP_Webhooks_Pro_Webhook {
 			);
 			WPWHPRO()->webhook->echo_response_data( $return_auth );
 			die();
-		}
-
-		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );
-
-		if( empty( $action ) ){
-			if( ! empty( $_REQUEST['action'] ) ){
-				$action = sanitize_title( $_REQUEST['action'] );
-			} else {
-				$action = '';
-			}
 		}
 
 		/*
