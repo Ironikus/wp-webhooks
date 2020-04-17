@@ -1128,7 +1128,7 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		$default_return['data'] = $action;
-		$default_return['msg'] = WPWHPRO()->helpers->translate("It looks like your current action is deactivated or it does not have any action function.", 'action-add-webhook-actions' );
+		$default_return['msg'] = WPWHPRO()->helpers->translate("It looks like your current webhook call as no action argument defined, it is deactivated or it does not have any action function.", 'action-add-webhook-actions' );
 
 		WPWHPRO()->webhook->echo_response_data( $default_return );
 		die();
