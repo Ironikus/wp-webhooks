@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.4
-Stable Tag: 2.0.2
+Stable Tag: 2.0.3
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -36,6 +36,7 @@ It's time to automate your WordPress website on a whole new level!
 * Test all of the available triggers with a single click
 * Test all of the available actions within the plugin
 * Advanced settings for each webhook trigger url
+* Manage all of our extensions within the plugin
 * Fully translatable and ready for multilingual sites
 * Full WPML Support
 * Advanced Developer Hooks
@@ -99,6 +100,16 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.3: March 17, 2020 =
+* Feature: EXTENSION MANAGEMENT - You can now manage all extensions for WP Webhooks and WP Webhooks Pro within our plugin via a new tab (Install, Activate, Deactivate, Upgrade, Delete)
+* Feature: the arguments post_date and post_date_gmt on the create_post webhook actions accept now any kind of date format (we automatically convert it to Y-m-d H:i:s)
+* Feature: Introducton to a new settings item called "Activate Debug Mode" - It will provide further debug.log information about malformed data structures and more
+* Tweak: Remove post_modified and post_modified_gmt parameter from the create_post webhook action since they are non-functional (https://core.trac.wordpress.org/ticket/49767)
+* Tweak: Reposition fetching of the action parameter for incoming webhook requests
+* Tweak: Optimized layout for the plugin admin area
+* Tweak: Optimize webhook action response text in case there wasn't any action defined
+* Dev: Add new helper function to check if a plugin is installed
 
 = 2.0.2: March 29, 2020 =
 * Feature: Fully reworked webhook descriptions (You WILL love them!)
