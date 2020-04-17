@@ -36,7 +36,8 @@ class WP_Webhooks_Pro_Helpers {
 	 * WP_Webhooks_Pro_Helpers constructor.
 	 */
     public function __construct() {
-        $this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
+		$this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
+		$this->activate_debugging = ( get_option( 'wpwhpro_activate_debug_mode' ) == 'yes' ) ? true : false;
     }
 
 	/**
@@ -381,6 +382,8 @@ class WP_Webhooks_Pro_Helpers {
 			if( $this->is_json( $response ) ){
 				$return['content'] = ( json_decode( $response ) !== null ) ? json_decode( $response ) : (object) json_decode( $response, true );
 				$content_evaluated = true;
+			} else {
+				$this->log_issue( $this->translate( "The incoming webhook content was sent as application/json, but did not contain a valid JSON: ", 'admin-debug-feature' ) . $this->display_var( $response ) );
 			}
         }
 
@@ -388,6 +391,8 @@ class WP_Webhooks_Pro_Helpers {
 			if( $this->is_xml( $response ) ){
 				$return['content'] = simplexml_load_string( $response );
 				$content_evaluated = true;
+			} else {
+				$this->log_issue( $this->translate( "The incoming webhook content was sent as application/xml, but did not contain a valid XML: ", 'admin-debug-feature' ) . $this->display_var( $response ) );
 			}
         }
 
@@ -557,6 +562,17 @@ class WP_Webhooks_Pro_Helpers {
 	    ob_start();
 	    print_r( $code );
 	    return ob_get_clean();
+	}
+
+	/**
+     * Log certain data within the debug.log file
+	 */
+	public function log_issue( $text ){
+
+		if( $this->activate_debugging ){
+			error_log( $text );
+		}
+	    
 	}
 
 	/**

@@ -514,6 +514,10 @@ class WP_Webhooks_Pro_Webhook {
 			}
 		}
 
+		if( empty( $action ) ){
+			WPWHPRO()->helpers->log_issue( WPWHPRO()->helpers->translate( "The incoming webhook call did not contain any action", 'admin-debug-feature' ) . ': ' . $response_ident_value  );
+		}
+
 		if( isset( $webhooks[ $response_ident_value ] ) ){
 			if( $webhooks[ $response_ident_value ]['api_key'] != $response_api_key ){
 				status_header( 403 );

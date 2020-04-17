@@ -145,6 +145,18 @@ class WP_Webhooks_Pro_Settings{
 			),
 
 			/**
+			 * Deactivate Post Delay
+			 */
+			'wpwhpro_activate_debug_mode' => array(
+				'id'          => 'wpwhpro_activate_debug_mode',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Activate Debug Mode', 'wpwhpro-fields-reset'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPWHPRO()->helpers->translate('This feature adds additional debug information to the plugin. It logs, e.g. further details within the WordPress debug.log file about issues that occur from a configurational perspective.', 'wpwhpro-fields-reset-tip')
+			),
+
+			/**
 			 * Reset WP Webbhooks Pro
 			 */
 			'wpwhpro_reset_data' => array(
