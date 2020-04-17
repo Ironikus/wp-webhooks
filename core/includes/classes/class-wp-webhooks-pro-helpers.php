@@ -643,4 +643,23 @@ class WP_Webhooks_Pro_Helpers {
 
 		return $ipaddress;
 	}
+
+	/**
+	 * Check if a given plugin is installed
+	 *
+	 * @param $slug - Plugin slug
+	 * @return boolean
+	 */
+	public function is_plugin_installed( $slug ){
+		if( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$all_plugins = get_plugins();
+
+		if( ! empty( $all_plugins[ $slug ] ) ){
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
