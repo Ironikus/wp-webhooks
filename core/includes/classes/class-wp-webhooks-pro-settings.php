@@ -117,7 +117,7 @@ class WP_Webhooks_Pro_Settings{
 				'label'       => WPWHPRO()->helpers->translate('Activate Authentication', 'wpwhpro-fields-activate-authentication'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('This allows you to authenticate certain webhook triggers in case you want to send data to API that requires authentication.', 'wpwhpro-fields-activate-authentication-tip')
+				'description' => WPWHPRO()->helpers->translate('This allows you to authenticate certain webhook triggers in case you want to send data to API that requires authentication. It will add a new tab within the menu', 'wpwhpro-fields-activate-authentication-tip')
 			),
 
 			/**
@@ -162,10 +162,10 @@ class WP_Webhooks_Pro_Settings{
 			'wpwhpro_reset_data' => array(
 				'id'          => 'wpwhpro_reset_data',
 				'type'        => 'checkbox',
-				'label'       => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro', 'wpwhpro-fields-reset'),
+				'label'       => WPWHPRO()->helpers->translate('Reset WP Webhooks', 'wpwhpro-fields-reset'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('Reset WP Webhooks Pro and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip')
+				'description' => WPWHPRO()->helpers->translate('Reset WP Webhooks and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip')
 			),
 		);
 

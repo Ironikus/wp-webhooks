@@ -1155,7 +1155,7 @@ class WP_Webhooks_Pro_Run{
 			'additional_roles'  => array( 'short_description' => WPWHPRO()->helpers->translate( 'This allows to add multiple roles to a user. For more information, please read the description.', 'action-create-user-content' ) ),
 			'user_pass'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user password. If not defined, we generate a 32 character long password dynamically.', 'action-create-user-content' ) ),
 			'send_email'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user with the data.', 'action-create-user-content' ) ),
-			'do_action'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-create-user-content' ) )
+			'do_action'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-create-user-content' ) )
 		);
 
 		$returns = array(
@@ -1203,7 +1203,7 @@ $return_args = array(
 			'user_email'    => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the assigned email of the user.', 'action-delete-user-content' ) ),
 			'send_email'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user that the account got deleted.', 'action-delete-user-content' ) ),
 			'remove_from_network'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to delete a user from the whole network. WARNING: This will delete all posts authored by the user. Default: "no"', 'action-delete-user-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-delete-user-content' ) )
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-delete-user-content' ) )
 		);
 
 		$returns = array(
@@ -1236,7 +1236,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Delete a user via Webhooks Pro.', 'action-create-user-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Delete a user via WP Webhooks.', 'action-create-user-content' ),
             'description'       => $description
 		);
 
@@ -1250,7 +1250,7 @@ $return_args = array(
 		$parameter = array(
 			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_User_Query notation. Please check the description for more information.', 'action-get_users-content' ) ),
 			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: get_results', 'action-get_users-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_users-content' ) )
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_users-content' ) )
 		);
 
 		$returns = array(
@@ -1294,7 +1294,7 @@ $return_args = array(
 		$parameter = array(
 			'user_value'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The user id of the user. You can also use certain other values. Please check the descripton for more details.', 'action-get_user-content' ) ),
 			'value_type'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'You can choose between certain value types. Possible: id, slug, email, login', 'action-get_user-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_user-content' ) )
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_user-content' ) )
 		);
 
 		$returns = array(
@@ -1359,7 +1359,7 @@ $return_args = array(
 			'tags_input'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of tag names, slugs, or IDs. Default empty.', 'action-create-post-content' ) ),
 			'tax_input'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A simple or JSON formatted string containing existing taxonomy terms. Default empty. More details within the description.', 'action-update-post-content' ) ),
 			'wp_error'              => array( 'short_description' => WPWHPRO()->helpers->translate( 'Whether to return a WP_Error on failure. Posible values: "yes" or "no". Default value: "no".', 'action-create-post-content' ) ),
-			'do_action'             => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-create-post-content' ) )
+			'do_action'             => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-create-post-content' ) )
 		);
 
 		$returns = array(
@@ -1406,7 +1406,7 @@ $return_args = array(
 		$parameter = array(
 			'post_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of your specified post. This field is required.', 'action-delete-post-content' ) ),
 			'force_delete'  => array( 'short_description' => WPWHPRO()->helpers->translate( '(optional) Whether to bypass trash and force deletion (added in WordPress 2.9). Possible values: "yes" and "no". Default: "no". Please note that soft deletion just works for the "post" and "page" post type.', 'action-delete-post-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-delete-post-content' ) )
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-delete-post-content' ) )
 		);
 
 		$returns = array(
@@ -1439,7 +1439,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Delete a post via WP Webhooks Pro.', 'action-create-post-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Delete a post via WP Webhooks.', 'action-create-post-content' ),
 			'description'       => $description
 		);
 
@@ -1453,7 +1453,7 @@ $return_args = array(
 		$parameter = array(
 			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_Query notation. Please check the description for more information.', 'action-get_posts-content' ) ),
 			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: posts', 'action-get_posts-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_posts-content' ) )
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_posts-content' ) )
 		);
 
 		$returns = array(
@@ -1499,7 +1499,7 @@ $return_args = array(
 			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Select the values you want to return. Default is all. Please see the description for more details.', 'action-get_post-content' ) ),
 			'thumbnail_size'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Pass the size of the thumbnail of your given post id. Default is full. Please see the description for more details.', 'action-get_post-content' ) ),
 			'post_taxonomies'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Single value or comma separated list of the taxonomies you want to return. Default: post_tag. Please see the description for more details.', 'action-get_post-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks Pro fires this webhook. More infos are in the description.', 'action-get_post-content' ) )
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_post-content' ) )
 		);
 
 		$returns = array(

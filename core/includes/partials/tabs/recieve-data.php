@@ -8,7 +8,7 @@ $actions = WPWHPRO()->webhook->get_actions();
 
 ?>
 <?php add_ThickBox(); ?>
-<h2><?php echo WPWHPRO()->helpers->translate( 'Receive Data From WP Webhooks Pro', 'wpwhpro-page-actions' ); ?></h2>
+<h2><?php echo WPWHPRO()->helpers->translate( 'Receive Data From WP Webhooks', 'wpwhpro-page-actions' ); ?></h2>
 
 <div>
 <?php echo sprintf(WPWHPRO()->helpers->translate( 'Use the webhook URL down below to connect your external service with your site. This URL receives data from external endpoints and does certain actions on your WordPress site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-actions' ), 'https://ironikus.com/docs/?utm_source=wp-webhooks&utm_medium=notice-recieve-data-docs&utm_campaign=WP%20Webhooks'); ?>
