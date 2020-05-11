@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.4
-Stable Tag: 2.0.3
+Tested up to: 5.4.1
+Stable Tag: 2.0.4
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -100,6 +100,17 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.4: May 11, 2020 =
+* Feature: New webhook trigger that sends data on trashing a post (custom post types supported)
+* Feature: The tax_input argument for the create_post action now supports JSON formatted strings
+* Feature: Added taxnomies as well to post_delete trigger
+* Feature: Added full post thumbnail URL to the post_create and post_delete trigger
+* Feature: Extend demo data for post_create and post_delete trigger
+* Tweak: Added the already existing parameters to the parameter description of the post_delete trigger
+* Tweak: Optimized all webhook descriptions and texts
+* Tweak: Optimize layout for the webhook action argument list
+* Fix: Taxonomies haven't been sent over on post_create and post_update trigger
 
 = 2.0.3: March 17, 2020 =
 * Feature: EXTENSION MANAGEMENT - You can now manage all extensions for WP Webhooks and WP Webhooks Pro within our plugin via a new tab (Install, Activate, Deactivate, Upgrade, Delete)
