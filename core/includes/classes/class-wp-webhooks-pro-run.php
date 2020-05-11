@@ -3456,9 +3456,9 @@ $return_args = array(
 	    if( ! $update || ! empty( $temp_post_status_change ) ){
 
 			$tax_output = array();
-			$taxonomies = get_taxonomies( '','names' );
+			$taxonomies = get_taxonomies( array(),'names' );
 			if( ! empty( $taxonomies ) ){
-				$tax_terms = wp_get_post_terms( 553, $taxonomies );
+				$tax_terms = wp_get_post_terms( $post_id, $taxonomies );
 				foreach( $tax_terms as $sk => $sv ){
 
 					if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
@@ -3569,9 +3569,9 @@ $return_args = array(
 	    if( $update && ( empty( $temp_post_status_change ) && ! did_action( 'wpwhpro/webhooks/trigger_post_create_post_status' ) ) ){
 
 			$tax_output = array();
-			$taxonomies = get_taxonomies( '','names' );
+			$taxonomies = get_taxonomies( array(),'names' );
 			if( ! empty( $taxonomies ) ){
-				$tax_terms = wp_get_post_terms( 553, $taxonomies );
+				$tax_terms = wp_get_post_terms( $post_id, $taxonomies );
 				foreach( $tax_terms as $sk => $sv ){
 
 					if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
