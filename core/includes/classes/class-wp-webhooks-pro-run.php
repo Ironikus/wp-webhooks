@@ -3483,6 +3483,7 @@ $return_args = array(
 			    'post_id'   => $post_id,
 			    'post'      => $post,
 				'post_meta' => get_post_meta( $post_id ),
+				'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
 				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
@@ -3597,6 +3598,7 @@ $return_args = array(
 			    'post'      => $post,
 				'post_meta' => get_post_meta( $post_id ),
 				'post_before' => isset( $this->pre_action_values['update_post_post_before'] ) ? $this->pre_action_values['update_post_post_before'] : false,
+				'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
 				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
@@ -3643,6 +3645,7 @@ $return_args = array(
 
 		$this->pre_action_values['delete_post_post_data'][ $post_ID ] = get_post( $post_ID );
 		$this->pre_action_values['delete_post_post_meta'][ $post_ID ] = get_post_meta( $post_ID );
+		$this->pre_action_values['delete_post_post_thumbnail_url'][ $post_ID ] = get_the_post_thumbnail_url( $post_ID,'full' );
 
 		//add the taxonomy
 		$tax_output = array();
@@ -3687,6 +3690,7 @@ $return_args = array(
             'post_id' => $post_id,
             'post'      => $post,
 			'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
+			'post_thumbnail' => $this->pre_action_values['delete_post_post_thumbnail_url'][ $post_id ],
 			'taxonomies' => $this->pre_action_values['delete_post_post_taxonomies'][ $post_id ],
         );
 		$response_data = array();
