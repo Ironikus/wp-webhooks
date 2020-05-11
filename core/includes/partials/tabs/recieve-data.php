@@ -277,7 +277,7 @@ $actions = WPWHPRO()->webhook->get_actions();
 
                                                 <?php if( ! empty( $action['returns_code'] ) ) : ?>
                                                     <p>
-                                                        <?php echo WPWHPRO()->helpers->translate( 'Here is an example of all the available default fields. The fields may vary based on custom extensions or third party plugins.', 'wpwhpro-page-actions'); ?>
+                                                    <?php echo WPWHPRO()->helpers->translate( 'Here is an example of all the available default fields. The fields may vary based on custom extensions, third party plugins or different values.', 'wpwhpro-page-actions'); ?>
                                                         <?php echo $action['returns_code']; ?>
                                                     </p>
                                                 <?php endif; ?>
