@@ -1357,7 +1357,7 @@ $return_args = array(
 			'guid'                  => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Global Unique ID for referencing the post. Default empty.', 'action-create-post-content' ) ),
 			'post_category'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of category names, slugs, or IDs. Defaults to value of the \'default_category\' option. Example: cat_1,cat_2,cat_3', 'action-create-post-content' ) ),
 			'tags_input'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of tag names, slugs, or IDs. Default empty.', 'action-create-post-content' ) ),
-			'tax_input'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma, semicolon and double point separated list of taxonomy terms keyed by their taxonomy name. Default empty. More details within the description.', 'action-create-post-content' ) ),
+			'tax_input'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A simple or JSON formatted string containing existing taxonomy terms. Default empty. More details within the description.', 'action-update-post-content' ) ),
 			'wp_error'              => array( 'short_description' => WPWHPRO()->helpers->translate( 'Whether to return a WP_Error on failure. Posible values: "yes" or "no". Default value: "no".', 'action-create-post-content' ) ),
 			'do_action'             => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-create-post-content' ) )
 		);
@@ -2247,50 +2247,105 @@ $return_args = array(
 					'delete' => array(),
 					'create' => array(),
 				);
-				$post_tax_data = explode( ';', trim( $tax_input, ';' ) );
-				foreach( $post_tax_data as $single_meta ){
 
-				    //Validate special values
-                    if( $single_meta == 'ironikus-append' ){
-                        $tax_append = true;
-                        continue;
-                    }
-
-                    if( $single_meta == 'ironikus-remove-all' ){
-	                    $remove_all = true;
-                        continue;
-                    }
-
-					$single_meta_data   = explode( ',', $single_meta );
-					$meta_key           = sanitize_text_field( $single_meta_data[0] );
-					$meta_values        = explode( ':', $single_meta_data[1] );
-
-					if( ! empty( $meta_key ) ){
-
-						if( ! is_array( $meta_values ) ){
-							$meta_values = array( $meta_values );
+				if( WPWHPRO()->helpers->is_json( $tax_input ) ){
+					$post_tax_data = json_decode( $tax_input, true );
+					foreach( $post_tax_data as $taxkey => $single_meta ){
+	
+						//Validate special values
+						if( $taxkey == 'wpwhtype' && $single_meta == 'ironikus-append' ){
+							$tax_append = true;
+							continue;
 						}
-
-						//separate for deletion and for creation
-						foreach( $meta_values as $svalue ){
-							if( strpos( $svalue, '-ironikus-delete' ) !== FALSE ){
-
-								if( ! isset( $tax_data['delete'][ $meta_key ] ) ){
-									$tax_data['delete'][ $meta_key ] = array();
-								}
-
-								//Replace deletion value to correct original value
-								$tax_data['delete'][ $meta_key ][] = str_replace( '-ironikus-delete', '', $svalue );
-							} else {
-
-								if( ! isset( $tax_data['create'][ $meta_key ] ) ){
-									$tax_data['create'][ $meta_key ] = array();
-								}
-
-								$tax_data['create'][ $meta_key ][] = $svalue;
+	
+						if( $taxkey == 'wpwhtype' && $single_meta == 'ironikus-remove-all' ){
+							$remove_all = true;
+							continue;
+						}
+	
+						$meta_key           = sanitize_text_field( $taxkey );
+						$meta_values        = $single_meta;
+	
+						if( ! empty( $meta_key ) ){
+	
+							if( ! is_array( $meta_values ) ){
+								$meta_values = array( $meta_values );
 							}
+	
+							//separate for deletion and for creation
+							foreach( $meta_values as $svalue ){
+								if( strpos( $svalue, '-ironikus-delete' ) !== FALSE ){
+	
+									if( ! isset( $tax_data['delete'][ $meta_key ] ) ){
+										$tax_data['delete'][ $meta_key ] = array();
+									}
+	
+									//Replace deletion value to correct original value
+									$tax_data['delete'][ $meta_key ][] = str_replace( '-ironikus-delete', '', $svalue );
+								} else {
+	
+									if( ! isset( $tax_data['create'][ $meta_key ] ) ){
+										$tax_data['create'][ $meta_key ] = array();
+									}
+	
+									$tax_data['create'][ $meta_key ][] = $svalue;
+								}
+							}
+	
 						}
+					}
+				} else {
+					$post_tax_data = explode( ';', trim( $tax_input, ';' ) );
+					foreach( $post_tax_data as $single_meta ){
+	
+						//Validate special values
+						if( $single_meta == 'ironikus-append' ){
+							$tax_append = true;
+							continue;
+						}
+	
+						if( $single_meta == 'ironikus-remove-all' ){
+							$remove_all = true;
+							continue;
+						}
+	
+						$single_meta_data   = explode( ',', $single_meta );
+						$meta_key           = sanitize_text_field( $single_meta_data[0] );
+						$meta_values        = explode( ':', $single_meta_data[1] );
+	
+						if( ! empty( $meta_key ) ){
+	
+							if( ! is_array( $meta_values ) ){
+								$meta_values = array( $meta_values );
+							}
+	
+							//separate for deletion and for creation
+							foreach( $meta_values as $svalue ){
+								if( strpos( $svalue, '-ironikus-delete' ) !== FALSE ){
+	
+									if( ! isset( $tax_data['delete'][ $meta_key ] ) ){
+										$tax_data['delete'][ $meta_key ] = array();
+									}
+	
+									//Replace deletion value to correct original value
+									$tax_data['delete'][ $meta_key ][] = str_replace( '-ironikus-delete', '', $svalue );
+								} else {
+	
+									if( ! isset( $tax_data['create'][ $meta_key ] ) ){
+										$tax_data['create'][ $meta_key ] = array();
+									}
+	
+									$tax_data['create'][ $meta_key ][] = $svalue;
+								}
+							}
+	
+						}
+					}
+				}
 
+				if( ! empty( $tax_data['delete'] ) ){
+					foreach( $tax_data['delete'] as $tax_key => $tax_values ){
+						wp_remove_object_terms( $post_id, $tax_values, $tax_key );
 					}
 				}
 
