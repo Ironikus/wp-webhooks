@@ -2706,7 +2706,7 @@ $return_args = array(
 			'name'              => WPWHPRO()->helpers->translate( 'Send Data On Register', 'trigger-create-user-content' ),
 			'parameter'         => $parameter,
 			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_user_create( array(), '', '' ) ),
-			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registered.', 'trigger-create-user-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registers.', 'trigger-create-user-content' ),
 			'description'       => $description,
             'callback'          => 'test_user_create'
 		);

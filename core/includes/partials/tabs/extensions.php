@@ -20,7 +20,7 @@ if( isset( $_POST['wpwh_extension_permission'] ) ){
 <h2><?php echo WPWHPRO()->helpers->translate( 'Extensions for', 'wpwhpro-page-logs' ) . ' ' . $this->page_title; ?> </h2>
 
 <div>
-	<?php echo sprintf( WPWHPRO()->helpers->translate( 'This page contains all approved extensions for <strong>%1$s</strong>. You will be able to fully manage each of the extension right within this plugin. In case you want to list your very own plugin here, feel free to <a title="Go to our contact form" target="_blank" href="%2$s">reach out to us</a>.', 'wpwhpro-page-logs' ), $this->page_title, 'https://ironikus.com/contact/' ); ?>
+<?php echo sprintf( WPWHPRO()->helpers->translate( 'This page contains all approved extensions for <strong>%1$s</strong>. You will be able to fully manage each of the extensions right within this plugin. In case you want to list your very own plugin here, feel free to <a title="Go to our contact form" target="_blank" href="%2$s">reach out to us</a>.', 'wpwhpro-page-logs' ), $this->page_title, 'https://ironikus.com/contact/' ); ?>
 </div>
 
 <?php if( empty( $extension_permission ) ) : ?>

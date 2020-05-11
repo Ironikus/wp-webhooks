@@ -11,7 +11,7 @@ $actions = WPWHPRO()->webhook->get_actions();
 <h2><?php echo WPWHPRO()->helpers->translate( 'Receive Data From WP Webhooks Pro', 'wpwhpro-page-actions' ); ?></h2>
 
 <div>
-	<?php echo sprintf(WPWHPRO()->helpers->translate( 'Use the webhook url down below to connect your specified with your site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-actions' ), 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=notice-recieve-data-docs&utm_campaign=WP%20Webhooks%20Pro'); ?>
+<?php echo sprintf(WPWHPRO()->helpers->translate( 'Use the webhook URL down below to connect your external service with your site. This URL receives data from external endpoints and does certain actions on your WordPress site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-actions' ), 'https://ironikus.com/docs/?utm_source=wp-webhooks&utm_medium=notice-recieve-data-docs&utm_campaign=WP%20Webhooks'); ?>
 </div>
 
 <table class="table ironikus-webhook-table ironikus-webhook-action-table">
@@ -230,7 +230,7 @@ $actions = WPWHPRO()->webhook->get_actions();
                                                     <div class="ironikus-attribute-wrapper">
                                                         <strong><?php echo 'action'; echo '<span style="color:red;">*</span>' ?></strong>
                                                         <br>
-                                                        <small><?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to: ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong></small>
+                                                        <small><?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong></small>
                                                     </div>
                                                 </li>
                                                 <?php foreach( $action['parameter'] as $param => $param_data ) : ?>
@@ -313,7 +313,7 @@ $actions = WPWHPRO()->webhook->get_actions();
                                     <div id="collapseactionTestingSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionTestingSub-<?php echo $identkey; ?>" data-parent="#actionTesting-<?php echo $identkey; ?>">
                                         <div class="card-body">
                                             <p>
-                                                <?php echo WPWHPRO()->helpers->translate( 'Here you can test the specified webhook. Please note, that this test is able to modify the data of your website (Depending on what action you test). Also you will see the response as any webservice recieves it.', 'wpwhpro-page-actions'); ?>
+                                            <?php echo WPWHPRO()->helpers->translate( 'Here you can test the specified webhook. Please note, that this test can modify the data of your website (Depending on what action you test). Also, you will see the response as any web service receives it.', 'wpwhpro-page-actions'); ?>
                                             </p>
                                             <p>
                                                 <?php echo WPWHPRO()->helpers->translate( 'Please choose the webhook you are going to run the test with. Simply select the one you want to use down below.', 'wpwhpro-page-actions'); ?>
@@ -343,7 +343,7 @@ $actions = WPWHPRO()->webhook->get_actions();
                                                         </td>
                                                         <td>
                                                             <p class="description">
-                                                                <?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to: ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong>
+                                                            <?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong>
                                                             </p>
                                                         </td>
                                                     </tr>
