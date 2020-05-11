@@ -8053,8 +8053,22 @@ input:checked + .slider:before {
       flex-wrap: wrap; }
   .wpwh-action-arguments .card-body ul li {
     width: 50%;
-    padding: 10px;
-    max-width: 250px; }
+    padding: 0;
+    max-width: 250px;
+    border: 1px solid #f1f1f1;
+    margin: 5px;
+    border-radius: 5px; }
+    .wpwh-action-arguments .card-body ul li .ironikus-attribute-wrapper-heading {
+      background: #e6e6e6;
+      width: 100%;
+      padding: 2px 10px; }
+      .wpwh-action-arguments .card-body ul li .ironikus-attribute-wrapper-heading.required {
+        background: #ffc16a; }
+        .wpwh-action-arguments .card-body ul li .ironikus-attribute-wrapper-heading.required span {
+          color: #c57e19;
+          float: right; }
+    .wpwh-action-arguments .card-body ul li .ironikus-attribute-wrapper-content {
+      padding: 10px; }
 
 .wpwhpro-webhook-actions-webhook-select {
   min-width: 200px;
@@ -8333,6 +8347,9 @@ input:checked + .slider:before {
 
 .wpwhpro-authentication-table select {
   font-size: 1rem; }
+
+.wpwhpro-authentication-table .input-group {
+  min-width: 300px; }
 
 .wpwh-authentication-inline-actions {
   display: -ms-flexbox;

@@ -228,18 +228,25 @@ $actions = WPWHPRO()->webhook->get_actions();
                                             <ul>
                                                 <li>
                                                     <div class="ironikus-attribute-wrapper">
-                                                        <strong><?php echo 'action'; echo '<span style="color:red;">*</span>' ?></strong>
-                                                        <br>
-                                                        <small><?php echo WPWHPRO()->helpers->translate( 'Always required. This argument determines which webhook you want to target. For this webhook action, please set it to ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong></small>
+                                                        <div class="ironikus-attribute-wrapper-heading required">
+                                                            <strong><?php echo 'action'; echo '<span>' . WPWHPRO()->helpers->translate( 'Required', 'wpwhpro-page-actions') . '</span>' ?></strong>
+                                                        </div>
+                                                        <div class="ironikus-attribute-wrapper-content">
+                                                            <small><?php echo WPWHPRO()->helpers->translate( 'Always required. Determines which webhook action you want to target. (Alternatively, set this value as a query parameter within the URL) For this webhook action, please set it to ', 'wpwhpro-page-actions'); ?><strong><?php echo $action['action']; ?></strong></small>
+                                                        </div>
                                                     </div>
                                                 </li>
                                                 <?php foreach( $action['parameter'] as $param => $param_data ) : ?>
                                                     <li>
                                                         <div class="ironikus-attribute-wrapper">
-                                                            <strong><?php echo $param; echo ( ! empty( $param_data['required'] ) ) ? '<span style="color:red;">*</span>' : '' ?></strong>
+                                                            <div class="ironikus-attribute-wrapper-heading <?php echo ( ! empty( $param_data['required'] ) ) ? 'required' : '' ?>">
+                                                                <strong><?php echo $param; echo ( ! empty( $param_data['required'] ) ) ? '<span>' . WPWHPRO()->helpers->translate( 'Required', 'wpwhpro-page-actions') . '</span>' : '' ?></strong>
+                                                            </div>
+                                                            
                                                             <?php if( isset( $param_data['short_description'] ) ) : ?>
-                                                                <br>
-                                                                <small><?php echo $param_data['short_description']; ?></small>
+                                                                <div class="ironikus-attribute-wrapper-content">
+                                                                    <small><?php echo $param_data['short_description']; ?></small>
+                                                                </div>  
                                                             <?php endif; ?>
                                                         </div>
                                                     </li>
