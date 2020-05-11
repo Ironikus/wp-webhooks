@@ -3643,6 +3643,32 @@ $return_args = array(
 
 		$this->pre_action_values['delete_post_post_data'][ $post_ID ] = get_post( $post_ID );
 		$this->pre_action_values['delete_post_post_meta'][ $post_ID ] = get_post_meta( $post_ID );
+
+		//add the taxonomy
+		$tax_output = array();
+		$taxonomies = get_taxonomies( array(),'names' );
+		if( ! empty( $taxonomies ) ){
+			$tax_terms = wp_get_post_terms( $post_ID, $taxonomies );
+			foreach( $tax_terms as $sk => $sv ){
+
+				if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
+					continue;
+				}
+				
+				if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
+					$tax_output[ $sv->taxonomy ] = array();
+				}
+				
+				if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
+					$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
+				}
+
+				$tax_output[ $sv->taxonomy ][ $sv->slug ] = $sv;
+
+			}
+		}
+
+		$this->pre_action_values['delete_post_post_taxonomies'][ $post_ID ] = $tax_output;
 	}
 
 	/*
@@ -3660,7 +3686,8 @@ $return_args = array(
         $data_array = array(
             'post_id' => $post_id,
             'post'      => $post,
-            'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
+			'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
+			'taxonomies' => $this->pre_action_values['delete_post_post_taxonomies'][ $post_id ],
         );
 		$response_data = array();
 
