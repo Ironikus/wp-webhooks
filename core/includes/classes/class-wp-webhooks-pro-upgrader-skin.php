@@ -31,7 +31,7 @@ class WP_Webhooks_Upgrader_Skin extends WP_Upgrader_Skin {
   public function header() { }
   public function footer() { }
 
-  public function feedback($string) {
+  public function feedback( $string, $args = array() ) {
     if ( isset( $this->upgrader->strings[$string] ) )
       $string = $this->upgrader->strings[$string];
 
