@@ -3157,6 +3157,8 @@ $return_args = array(
 			'post_id'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the created post.', 'trigger-post-create' ) ),
 			'post'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'The whole post object with all of its values', 'trigger-post-create' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'An array of the whole post meta data.', 'trigger-post-create' ) ),
+			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-create' ) ),
+			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-create' ) ),
 		);
 
 		ob_start();
@@ -3227,6 +3229,8 @@ $return_args = array(
 			'post_id'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the updated post.', 'trigger-post-update' ) ),
 			'post'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'The whole post object with all of its values', 'trigger-post-update' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'An array of the whole post meta data.', 'trigger-post-update' ) ),
+			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-update' ) ),
+			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-update' ) ),
 		);
 
 		ob_start();
@@ -3287,6 +3291,8 @@ $return_args = array(
 			'post_id' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the deleted post.', 'trigger-post-delete' ) ),
 			'post' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Thefull post data from get_post().', 'trigger-post-delete' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full post meta of the post.', 'trigger-post-delete' ) ),
+			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-delete' ) ),
+			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-delete' ) ),
 		);
 
 		ob_start();
@@ -3353,6 +3359,8 @@ $return_args = array(
 			'post_id' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the trashed post.', 'trigger-post-trash' ) ),
 			'post' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Thefull post data from get_post().', 'trigger-post-trash' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full post meta of the post.', 'trigger-post-trash' ) ),
+			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-trash' ) ),
+			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-trash' ) ),
 		);
 
 		ob_start();
@@ -3785,7 +3793,39 @@ $return_args = array(
 				        array (
 					        0 => 'a:0:{}',
 				        ),
-		        ),
+				),
+				'post_thumbnail' => 'https://mydomain.com/images/image.jpg',
+				'taxonomies' => array (
+					'category' => 
+					array (
+					  'uncategorized' => 
+					  array (
+						'term_id' => 1,
+						'name' => 'Uncategorized',
+						'slug' => 'uncategorized',
+						'term_group' => 0,
+						'term_taxonomy_id' => 1,
+						'taxonomy' => 'category',
+						'description' => '',
+						'parent' => 10,
+						'count' => 7,
+						'filter' => 'raw',
+					  ),
+					  'secondcat' => 
+					  array (
+						'term_id' => 2,
+						'name' => 'Second Cat',
+						'slug' => 'secondcat',
+						'term_group' => 0,
+						'term_taxonomy_id' => 2,
+						'taxonomy' => 'category',
+						'description' => '',
+						'parent' => 1,
+						'count' => 1,
+						'filter' => 'raw',
+					  ),
+					),
+				),
         );
 
 		return $data;
@@ -3801,12 +3841,38 @@ $return_args = array(
 	}
 	public function ironikus_trigger_post_trash( $post_id ){
 
-        $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_trash' );
+		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_trash' );
+		
+		$tax_output = array();
+		$taxonomies = get_taxonomies( array(),'names' );
+		if( ! empty( $taxonomies ) ){
+			$tax_terms = wp_get_post_terms( $post_id, $taxonomies );
+			foreach( $tax_terms as $sk => $sv ){
+
+				if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
+					continue;
+				}
+				
+				if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
+					$tax_output[ $sv->taxonomy ] = array();
+				}
+				
+				if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
+					$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
+				}
+
+				$tax_output[ $sv->taxonomy ][ $sv->slug ] = $sv;
+
+			}
+		}
+
 		$post = get_post( $post_id );
         $data_array = array(
             'post_id' => $post_id,
             'post'      => $post,
             'post_meta' => get_post_meta( $post_id ),
+			'post_thumbnail' => get_the_post_thumbnail_url( $post_id, 'full' ),
+			'taxonomies' => $tax_output
         );
 		$response_data = array();
 
@@ -3895,6 +3961,38 @@ $return_args = array(
 						0 => 'a:0:{}',
 					),
 			),
+			'post_thumbnail' => 'https://mydomain.com/images/image.jpg',
+				'taxonomies' => array (
+					'category' => 
+					array (
+					  'uncategorized' => 
+					  array (
+						'term_id' => 1,
+						'name' => 'Uncategorized',
+						'slug' => 'uncategorized',
+						'term_group' => 0,
+						'term_taxonomy_id' => 1,
+						'taxonomy' => 'category',
+						'description' => '',
+						'parent' => 10,
+						'count' => 7,
+						'filter' => 'raw',
+					  ),
+					  'secondcat' => 
+					  array (
+						'term_id' => 2,
+						'name' => 'Second Cat',
+						'slug' => 'secondcat',
+						'term_group' => 0,
+						'term_taxonomy_id' => 2,
+						'taxonomy' => 'category',
+						'description' => '',
+						'parent' => 1,
+						'count' => 1,
+						'filter' => 'raw',
+					  ),
+					),
+				),
 		);
 	}
 
