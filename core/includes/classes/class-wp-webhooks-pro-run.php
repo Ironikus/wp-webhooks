@@ -2618,6 +2618,7 @@ $return_args = array(
 		$triggers[] = $this->trigger_post_create();
 		$triggers[] = $this->trigger_post_update();
 		$triggers[] = $this->trigger_post_delete();
+		$triggers[] = $this->trigger_post_trash();
 		$triggers[] = $this->trigger_custom_action_content();
 
 		return $triggers;
@@ -2673,6 +2674,11 @@ $return_args = array(
 			add_action( 'before_delete_post', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
 			add_action( 'delete_attachment', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
 			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete_init' ), 10, 1 );
+			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
+		}
+		
+		if( isset( $available_triggers['post_trash'] ) ){
+			add_action( 'trashed_post', array( $this, 'ironikus_trigger_post_trash_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
         }
 
@@ -3279,6 +3285,8 @@ $return_args = array(
 
 		$parameter = array(
 			'post_id' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the deleted post.', 'trigger-post-delete' ) ),
+			'post' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Thefull post data from get_post().', 'trigger-post-delete' ) ),
+			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full post meta of the post.', 'trigger-post-delete' ) ),
 		);
 
 		ob_start();
@@ -3313,6 +3321,73 @@ $return_args = array(
 		);
 
 	}
+
+	/*
+	 * Register the post trash trigger as an element
+	 *
+	 * @since 2.0.4
+	 */
+	public function trigger_post_trash(){
+
+		$validated_post_types = array();
+		foreach( get_post_types() as $name ){
+
+			$singular_name = $name;
+
+			//Media is by default not supported by WordPress
+			if( $name === 'attachment' ){
+				continue;
+			}
+
+			$post_type_obj = get_post_type_object( $singular_name );
+			if( ! empty( $post_type_obj->labels->singular_name ) ){
+				$singular_name = $post_type_obj->labels->singular_name;
+			} elseif( ! empty( $post_type_obj->labels->name ) ){
+				$singular_name = $post_type_obj->labels->name;
+			}
+
+			$validated_post_types[ $name ] = $singular_name;
+		}
+
+		$parameter = array(
+			'post_id' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the trashed post.', 'trigger-post-trash' ) ),
+			'post' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Thefull post data from get_post().', 'trigger-post-trash' ) ),
+			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full post meta of the post.', 'trigger-post-trash' ) ),
+		);
+
+		ob_start();
+			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_trash.php' );
+		$description = ob_get_clean();
+
+		$settings = array(
+			'load_default_settings' => true,
+			'data' => array(
+				'wpwhpro_post_trash_trigger_on_post_type' => array(
+					'id'          => 'wpwhpro_post_trash_trigger_on_post_type',
+					'type'        => 'select',
+					'multiple'    => true,
+					'choices'      => $validated_post_types,
+					'label'       => WPWHPRO()->helpers->translate('Trigger on selected post types', 'wpwhpro-fields-trigger-on-post-type'),
+					'placeholder' => '',
+					'required'    => false,
+					'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+				),
+			)
+		);
+
+		return array(
+			'trigger'           => 'post_trash',
+			'name'              => WPWHPRO()->helpers->translate( 'Send Data On Post Trash', 'trigger-post-trash' ),
+			'parameter'         => $parameter,
+			'settings'          => $settings,
+			'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_post_delete( array(), '', '' ) ),
+			'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after a post was trashed.', 'trigger-post-trash' ),
+			'description'       => $description,
+			'callback'          => 'test_post_delete'
+		);
+
+	}
+
 
 	/*
 	 * Register the post delete trigger as an element
@@ -3686,13 +3761,110 @@ $return_args = array(
 	}
 
 	/*
+	 * Register the post trash trigger logic
+	 *
+	 * @since 2.0.4
+	 */
+	public function ironikus_trigger_post_trash_init(){
+		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_post_trash' ), func_get_args() );
+	}
+	public function ironikus_trigger_post_trash( $post_id ){
+
+        $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_trash' );
+		$post = get_post( $post_id );
+        $data_array = array(
+            'post_id' => $post_id,
+            'post'      => $post,
+            'post_meta' => get_post_meta( $post_id ),
+        );
+		$response_data = array();
+
+        foreach( $webhooks as $webhook ){
+
+	        $is_valid = true;
+
+	        if( isset( $webhook['settings'] ) ){
+		        foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+			        if( $settings_name === 'wpwhpro_post_trash_trigger_on_post_type' && ! empty( $settings_data ) ){
+				        if( ! in_array( $post->post_type, $settings_data ) ){
+					        $is_valid = false;
+				        }
+			        }
+
+		        }
+	        }
+
+	        if( $is_valid ) {
+		        $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+	        }
+        }
+
+        do_action( 'wpwhpro/webhooks/trigger_post_trash', $post_id, $response_data );
+	}
+
+	/*
 	 * Register the demo post delete trigger callback
 	 *
 	 * @since 1.2
 	 */
 	public function ironikus_send_demo_post_delete( $data, $webhook, $webhook_group ) {
 
-		return array( 'post_id' => 12345 ); // the deleted demo post id
+		return array( 
+			'post_id' => 12345,
+			'post' => array (
+				'ID' => 1,
+				'post_author' => '1',
+				'post_date' => '2018-11-06 14:19:18',
+				'post_date_gmt' => '2018-11-06 14:19:18',
+				'post_content' => 'Welcome to WordPress. This is your first post. Edit or delete it, then start writing!',
+				'post_title' => 'Hello world!',
+				'post_excerpt' => '',
+				'post_status' => 'publish',
+				'comment_status' => 'open',
+				'ping_status' => 'open',
+				'post_password' => '',
+				'post_name' => 'hello-world',
+				'to_ping' => '',
+				'pinged' => '',
+				'post_modified' => '2018-11-06 14:19:18',
+				'post_modified_gmt' => '2018-11-06 14:19:18',
+				'post_content_filtered' => '',
+				'post_parent' => 0,
+				'guid' => 'https://mydomain.dev/?p=1',
+				'menu_order' => 0,
+				'post_type' => 'post',
+				'post_mime_type' => '',
+				'comment_count' => '1',
+				'filter' => 'raw',
+			),
+			'post_meta' => array (
+				'key_0' =>
+					array (
+						0 => '0.00',
+					),
+				'key_1' =>
+					array (
+						0 => '0',
+					),
+				'key_2' =>
+					array (
+						0 => '1',
+					),
+				'key_3' =>
+					array (
+						0 => '148724528:1',
+					),
+				'key_4' =>
+					array (
+						0 => '10.00',
+					),
+				'key_5' =>
+					array (
+						0 => 'a:0:{}',
+					),
+			),
+		);
 	}
 
 	/*
