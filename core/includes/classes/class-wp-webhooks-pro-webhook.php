@@ -247,7 +247,7 @@ class WP_Webhooks_Pro_Webhook {
 		$group = '';
 		switch( $type ){
 			case 'action':
-				$data['api_key'] = strtolower( wp_generate_password( 64, false ) );
+				$data['api_key'] = $this->generate_api_key();
 				break;
 			case 'trigger':
 				$data['webhook_url'] = $args['webhook_url'];
@@ -339,12 +339,23 @@ class WP_Webhooks_Pro_Webhook {
 		$default_wehook = apply_filters( 'wpwhpro/admin/webhooks/default_webhook_name', 'main_' . rand( 1000, 9999 ) );
 
 		$data = array(
-			'api_key'       => strtolower( wp_generate_password( 64, false ) ),
+			'api_key'       => $this->generate_api_key(),
 			'permission'    => WPWHPRO()->settings->get_admin_cap('default_webhook'),
 			'date_created'  => date( 'Y-m-d H:i:s' )
 		);
 		$this->set_hooks( $default_wehook, 'action', $data );
 
+	}
+
+	public function generate_api_key( $length = 64 ){
+
+		if( ! is_int( $length ) ){
+			$length = 64; //Fallack on non-integers
+		}
+
+		$password = strtolower( wp_generate_password( $length, false ) );
+
+		return apply_filters( 'wpwhpro/admin/webhooks/generate_api_key', $password, $length );
 	}
 
 	/**
