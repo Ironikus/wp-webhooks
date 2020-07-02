@@ -8163,6 +8163,12 @@ input:checked + .slider:before {
       padding-bottom: 20px;
       border-bottom: 1px solid #e6e6e6;
       margin-bottom: 20px; }
+  .wpwhpro-log-view #wpwhpro-log-content .card {
+    padding: 0;
+    max-width: 100%; }
+  .wpwhpro-log-view .wpwhlog-visually-hidden {
+    display: none;
+    visibility: hidden; }
 
 .wpwhpro-data-mapping-template-wrapper {
   display: -ms-flexbox;

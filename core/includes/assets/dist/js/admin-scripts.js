@@ -4606,7 +4606,7 @@
                     if( $webhook['success'] != 'false' && $webhook['success'] != false ){
                         $( $this ).css( { 'background': '#00a73f' } );
 
-                        var $webhook_html = '<tr id="ironikus-webhook-id-' + $webhook['webhook'] + '"><td>' + $webhook['webhook'] + '</td><td>';
+                        var $webhook_html = '<tr id="ironikus-webhook-id-' + webhook_id + '-' + $webhook['webhook'] + '"><td>' + $webhook['webhook'] + '</td><td>';
                         $webhook_html += '<input class="ironikus-webhook-input" type="text" name="ironikus_wp_webhooks_pro_webhook_url" value="' + $webhook['webhook_url'] + '" readonly /><br>';
                         $webhook_html += '</td><td><div class="ironikus-element-actions">';
                         $webhook_html += '<span class="ironikus-delete" ironikus-delete="' + $webhook['webhook'] + '" ironikus-group="' + $webhook['webhook_group'] + '" >Delete</span><br>';
@@ -4763,7 +4763,7 @@
                     var $webhook_response = $.parseJSON( $response );
 
                     if( $webhook_response['success'] != 'false' ){
-                        $( '#ironikus-webhook-id-' + $webhook ).remove();
+                        $( '#ironikus-webhook-id-' + $webhook_group + '-' + $webhook ).remove();
                     }
                 },
                 error: function( errorThrown ){
@@ -4963,7 +4963,7 @@
         var $this = this;
         var $webhook = $( $this ).attr( 'webhook-id' );
         var $webhook_group = $( $this ).attr( 'webhook-group' );
-        var $datastring = $("#ironikus-webhook-form-"+$webhook).serialize();
+        var $datastring = $("#ironikus-webhook-form-"+$webhook_group+'-'+$webhook).serialize();
 
         //Prevent from clicking again
         if( $( $this ).children( '.ironikus-loader' ).hasClass( 'active' ) ){
@@ -5694,11 +5694,15 @@
      $( document ).on( "click", ".log-element", function() {
         var $this = this;
         var $log_id = $( $this ).attr( 'wpwhpro-log-id' );
-        var $log_content = $( "#wpwhpro-log-content-"+$log_id ).html();
-        var $log_json = $( "#wpwhpro-log-json-"+$log_id ).text();
 
+        var $log_json = $( "#wpwhpro-log-json-"+$log_id ).text();
+        $('#wpwhpro-log-json-output-' + $log_id).jsonBrowse( $.parseJSON( $log_json ) );
+
+        var $log_json = $( "#wpwhpro-log-json-endpoint-"+$log_id ).text();
+        $('#wpwhpro-log-json-endpoint-output-' + $log_id).jsonBrowse( $.parseJSON( $log_json ) );
+
+        var $log_content = $( "#wpwhpro-log-content-"+$log_id ).html();
         $( "#wpwhpro-log-content" ).html( $log_content );
-        $('#wpwhpro-log-json').jsonBrowse( $.parseJSON( $log_json ) );
 
      });
 
