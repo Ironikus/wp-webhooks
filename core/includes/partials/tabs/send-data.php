@@ -81,7 +81,7 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 								<?php $all_triggers = WPWHPRO()->webhook->get_hooks( 'trigger', $trigger['trigger'] ); ?>
 								<?php foreach( $all_triggers as $webhook => $webhook_data ) : ?>
 									<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
-									<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook ) ) ) { continue; } ?>
+									<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook, $trigger['trigger'] ) ) ) { continue; } ?>
 									<?php
 										$status = 'active';
 										$status_name = 'Deactivate';
@@ -90,7 +90,7 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 											$status_name = 'Activate';
 										}
 									?>
-									<tr id="ironikus-webhook-id-<?php echo $webhook; ?>">
+									<tr id="ironikus-webhook-id-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
 										<td>
 											<?php echo $webhook; ?>
 										</td>
@@ -101,14 +101,14 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 											<div class="ironikus-element-actions">
 												<span class="ironikus-delete" ironikus-delete="<?php echo $webhook; ?>" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-triggers' ); ?></span><br>
 												<span class="ironikus-status-action <?php echo $status; ?>" ironikus-webhook-status="<?php echo $status; ?>" ironikus-webhook-group="<?php echo $trigger['trigger']; ?>" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-actions' ); ?></span><br>
-												<a class="thickbox ironikus-settings-wrapper" title="<?php echo $trigger_name; ?>" href="#TB_inline?height=330&width=800&inlineId=wpwhpro-trigger-settings-<?php echo $webhook; ?>">
+												<a class="thickbox ironikus-settings-wrapper" title="<?php echo $trigger_name; ?>" href="#TB_inline?height=330&width=800&inlineId=wpwhpro-trigger-settings-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
 													<span class="ironikus-settings" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-triggers' ); ?></span>
 												</a>
 												<?php if( ! empty( $trigger['callback'] ) ) : ?>
 													<br><span class="ironikus-send-demo" ironikus-demo-data-callback="<?php echo $trigger['callback']; ?>" ironikus-webhook="<?php echo $webhook; ?>" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo WPWHPRO()->helpers->translate( 'Send demo', 'wpwhpro-page-triggers' ); ?></span>
 												<?php endif; ?>
 											</div>
-											<div id="wpwhpro-trigger-settings-<?php echo $webhook; ?>" style="display:none;">
+											<div id="wpwhpro-trigger-settings-<?php echo $trigger['trigger'] . '-' . $webhook; ?>" style="display:none;">
 												<div class="ironikus-tb-webhook-wrapper">
 													<div class="ironikus-tb-webhook-url">
 														<strong>Webhook url:</strong> <?php echo $webhook_data['webhook_url']; ?>
@@ -117,7 +117,7 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 													</div>
 													<div class="ironikus-tb-webhook-settings">
 														<?php if( $settings ) : ?>
-															<form id="ironikus-webhook-form-<?php echo $webhook; ?>">
+															<form id="ironikus-webhook-form-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
 																<table class="table wpwhpro-settings-table form-table">
 																	<tbody>
 
@@ -146,14 +146,14 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 																		?>
 																		<tr valign="top">
 																			<td class="tb-settings-input">
-																				<label for="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $webhook; ?>">
+																			<label for="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
 																					<strong><?php echo $setting['label']; ?></strong>
 																				</label>
 																				<?php if( in_array( $setting['type'], array( 'text' ) ) ) : ?>
-																				<input id="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $webhook; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+																					<input id="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $trigger['trigger'] . '-' . $webhook; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
 																				<?php elseif( in_array( $setting['type'], array( 'checkbox' ) ) ) : ?>
 																					<label class="switch ">
-																						<input id="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $webhook; ?>" class="default primary" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+																					<input id="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $trigger['trigger'] . '-' . $webhook; ?>" class="default primary" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
 																						<span class="slider round"></span>
 																					</label>
 																				<?php elseif( $setting['type'] === 'select' && isset( $setting['choices'] ) ) : ?>
@@ -196,7 +196,7 @@ $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 																	</tbody>
 																</table>
 																<div class="ironikus-single-webhook-trigger-handler">
-																	<p class="btn btn-primary h30 ironikus-submit-settings-form" id="<?php echo $webhook; ?>" webhook-group="<?php echo $trigger['trigger']; ?>" webhook-id="<?php echo $webhook; ?>" >
+																<p class="btn btn-primary h30 ironikus-submit-settings-form" id="<?php echo $trigger['trigger'] . '-' . $webhook; ?>" webhook-group="<?php echo $trigger['trigger']; ?>" webhook-id="<?php echo $webhook; ?>" >
 																		<span class="ironikus-save-text active"><?php echo WPWHPRO()->helpers->translate( 'Save Settings', 'wpwhpro-page-triggers' ); ?></span>
 																		<img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
 																	</p>
