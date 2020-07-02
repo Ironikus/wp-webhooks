@@ -2434,7 +2434,7 @@ $return_args = array(
 					$return_args['msg']     = WPWHPRO()->helpers->translate("Post successfully deleted.", 'action-delete-post-success' );
 					$return_args['success'] = true;
 				} else {
-					$return_args['msg']  = WPWHPRO()->helpers->translate("Error deleting post. Please check wp_delete_post( ' . $post->ID . ', ' . $force_delete . ' ) for more information.", 'action-delete-post-success' );
+					$return_args['msg']  = WPWHPRO()->helpers->translate("Error deleting post. Please check wp_delete_post( " . $post->ID . ", " . $force_delete . " ) for more information.", 'action-delete-post-success' );
 					$return_args['data']['post_id'] = $post->ID;
 					$return_args['data']['force_delete'] = $force_delete;
 				}
@@ -2746,6 +2746,7 @@ $return_args = array(
 
 		if( isset( $available_triggers['custom_action'] ) ){
 			add_action( 'wp_webhooks_send_to_webhook', array( $this, 'wp_webhooks_send_to_webhook_action' ), 10, 2 );
+			add_filter( 'wp_webhooks_send_to_webhook_filter', array( $this, 'wp_webhooks_send_to_webhook_action_filter' ), 10, 4 );
 			add_filter( 'ironikus_demo_test_custom_action', array( $this, 'ironikus_send_demo_custom_action' ), 10 );
         }
 
@@ -4059,7 +4060,7 @@ $return_args = array(
 	}
 
 	/*
-	 * Register the post delete trigger logic
+	 * Register the post delete trigger logic (DEPRECATED)
 	 *
 	 * @since 1.6.4
 	 */
@@ -4082,6 +4083,37 @@ $return_args = array(
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_custom_action', $data, $response_data );
+	}
+
+	/*
+	 * Register the custom action trigger logic
+	 *
+	 * @since 2.0.5
+	 */
+	public function wp_webhooks_send_to_webhook_action_filter( $response_data, $data, $webhook_names = array(), $http_args = array() ){
+
+		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'custom_action' );
+		
+		if( ! is_array( $response_data ) ){
+			$response_data = array();
+		}
+
+		foreach( $webhooks as $webhook_key => $webhook ){
+
+			if( ! empty( $webhook_names ) ){
+				if( ! empty( $webhook_key ) ){
+					if( ! in_array( $webhook_key, $webhook_names ) ){
+						continue;
+					}
+				}
+			}
+
+			$response_data[ $webhook_key ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data, $http_args );
+		}
+
+		do_action( 'wpwhpro/webhooks/trigger_custom_action', $data, $response_data );
+
+		return $response_data;
 	}
 
 	/*
