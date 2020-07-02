@@ -171,9 +171,14 @@ class WP_Webhooks_Pro_Run{
 	 * Handler for dealing with the ajax based webhook triggers
 	 */
 	public function ironikus_add_webhook_trigger(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+		check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+		
+		$percentage_escape		= '{irnksescprcntg}';
+		$webhook_url            = isset( $_REQUEST['webhook_url'] ) ? $_REQUEST['webhook_url'] : '';
+		$webhook_url 			= str_replace( '%', $percentage_escape, $webhook_url );
+		$webhook_url 			= sanitize_text_field( $webhook_url );
+		$webhook_url 			= str_replace( $percentage_escape, '%', $webhook_url );
 
-        $webhook_url            = isset( $_REQUEST['webhook_url'] ) ? sanitize_text_field( $_REQUEST['webhook_url'] ) : '';
         $webhook_slug            = isset( $_REQUEST['webhook_slug'] ) ? sanitize_title( $_REQUEST['webhook_slug'] ) : '';
         $webhook_current_url    = isset( $_REQUEST['current_url'] ) ? sanitize_text_field( $_REQUEST['current_url'] ) : '';
         $webhook_group          = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
