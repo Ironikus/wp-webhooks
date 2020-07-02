@@ -83,7 +83,7 @@ class WP_Webhooks_Pro_Post_Delay {
     /**
      * Add a trigger to the post delay collector
      * 
-     * This enqueues the trigger to fire it bbefore the 
+     * This enqueues the trigger to fire it before the 
      * PHP shutdown.
      * If the feature is not active, we fire the trigger immediately.
      *
