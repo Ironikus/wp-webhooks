@@ -5,15 +5,15 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.4.1
-Stable Tag: 2.0.4
+Tested up to: 5.4.2
+Stable Tag: 2.0.5
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
 
 == Description ==
 
-If you want to do certain actions on your WordPress site from somewhere else, this is your plugin! It will turn your website into an optimized webhook system so that you can connect your third party apps via Zapier, automate.io or other third-party services to your WordPress website.
+If you want to do certain actions on your WordPress site from somewhere else, this is your plugin! It will turn your website into an optimized webhook system so that you can connect your third party apps manually, via Zapier, automate.io or other third-party services to your WordPress website.
 It allows you to receive data from other services to, for example, create a user or a post on your WordPress website, as well as it can send data for you on certain actions.
 It's time to automate your WordPress website on a whole new level!
 
@@ -22,6 +22,7 @@ It's time to automate your WordPress website on a whole new level!
 * Create a WordPress post using Alexa (Voice Control)
 * Create WordPress users from an Excel list
 * Send data to intercom when a user logs into your WordPress website
+* Fire your own PHP code based on incoming data
 
 = Features =
 
@@ -74,11 +75,16 @@ Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-web
 * Create posts with post meta
 * Update posts with post meta
 * Delete posts
+* Data Mapping engine to revalidate your incoming/outgoing data
+* Log feature for easier debugging
 * IP Whitelist feature for enhanced security
-* In-plugin support
+* Access token feature for enhanced security
+* Webhook URL action whitelist
+* In-plugin assistant
 
 Our free premium extensions for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
+* Woocommerce integration: This extension allows you to do certain Woocommerce action on your website
 * Create Blog Post Via Email: Yes, it will allow you to create WordPress posts via Email
 * Execute PHP Code: It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
 * Remote File Control: Manage your local files on the server via webhooks. You can also create new local files from a given URL
@@ -100,6 +106,23 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.5: July 02, 2020 =
+* Feature: Add user meta to the get_user webhook action
+* Feature: The custom_action trigger got a rework and now uses apply_filters() instead of do_action - this allows you to also catch the response (the logic is backwards compatible, so you can still continue to use your existing logic)
+* Feature: Allow modification of the http arguments within the custom_action webhook action (separate variable for the apply_filters() call)
+* Feature: Allow the percentage character within webhook trigger URLs
+* Feature: Add user meta data to the get_users webhook action response
+* Feature: New trigger setting to allow unsafe looking URLs (By default, URL's like asiufgasvflhsf.siugsf.com are prevented from being sent for your security)
+* Feature: New trigger setting to allow unverified SSL connections (In case you have a self-signed URL, you can prevent the default SSL check for each webhook)
+* Tweak: Optimize PHPDocs
+* Fix: The same webhook names for different triggers broke the settings popup
+* Fix: the delete_post webhook action contained a wrongly formatted error message
+* Fix: Prevalidate json within the is_json() helper function to prevent notices within the debug.log file
+* Dev: Added the trigger group slug to the wpwhpro/admin/settings/webhook/page_capability filter (currently the trigger was only sent by its name which is not unique without the trigger group)
+* Dev: Added new handler function for generating the API keys
+* Dev: New filter to manipulate the API key: wpwhpro/admin/webhooks/generate_api_key (https://ironikus.com/docs/knowledge-base/filter-generated-api-key-for-action-urls/)
+
 
 = 2.0.4: May 11, 2020 =
 * Feature: New webhook trigger that sends data on trashing a post (custom post types supported)
