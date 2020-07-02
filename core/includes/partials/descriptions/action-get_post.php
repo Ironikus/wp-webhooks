@@ -34,7 +34,7 @@ $translation_ident = "action-get-post-description";
 <br>
 <h5><?php echo WPWHPRO()->helpers->translate( "return_only", $translation_ident ); ?></h5>
 <?php echo WPWHPRO()->helpers->translate( "You can also manipulate the result of the post data gathering using the <strong>return_only</strong> parameter. This allows you to output only certain elements of the request. Here is an example:", $translation_ident ); ?>
-<pre>post,post_thumbnail,post_terms,post_meta</pre>
+<pre>post,post_thumbnail,post_terms,post_meta,post_permalink</pre>
 <?php echo WPWHPRO()->helpers->translate( "Here's a list of all available values for the <strong>return_only</strong> argument. In case you want to use multiple ones, simply separate them with a comma.", $translation_ident ); ?>
 <ol>
     <li>all</li>
@@ -42,6 +42,7 @@ $translation_ident = "action-get-post-description";
     <li>post_thumbnail</li>
     <li>post_terms</li>
     <li>post_meta</li>
+    <li>post_permalink</li>
 </ol>
 <hr>
 

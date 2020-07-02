@@ -2632,6 +2632,7 @@ $return_args = array(
 			$post_thumbnail = get_the_post_thumbnail_url( $post_id, $thumbnail_sizes );
 			$post_terms = wp_get_post_terms( $post_id, $post_taxonomies_out );
 			$post_meta = get_post_meta( $post_id );
+			$permalink = get_permalink( $post_id );
 
 			if ( is_wp_error( $post ) ) {
 				$return_args['msg'] = WPWHPRO()->helpers->translate( $post->get_error_message(), 'action-get_post-failure' );
@@ -2645,6 +2646,7 @@ $return_args = array(
 							$return_args['data'][ 'post_thumbnail' ] = $post_thumbnail;
 							$return_args['data'][ 'post_terms' ] = $post_terms;
 							$return_args['data'][ 'post_meta' ] = $post_meta;
+							$return_args['data'][ 'post_permalink' ] = $permalink;
 							break;
 						case 'post':
 							$return_args['data'][ $single_return ] = $post;
@@ -2657,6 +2659,9 @@ $return_args = array(
 							break;
 						case 'post_meta':
 							$return_args['data'][ $single_return ] = $post_meta;
+							break;
+						case 'post_permalink':
+							$return_args['data'][ $single_return ] = $permalink;
 							break;
 					}
 				}
