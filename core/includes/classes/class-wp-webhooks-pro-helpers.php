@@ -437,6 +437,10 @@ class WP_Webhooks_Pro_Helpers {
 	 */
 	public function is_json( $string ) {
 
+		if( ! is_string( $string ) ){
+			return false;
+		}
+
 		json_decode( $string );
 		if( json_last_error() == JSON_ERROR_NONE ){
 			return true;
