@@ -1980,9 +1980,16 @@ $return_args = array(
 			} else {
 
 				if( ! empty( $user ) ){
+
+					$user_meta = array();
+					if( isset( $user->ID ) ){
+						$user_meta = get_user_meta( $user->ID );
+					}
+
 					$return_args['msg'] = WPWHPRO()->helpers->translate("User was successfully returned.", 'action-get_users-success' );
 					$return_args['success'] = true;
 					$return_args['data'] = $user;
+					$return_args['user_meta'] = $user_meta;
 				} else {
 					$return_args['data'] = $user;
 					$return_args['msg'] = WPWHPRO()->helpers->translate("No user found.", 'action-get_users-success' );
