@@ -238,6 +238,22 @@ class WP_Webhooks_Pro_Settings{
 				'default_value' => '',
 				'description' => WPWHPRO()->helpers->translate('Set a custom authentication template in case the other endpoint requires authentication.', 'wpwhpro-fields-trigger-required-settings')
 			),
+			'wpwhpro_trigger_allow_unsafe_urls' => array(
+				'id'          => 'wpwhpro_trigger_allow_unsafe_urls',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Allow unsafe URLs', 'wpwhpro-fields-trigger-required-settings'),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Activating this setting allows you to use unsafe looking URLs like zfvshjhfbssdf.szfdhdf.com.', 'wpwhpro-fields-trigger-settings')
+			),
+			'wpwhpro_trigger_allow_unverified_ssl' => array(
+				'id'          => 'wpwhpro_trigger_allow_unverified_ssl',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Allow unverified SSL', 'wpwhpro-fields-trigger-required-settings'),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Activating this setting allows you to use unverified SSL connections for this URL (We won\'t verify the SSL for this webhook URL).', 'wpwhpro-fields-trigger-settings')
+			),
 
 		);
 

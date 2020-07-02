@@ -601,6 +601,8 @@ class WP_Webhooks_Pro_Webhook {
 		$response_content_type = 'application/json';
 		$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : '';
 		$authentication_data = array();
+		$allow_unsafe_urls = false;
+		$allow_unverified_ssl = false;
 
 		//Required settings
 		if( is_array($webhook) && isset( $webhook['settings'] ) && ! empty( $webhook['settings'] ) ) {
@@ -687,6 +689,16 @@ class WP_Webhooks_Pro_Webhook {
 
 				}
 
+				//Allow unsafe URLs
+				if( $settings_name === 'wpwhpro_trigger_allow_unsafe_urls' && (integer) $settings_data === 1 ){
+					$allow_unsafe_urls = true;
+				}
+
+				//Allow unverified SSL
+				if( $settings_name === 'wpwhpro_trigger_allow_unverified_ssl' && (integer) $settings_data === 1 ){
+					$allow_unverified_ssl = true;
+				}
+
 			}
 		}
 
@@ -753,6 +765,10 @@ class WP_Webhooks_Pro_Webhook {
 			'cookies'     => array(),
 		);
 
+		if( $allow_unverified_ssl ){
+			$http_args['sslverify'] = false;
+		}
+
 		$data = apply_filters( 'wpwhpro/admin/webhooks/webhook_data', $data, $response, $webhook, $args, $authentication_data );
 
 		switch( $response_content_type_slug ){
@@ -792,7 +808,11 @@ class WP_Webhooks_Pro_Webhook {
 			$http_args['headers']['X-WP-Webhook-Signature'] = $this->generate_trigger_signature( $http_args['body'], $secret_key );
 		}	
 
-		$response = wp_safe_remote_request( $url, $http_args );
+		if( $allow_unsafe_urls ){
+			$response = wp_remote_request( $url, $http_args );
+		} else {
+			$response = wp_safe_remote_request( $url, $http_args );	
+		}	
 
 		do_action( 'wpwhpro/admin/webhooks/webhook_trigger_sent', $response, $url, $http_args, $webhook );
 
