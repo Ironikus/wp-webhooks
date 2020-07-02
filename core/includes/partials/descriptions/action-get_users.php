@@ -41,7 +41,9 @@ $translation_ident = "action-get-users-description";
 <hr>
 <h5><?php echo WPWHPRO()->helpers->translate( "return_only", $translation_ident ); ?></h5>
 <?php echo WPWHPRO()->helpers->translate( "You can also manipulate the output of the query using the <strong>return_only</strong> parameter. This allows you to, for example, output either only the search results, the total count, the whole query object or any combination in between. Here is an example that returns all of the data:", $translation_ident ); ?>
-<pre>get_total,get_results,all</pre>
+<pre>get_total,get_results,all,meta_data</pre>
+<?php echo WPWHPRO()->helpers->translate( "The <code>all</code> argument returns the whole WP_Query object, but not the results of the query. If you want the results of the query, you can use the <code>get_results</code> value. To use the <code>meta_data</code> setting, you also need to set the <code>get_results</code> key since the meta data will be attached to every user entry.", $translation_ident ); ?>
+<br>
 <hr>
 <h5><?php echo WPWHPRO()->helpers->translate( "do_action", $translation_ident ); ?></h5>
 <?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>get_users</strong> action was fired.", $translation_ident ); ?>

@@ -2071,6 +2071,23 @@ $return_args = array(
 
 				}
 
+				//Manually attach additional data to the query
+				foreach( $return as $single_return ){
+
+					switch( $single_return ){
+						case 'meta_data':
+							if( isset( $return_args['data']['get_results'] ) && ! empty( $return_args['data']['get_results'] ) ){
+								foreach( $return_args['data']['get_results'] as $user_key => $user_data ){
+									if( isset( $user_data->data ) && isset( $user_data->data->ID ) ){
+										$return_args['data']['get_results'][ $user_key ]->data->meta_data = get_user_meta( $user_data->data->ID );
+									}
+								}
+							}
+							break;
+					}
+
+				}
+
 				$return_args['msg'] = WPWHPRO()->helpers->translate("Query was successfully executed.", 'action-get_users-success' );
 				$return_args['success'] = true;
 
