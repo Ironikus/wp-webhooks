@@ -11,6 +11,8 @@
 	<li>Create posts with post meta</li>
 	<li>Update posts with post meta</li>
 	<li>Delete posts</li>
+	<li>Data Mapping engine to fully customize your data</li>
+	<li>Whitelabel feature</li>
 	<li>IP Whitelist feature for enhanced security</li>
 	<li>In-plugin support</li>
 	<li>A loooooooot of more features, extensions and possibilities</li>
