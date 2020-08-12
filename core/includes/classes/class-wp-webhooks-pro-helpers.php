@@ -355,27 +355,35 @@ class WP_Webhooks_Pro_Helpers {
 	 *
 	 * @return array - the response content and content_type
 	 */
-	public function get_response_body(){
+	public function get_response_body( $custom_data = array() ){
 
 	    $return = array(
             'content_type' => 'unknown',
             'content' => ''
         );
 
-	    //We don't support other income streams than POST
         if( ! isset( $_SERVER["CONTENT_TYPE"] ) ){
             return $return;
         }
 
         //Cache current content
         if( empty( $this->incoming_content ) ){
-	        $this->incoming_content = $_SERVER["CONTENT_TYPE"];
+	        if( isset( $custom_data['content_type'] ) ){
+				$this->incoming_content = $custom_data['content_type'];
+			} else {
+				$this->incoming_content = $_SERVER["CONTENT_TYPE"];
+			}
         }
 
 	    $current_content_type = $this->incoming_content;
 		$return['content_type'] = $current_content_type;
 
-		$response = file_get_contents('php://input');
+		if( isset( $custom_data['payload'] ) ){
+			$response = $custom_data['payload'];
+		} else {
+			$response = file_get_contents('php://input');
+		}
+		
 		$content_evaluated = false;
 
 		if( strpos( $current_content_type, 'application/json' ) !== false ){
