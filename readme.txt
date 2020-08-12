@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.4.2
-Stable Tag: 2.0.5
+Tested up to: 5.5
+Stable Tag: 2.0.6
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -49,10 +49,12 @@ It's time to automate your WordPress website on a whole new level!
 = Free Extensions =
 On wordpress.org you will also find more free extensions to equip your favorite plugins via webhooks.
 
+* [WP Webhooks – Easy Digital Downloads](https://wordpress.org/plugins/wp-webhooks-easy-digital-downloads/)
 * [Contact Form 7 Integration](https://wordpress.org/plugins/wpwh-contact-form-7/)
 * [Manage Taxonomy Terms](https://wordpress.org/plugins/wp-webhooks-manage-taxonomy-terms/)
 * [WP Reset Integration](https://wordpress.org/plugins/wpwh-wp-reset-webhook-integration/)
 * [WP Webhook Comments](https://wordpress.org/plugins/wp-webhooks-comments/)
+* [WP Webhooks – Email integration](https://wordpress.org/plugins/wp-webhooks-email-integration/)
 
 = The best Pro version you have ever seen! =
 
@@ -106,6 +108,8 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.6: August 12, 2020 =
 
 = 2.0.5: July 02, 2020 =
 * Feature: Add user meta to the get_user webhook action

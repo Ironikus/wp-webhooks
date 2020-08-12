@@ -7863,7 +7863,7 @@ input:checked + .slider:before {
 .ironikus-webhook-triggers .card {
   max-width: 100%;
   padding: 0;
-  margin-top: 5px; }
+  margin-top: 1px; }
   .ironikus-webhook-triggers .card .card-header {
     background: #383942;
     cursor: pointer; }
@@ -7938,9 +7938,9 @@ input:checked + .slider:before {
   padding: 0; }
 
 .ironikus-webhook-triggers > .accordion > .card > .card-header {
-  background: #f2592a; }
+  /*background: #f2592a;*/ }
   .ironikus-webhook-triggers > .accordion > .card > .card-header .btn-link {
-    color: #fff; }
+    color: #e6e6e6; }
 
 .ironikus-webhook-triggers > .accordion > .card > div > .card-body {
   background: #f1f1f1; }
@@ -8000,7 +8000,7 @@ input:checked + .slider:before {
   .ironikus-webhook-actions .card {
     max-width: 100%;
     padding: 0;
-    margin-top: 5px; }
+    margin-top: 1px; }
     .ironikus-webhook-actions .card .card-header {
       background: #383942;
       cursor: pointer; }
@@ -8037,9 +8037,9 @@ input:checked + .slider:before {
     border: none;
     padding: 0; }
   .ironikus-webhook-actions > .accordion > .card > .card-header {
-    background: #f2592a; }
+    /*background: #f2592a;*/ }
     .ironikus-webhook-actions > .accordion > .card > .card-header .btn-link {
-      color: #fff; }
+      color: #e6e6e6; }
   .ironikus-webhook-actions > .accordion > .card > div > .card-body {
     background: #f1f1f1; }
 
@@ -8071,6 +8071,7 @@ input:checked + .slider:before {
       padding: 10px; }
 
 .wpwhpro-webhook-actions-webhook-select {
+  margin-top: 20px;
   min-width: 200px;
   max-width: 500px; }
 
@@ -8183,6 +8184,10 @@ input:checked + .slider:before {
     .wpwhpro-data-mapping-template-wrapper #wpwhpro-data-mapper-template-loader-img.active {
       display: block !important; }
 
+#wpwhpro-data-mapping-key-settings {
+  display: none !important;
+  visibility: hidden !important; }
+
 #wpwhpro-data-mapping-actions {
   background: #e6e6e6;
   padding: 20px;
@@ -8203,11 +8208,14 @@ input:checked + .slider:before {
     display: flex;
     -ms-flex-align: center;
         align-items: center; }
-  #wpwhpro-data-mapping-actions #wpwhpro-delete-template-button, #wpwhpro-data-mapping-actions #wpwhpro-save-template-button {
+  #wpwhpro-data-mapping-actions #wpwhpro-delete-template-button, #wpwhpro-data-mapping-actions #wpwhpro-save-template-button, #wpwhpro-data-mapping-actions #wpwhpro-settings-template-button {
     display: none; }
-    #wpwhpro-data-mapping-actions #wpwhpro-delete-template-button.active, #wpwhpro-data-mapping-actions #wpwhpro-save-template-button.active {
+    #wpwhpro-data-mapping-actions #wpwhpro-delete-template-button.active, #wpwhpro-data-mapping-actions #wpwhpro-save-template-button.active, #wpwhpro-data-mapping-actions #wpwhpro-settings-template-button.active {
       display: -ms-flexbox;
       display: flex; }
+  #wpwhpro-data-mapping-actions #wpwhpro-settings-template-button {
+    background-color: #212328;
+    border-color: #212328; }
   #wpwhpro-data-mapping-actions .wpwhpro-data-mapping-add-template-wrapper {
     display: -ms-flexbox;
     display: flex; }
@@ -8237,6 +8245,10 @@ input:checked + .slider:before {
         margin-left: 10px; }
   #wpwhpro-data-mapping-wrapper input {
     border-radius: 4px; }
+  #wpwhpro-data-mapping-wrapper .hidden {
+    display: none; }
+  #wpwhpro-data-mapping-wrapper .visible {
+    display: block; }
 
 #wpwhpro-data-editor {
   overflow: auto;
@@ -8269,15 +8281,29 @@ input:checked + .slider:before {
       #wpwhpro-data-editor .single-data-row .data-connector svg {
         width: 20px;
         height: 20px; }
+    #wpwhpro-data-editor .single-data-row .wpwhpro-single-row {
+      margin-right: 10px; }
+      #wpwhpro-data-editor .single-data-row .wpwhpro-single-row .single-key-btn {
+        width: 100px;
+        z-index: 40;
+        position: relative; }
+      #wpwhpro-data-editor .single-data-row .wpwhpro-single-row .wpwhpro-single-row-preview-input {
+        cursor: pointer;
+        z-index: 40;
+        position: relative; }
+        #wpwhpro-data-editor .single-data-row .wpwhpro-single-row .wpwhpro-single-row-preview-input:disabled {
+          background: white;
+          border-color: white;
+          box-shadow: inset 0 1px 2px white;
+          color: rgba(51, 51, 51, 0.5); }
     #wpwhpro-data-editor .single-data-row .data-income-keys {
       display: -ms-flexbox;
       display: flex;
       margin: 0; }
       #wpwhpro-data-editor .single-data-row .data-income-keys li {
-        margin: 0;
+        margin-bottom: 0;
         position: relative; }
       #wpwhpro-data-editor .single-data-row .data-income-keys input {
-        margin-right: 10px;
         position: relative;
         z-index: 10; }
       #wpwhpro-data-editor .single-data-row .data-income-keys .wpwhpro-single-row-key-actions {
@@ -8285,7 +8311,7 @@ input:checked + .slider:before {
         right: 10px;
         position: absolute;
         top: -23px;
-        z-index: 20;
+        z-index: 50;
         padding: 3px;
         background: #fff; }
         #wpwhpro-data-editor .single-data-row .data-income-keys .wpwhpro-single-row-key-actions.active {
@@ -8303,6 +8329,53 @@ input:checked + .slider:before {
       min-width: 90px;
       -ms-flex-pack: center;
           justify-content: center; }
+
+.wpwhpro-data-mapping-settings-popup-wrapper .ironikus-submit-data-mapping-settings {
+  margin: 0; }
+
+.wpwhpro-data-mapping-settings-popup-wrapper .wpwh-data-mapping-submit-button-wrapper {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+  -ms-flex-align: center;
+      align-items: center; }
+
+.wpwhpro-data-mapping-preview-editor {
+  padding-top: 60px;
+  padding-bottom: 20px; }
+  .wpwhpro-data-mapping-preview-editor .ironikus-data-mapping-preview-submit-button {
+    border-color: #f2592a;
+    width: 100%; }
+    .wpwhpro-data-mapping-preview-editor .ironikus-data-mapping-preview-submit-button:hover {
+      border-color: #428bca; }
+  .wpwhpro-data-mapping-preview-editor .negative-headline {
+    position: absolute;
+    top: -40px; }
+  .wpwhpro-data-mapping-preview-editor .wpwhpro-data-mapping-preview-submit-wrapper {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: start;
+        justify-content: flex-start;
+    -ms-flex-align: start;
+        align-items: flex-start;
+    -ms-flex-direction: column;
+        flex-direction: column; }
+  .wpwhpro-data-mapping-preview-editor #wpwhpro-data-mapping-preview-output {
+    background: #f5f5f5;
+    border-radius: 5px;
+    width: 100%;
+    min-height: 200px;
+    height: 100%;
+    margin: 0;
+    padding: 20px; }
+  .wpwhpro-data-mapping-preview-editor #wpwhpro-data-mapping-preview-input {
+    width: 100%;
+    height: 100%;
+    min-height: 200px; }
+
+.wpwhpro-data-mapping-helpers {
+  margin-top: 20px; }
 
 #ironikus-authentication-form {
   display: -ms-flexbox;
@@ -8455,6 +8528,35 @@ input:checked + .slider:before {
   .ironikus-whitelist-requests > .accordion > .card > div > .card-body {
     background: #f1f1f1; }
 
+.ironikus-whitelabel-settings-wrapper .settings-input {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+
+.ironikus-whitelabel-settings-wrapper .action-button-toggle {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+
+.ironikus-whitelabel-settings-wrapper .sub-text {
+  margin-bottom: 20px; }
+
+.ironikus-whitelabel-settings-wrapper tbody {
+  background: #fff; }
+  .ironikus-whitelabel-settings-wrapper tbody td {
+    vertical-align: middle; }
+
+.ironikus-whitelabel-settings-wrapper .wpwhpro-settings-table tr td:nth-child(2) label {
+  margin-bottom: 0; }
+
+.ironikus-whitelabel-settings-wrapper label.switch {
+  margin-bottom: 0; }
+
+.ironikus-whitelabel-settings-wrapper .btn {
+  margin-bottom: 40px; }
+
 .wpwhpro-settings-table select, .wpwhpro-action-settings-table select {
   width: 100%;
   min-width: 200px; }
@@ -8463,19 +8565,19 @@ input:checked + .slider:before {
   width: 100%;
   min-width: 200px; }
 
-.ironikus-save, .ironikus-action-save, .ironikus-submit-settings-form, .ironikus-actions-submit-settings-form, .ironikus-submit-settings-data, .ironikus-submit-auth-data {
+.ironikus-save, .ironikus-action-save, .ironikus-submit-settings-form, .ironikus-actions-submit-settings-form, .ironikus-submit-settings-data, .ironikus-submit-whitelabel-settings-data, .ironikus-submit-auth-data, .ironikus-submit-data-mapping-settings, .ironikus-data-mapping-preview-submit-button {
   padding: .375rem .75rem !important;
   background: #f2592a;
   border-color: #f2592a; }
-  .ironikus-save .ironikus-save-text, .ironikus-action-save .ironikus-save-text, .ironikus-submit-settings-form .ironikus-save-text, .ironikus-actions-submit-settings-form .ironikus-save-text, .ironikus-submit-settings-data .ironikus-save-text, .ironikus-submit-auth-data .ironikus-save-text {
+  .ironikus-save .ironikus-save-text, .ironikus-action-save .ironikus-save-text, .ironikus-submit-settings-form .ironikus-save-text, .ironikus-actions-submit-settings-form .ironikus-save-text, .ironikus-submit-settings-data .ironikus-save-text, .ironikus-submit-whitelabel-settings-data .ironikus-save-text, .ironikus-submit-auth-data .ironikus-save-text, .ironikus-submit-data-mapping-settings .ironikus-save-text, .ironikus-data-mapping-preview-submit-button .ironikus-save-text {
     display: none;
     pointer-events: none; }
-    .ironikus-save .ironikus-save-text.active, .ironikus-action-save .ironikus-save-text.active, .ironikus-submit-settings-form .ironikus-save-text.active, .ironikus-actions-submit-settings-form .ironikus-save-text.active, .ironikus-submit-settings-data .ironikus-save-text.active, .ironikus-submit-auth-data .ironikus-save-text.active {
+    .ironikus-save .ironikus-save-text.active, .ironikus-action-save .ironikus-save-text.active, .ironikus-submit-settings-form .ironikus-save-text.active, .ironikus-actions-submit-settings-form .ironikus-save-text.active, .ironikus-submit-settings-data .ironikus-save-text.active, .ironikus-submit-whitelabel-settings-data .ironikus-save-text.active, .ironikus-submit-auth-data .ironikus-save-text.active, .ironikus-submit-data-mapping-settings .ironikus-save-text.active, .ironikus-data-mapping-preview-submit-button .ironikus-save-text.active {
       display: block !important; }
-  .ironikus-save .ironikus-loader, .ironikus-action-save .ironikus-loader, .ironikus-submit-settings-form .ironikus-loader, .ironikus-actions-submit-settings-form .ironikus-loader, .ironikus-submit-settings-data .ironikus-loader, .ironikus-submit-auth-data .ironikus-loader {
+  .ironikus-save .ironikus-loader, .ironikus-action-save .ironikus-loader, .ironikus-submit-settings-form .ironikus-loader, .ironikus-actions-submit-settings-form .ironikus-loader, .ironikus-submit-settings-data .ironikus-loader, .ironikus-submit-whitelabel-settings-data .ironikus-loader, .ironikus-submit-auth-data .ironikus-loader, .ironikus-submit-data-mapping-settings .ironikus-loader, .ironikus-data-mapping-preview-submit-button .ironikus-loader {
     display: none;
     pointer-events: none; }
-    .ironikus-save .ironikus-loader.active, .ironikus-action-save .ironikus-loader.active, .ironikus-submit-settings-form .ironikus-loader.active, .ironikus-actions-submit-settings-form .ironikus-loader.active, .ironikus-submit-settings-data .ironikus-loader.active, .ironikus-submit-auth-data .ironikus-loader.active {
+    .ironikus-save .ironikus-loader.active, .ironikus-action-save .ironikus-loader.active, .ironikus-submit-settings-form .ironikus-loader.active, .ironikus-actions-submit-settings-form .ironikus-loader.active, .ironikus-submit-settings-data .ironikus-loader.active, .ironikus-submit-whitelabel-settings-data .ironikus-loader.active, .ironikus-submit-auth-data .ironikus-loader.active, .ironikus-submit-data-mapping-settings .ironikus-loader.active, .ironikus-data-mapping-preview-submit-button .ironikus-loader.active {
       display: block !important; }
 
 .tb-settings-input {
