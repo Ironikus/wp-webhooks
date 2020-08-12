@@ -142,6 +142,7 @@ class WP_Webhooks_Pro_Run{
 			wp_localize_script( 'wpwhpro-admin-scripts', 'ironikus', array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( md5( $this->page_name ) ),
+				'plugin_url' => WPWH_PLUGIN_URL,
 			));
 		}
 	}
