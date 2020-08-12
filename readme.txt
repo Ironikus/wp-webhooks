@@ -78,6 +78,7 @@ Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-web
 * Update posts with post meta
 * Delete posts
 * Data Mapping engine to revalidate your incoming/outgoing data
+* Whitelabel feature (see comparison table)
 * Log feature for easier debugging
 * IP Whitelist feature for enhanced security
 * Access token feature for enhanced security
@@ -110,6 +111,13 @@ We offer you a very awesome hook system to customize everything based on your ne
 == Changelog ==
 
 = 2.0.6: August 12, 2020 =
+* Tweak: Ready for WordPress 5.5
+* Tweak optimize text
+* Tweak: Optimized layout
+* Tweak: Correct comments
+* Fix: Issue with wrong naming for the "Send Data" setup on the demo user payload for the user_meta key
+* Dev: get_response_body() helper now supports manual data entry as a payload and content type
+* Dev: Add plugin URL to admin ajax
 
 = 2.0.5: July 02, 2020 =
 * Feature: Add user meta to the get_user webhook action
