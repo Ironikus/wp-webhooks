@@ -319,21 +319,18 @@ $actions = WPWHPRO()->webhook->get_actions();
 
                                     <div id="collapseactionTestingSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingactionTestingSub-<?php echo $identkey; ?>" data-parent="#actionTesting-<?php echo $identkey; ?>">
                                         <div class="card-body">
-                                            <p>
                                             <?php echo WPWHPRO()->helpers->translate( 'Here you can test the specified webhook. Please note, that this test can modify the data of your website (Depending on what action you test). Also, you will see the response as any web service receives it.', 'wpwhpro-page-actions'); ?>
-                                            </p>
-                                            <p>
-                                                <?php echo WPWHPRO()->helpers->translate( 'Please choose the webhook you are going to run the test with. Simply select the one you want to use down below.', 'wpwhpro-page-actions'); ?>
-                                                <br>
-                                                <select class="wpwhpro-webhook-actions-webhook-select custom-select-lg" wpwh-identkey="<?php echo $identkey; ?>">
-                                                    <option value="empty"><?php echo WPWHPRO()->helpers->translate( 'Choose...', 'wpwhpro-page-data-mapping' ); ?></option>
-                                                    <?php if( ! empty( $webhooks ) ) : ?>
-                                                        <?php foreach( $webhooks as $subwebhook => $subwebhook_data ) : ?>
-                                                            <option class="<?php echo $subwebhook; ?>" value="<?php echo WPWHPRO()->webhook->built_url( $subwebhook, $subwebhook_data['api_key'] ) . '&wpwhpro_direct_test=1'; ?>"><?php echo $subwebhook; ?></option>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
-                                            </p>
+                                            <br>
+                                            <?php echo WPWHPRO()->helpers->translate( 'Please choose the webhook you are going to run the test with. Simply select the one you want to use down below.', 'wpwhpro-page-actions'); ?>
+                                            <br>
+                                            <select class="wpwhpro-webhook-actions-webhook-select custom-select-lg" wpwh-identkey="<?php echo $identkey; ?>">
+                                                <option value="empty"><?php echo WPWHPRO()->helpers->translate( 'Choose...', 'wpwhpro-page-data-mapping' ); ?></option>
+                                                <?php if( ! empty( $webhooks ) ) : ?>
+                                                    <?php foreach( $webhooks as $subwebhook => $subwebhook_data ) : ?>
+                                                        <option class="<?php echo $subwebhook; ?>" value="<?php echo WPWHPRO()->webhook->built_url( $subwebhook, $subwebhook_data['api_key'] ) . '&wpwhpro_direct_test=1'; ?>"><?php echo $subwebhook; ?></option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
                                             <form id="wpwh-action-testing-form-<?php echo $identkey; ?>" method="post" class="wpwh-actions-testing-form" action="" target="_blank" style="display:none;">
 
                                                 <table class="wpwhpro-settings-table form-table">
