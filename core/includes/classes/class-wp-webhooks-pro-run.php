@@ -2910,7 +2910,7 @@ $return_args = array(
 				    'administrator' => true,
 			    ),
 		    'filter' => NULL,
-            'meta_data' => array (
+            'user_meta' => array (
 	            'nickname' =>
 		            array (
 			            0 => 'admin',
