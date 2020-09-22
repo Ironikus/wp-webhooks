@@ -3249,6 +3249,7 @@ $return_args = array(
 			'post'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'The whole post object with all of its values', 'trigger-post-create' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'An array of the whole post meta data.', 'trigger-post-create' ) ),
 			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-create' ) ),
+			'post_permalink' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The permalink of the currently given post.', 'trigger-post-create' ) ),
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-create' ) ),
 		);
 
@@ -3321,6 +3322,7 @@ $return_args = array(
 			'post'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'The whole post object with all of its values', 'trigger-post-update' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'An array of the whole post meta data.', 'trigger-post-update' ) ),
 			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-update' ) ),
+			'post_permalink' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The permalink of the currently given post.', 'trigger-post-update' ) ),
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-update' ) ),
 		);
 
@@ -3383,6 +3385,7 @@ $return_args = array(
 			'post' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Thefull post data from get_post().', 'trigger-post-delete' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full post meta of the post.', 'trigger-post-delete' ) ),
 			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-delete' ) ),
+			'post_permalink' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The permalink of the currently given post.', 'trigger-post-delete' ) ),
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-delete' ) ),
 		);
 
@@ -3451,6 +3454,7 @@ $return_args = array(
 			'post' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Thefull post data from get_post().', 'trigger-post-trash' ) ),
 			'post_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full post meta of the post.', 'trigger-post-trash' ) ),
 			'post_thumbnail' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full featured image/thumbnail URL in the full size.', 'trigger-post-trash' ) ),
+			'post_permalink' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The permalink of the currently given post.', 'trigger-post-trash' ) ),
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-trash' ) ),
 		);
 
@@ -3583,6 +3587,7 @@ $return_args = array(
 			    'post'      => $post,
 				'post_meta' => get_post_meta( $post_id ),
 				'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
+				'post_permalink' => get_permalink( $post_id ),
 				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
@@ -3698,6 +3703,7 @@ $return_args = array(
 				'post_meta' => get_post_meta( $post_id ),
 				'post_before' => isset( $this->pre_action_values['update_post_post_before'] ) ? $this->pre_action_values['update_post_post_before'] : false,
 				'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
+				'post_permalink' => get_permalink( $post_id ),
 				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
@@ -3745,6 +3751,7 @@ $return_args = array(
 		$this->pre_action_values['delete_post_post_data'][ $post_ID ] = get_post( $post_ID );
 		$this->pre_action_values['delete_post_post_meta'][ $post_ID ] = get_post_meta( $post_ID );
 		$this->pre_action_values['delete_post_post_thumbnail_url'][ $post_ID ] = get_the_post_thumbnail_url( $post_ID,'full' );
+		$this->pre_action_values['delete_post_post_permalink'][ $post_ID ] = get_permalink( $post_ID );
 
 		//add the taxonomy
 		$tax_output = array();
@@ -3790,6 +3797,7 @@ $return_args = array(
             'post'      => $post,
 			'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
 			'post_thumbnail' => $this->pre_action_values['delete_post_post_thumbnail_url'][ $post_id ],
+			'post_permalink' => $this->pre_action_values['delete_post_post_permalink'][ $post_id ],
 			'taxonomies' => $this->pre_action_values['delete_post_post_taxonomies'][ $post_id ],
         );
 		$response_data = array();
@@ -3886,6 +3894,7 @@ $return_args = array(
 				        ),
 				),
 				'post_thumbnail' => 'https://mydomain.com/images/image.jpg',
+				'post_permalink' => 'https://mydomain.com/the-post/permalink',
 				'taxonomies' => array (
 					'category' => 
 					array (
@@ -3963,6 +3972,7 @@ $return_args = array(
             'post'      => $post,
             'post_meta' => get_post_meta( $post_id ),
 			'post_thumbnail' => get_the_post_thumbnail_url( $post_id, 'full' ),
+			'post_permalink' => get_permalink( $post_id ),
 			'taxonomies' => $tax_output
         );
 		$response_data = array();
@@ -4053,6 +4063,7 @@ $return_args = array(
 					),
 			),
 			'post_thumbnail' => 'https://mydomain.com/images/image.jpg',
+			'post_permalink' => 'https://mydomain.com/the-post/permalink',
 				'taxonomies' => array (
 					'category' => 
 					array (
