@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.5
-Stable Tag: 2.0.6
+Tested up to: 5.5.1
+Stable Tag: 2.0.7
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -109,6 +109,13 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.0.7: September 22, 2020 =
+* Tweak: Add import_id to the create_post webhook action
+* Tweak: Added permalink to the following triggers: post_create, post_update, post_delete and post_trash
+* Dev: Introduced new handler function echo_action_data() to centralize the output of a webhook action
+* Dev: Extend the wpwhpro/webhooks/response_response_type filter by a new argument: $args (https://ironikus.com/docs/knowledge-base/filter-response-type/)
+* Dev: The echo_response_data() function now returns the validated data as well
 
 = 2.0.6: August 12, 2020 =
 * Tweak: Ready for WordPress 5.5
