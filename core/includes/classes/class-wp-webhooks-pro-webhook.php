@@ -412,11 +412,33 @@ class WP_Webhooks_Pro_Webhook {
 	}
 
 	/**
+	 * Function to output all the available arguments for actions
+	 *
+	 * @since 3.0.7
+	 * @param array $args
+	 */
+	public function echo_action_data( $args = array() ){
+
+		$response_body = WPWHPRO()->helpers->get_response_body();
+		$action = $this->get_incoming_action( $response_body );
+		
+		$validated_data = $this->echo_response_data( $args );
+
+		do_action( 'wpwhpro/webhooks/echo_action_data', $action, $validated_data );
+
+		return $validated_data;
+	}
+
+	/**
 	 * Function to output all the available json arguments.
 	 *
 	 * @param array $args
 	 */
 	public function echo_response_data( $args = array() ){
+		$return = array(
+			'arguments' => $args,
+			'response_type' => '',
+		);
 
 		$response_body = WPWHPRO()->helpers->get_response_body();
 		$response_type = sanitize_title( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'response_type' ) );
@@ -425,7 +447,7 @@ class WP_Webhooks_Pro_Webhook {
 			$response_type = 'json';
 		}
 
-		$response_type = apply_filters( 'wpwhpro/webhooks/response_response_type', $response_type );
+		$response_type = apply_filters( 'wpwhpro/webhooks/response_response_type', $response_type, $args );
 		$args = apply_filters( 'wpwhpro/webhooks/response_json_arguments', $args, $response_type );
 
 		switch( $response_type ){
@@ -441,6 +463,11 @@ class WP_Webhooks_Pro_Webhook {
 				echo json_encode( $args );
 				break;
 		}
+
+		$return['arguments'] = $args;
+		$return['response_type'] = $response_type;
+
+		return $return;
 	}
 
 	/**
@@ -483,6 +510,28 @@ class WP_Webhooks_Pro_Webhook {
 
 	}
 
+	public function get_incoming_action( $response_body = false ){
+
+		if( $response_body === false ){
+			$response_body = WPWHPRO()->helpers->get_response_body();
+		}
+
+		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );
+		if( empty( $action ) ){
+			if( ! empty( $_REQUEST['action'] ) ){
+				$action = sanitize_title( $_REQUEST['action'] );
+			} else {
+				$action = '';
+			}
+
+			if( empty( $action ) ){
+				WPWHPRO()->helpers->log_issue( WPWHPRO()->helpers->translate( "The incoming webhook call did not contain any action", 'admin-debug-feature' ) . ': ' . $response_ident_value  );
+			}
+		}
+
+		return apply_filters( 'wpwhpro/webhooks/get_incoming_action', $action, $response_body );
+	}
+
 	/**
 	 * Validate an incoming webhook action
 	 */
@@ -516,14 +565,7 @@ class WP_Webhooks_Pro_Webhook {
 		// set the output to be JSON. (Default)
 		header( 'Content-Type: application/json' );
 
-		$action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'action' );
-		if( empty( $action ) ){
-			if( ! empty( $_REQUEST['action'] ) ){
-				$action = sanitize_title( $_REQUEST['action'] );
-			} else {
-				$action = '';
-			}
-		}
+		$action = $this->get_incoming_action( $response_body );
 
 		if( empty( $action ) ){
 			WPWHPRO()->helpers->log_issue( WPWHPRO()->helpers->translate( "The incoming webhook call did not contain any action", 'admin-debug-feature' ) . ': ' . $response_ident_value  );

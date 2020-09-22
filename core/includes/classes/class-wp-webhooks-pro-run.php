@@ -1638,7 +1638,7 @@ $return_args = array(
 
 		$return_args = apply_filters( 'wpwhpro/run/actions/custom_action/return_args', $return_args, $identifier, $response_body );
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 
     }
@@ -1663,7 +1663,7 @@ $return_args = array(
 
         $return_args['test_var'] = $test_var;
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 
     }
@@ -1706,7 +1706,7 @@ $return_args = array(
 		if ( empty( $user_email ) ) {
 			$return_args['msg'] = WPWHPRO()->helpers->translate("An email is required to create a user.", 'action-create-user-success' );
 
-			WPWHPRO()->webhook->echo_response_data( $return_args );
+			WPWHPRO()->webhook->echo_action_data( $return_args );
 			die();
 		}
 
@@ -1857,7 +1857,7 @@ $return_args = array(
 			do_action( $do_action, $user_data, $user_id );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -1946,7 +1946,7 @@ $return_args = array(
 			do_action( $do_action, $user, $user_id, $user_email, $send_email );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -1970,7 +1970,7 @@ $return_args = array(
 		if( empty( $user_value ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the user_value argument. Please define it first.", 'action-get_user-failure' );
 
-			WPWHPRO()->webhook->echo_response_data( $return_args );
+			WPWHPRO()->webhook->echo_action_data( $return_args );
 			die();
 		}
 
@@ -2011,7 +2011,7 @@ $return_args = array(
 			do_action( $do_action, $return_args, $user_value, $value_type, $user );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -2035,7 +2035,7 @@ $return_args = array(
 		if( empty( $args ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate("arguments is a required parameter. Please define it.", 'action-get_users-failure' );
 
-			WPWHPRO()->webhook->echo_response_data( $return_args );
+			WPWHPRO()->webhook->echo_action_data( $return_args );
 			die();
 		}
 
@@ -2102,7 +2102,7 @@ $return_args = array(
 			do_action( $do_action, $return_args, $user_query, $args, $return_only );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -2416,7 +2416,7 @@ $return_args = array(
 			do_action( $do_action, $post_data, $post_id, $return_args );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -2474,7 +2474,7 @@ $return_args = array(
 			do_action( $do_action, $post, $post_id, $check, $force_delete );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -2498,7 +2498,7 @@ $return_args = array(
 		if( empty( $args ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate("arguments is a required parameter. Please define it.", 'action-get_posts-failure' );
 
-			WPWHPRO()->webhook->echo_response_data( $return_args );
+			WPWHPRO()->webhook->echo_action_data( $return_args );
 			die();
 		}
 
@@ -2584,7 +2584,7 @@ $return_args = array(
 			do_action( $do_action, $return_args, $post_query, $args, $return_only );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
@@ -2609,7 +2609,7 @@ $return_args = array(
 		if( empty( $post_id ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the post_id argument. Please define it first.", 'action-get_post-failure' );
 
-			WPWHPRO()->webhook->echo_response_data( $return_args );
+			WPWHPRO()->webhook->echo_action_data( $return_args );
 			die();
 		}
 
@@ -2680,7 +2680,7 @@ $return_args = array(
 			do_action( $do_action, $return_args, $post_id, $thumbnail_size, $post_taxonomies );
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
+		WPWHPRO()->webhook->echo_action_data( $return_args );
 		die();
 	}
 
