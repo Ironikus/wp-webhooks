@@ -1361,6 +1361,7 @@ $return_args = array(
 			'menu_order'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) The order the post should be displayed in. Default 0.', 'action-create-post-content' ) ),
 			'post_mime_type'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The mime type of the post. Default empty.', 'action-create-post-content' ) ),
 			'guid'                  => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Global Unique ID for referencing the post. Default empty.', 'action-create-post-content' ) ),
+			'import_id'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(integer) In case you want to give your post a specific post id, please define it here. See the description for further details.', 'action-create-post-content' ) ),
 			'post_category'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of category names, slugs, or IDs. Defaults to value of the \'default_category\' option. Example: cat_1,cat_2,cat_3', 'action-create-post-content' ) ),
 			'tags_input'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of tag names, slugs, or IDs. Default empty.', 'action-create-post-content' ) ),
 			'tax_input'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A simple or JSON formatted string containing existing taxonomy terms. Default empty. More details within the description.', 'action-update-post-content' ) ),
@@ -2144,6 +2145,7 @@ $return_args = array(
 		$menu_order             = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'menu_order' ) );
 		$post_mime_type         = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_mime_type' ) );
 		$guid                   = sanitize_text_field( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'guid' ) );
+		$import_id              = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'import_id' ) );
 		$post_category          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_category' );
 		$tags_input             = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'tags_input' );
 		$tax_input              = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'tax_input' );
@@ -2245,6 +2247,10 @@ $return_args = array(
 
 		if( ! empty( $guid ) ){
 			$post_data['guid'] = $guid;
+		}
+
+		if( ! empty( $import_id ) ){
+			$post_data['import_id'] = $import_id;
 		}
 
 		//Setup post categories

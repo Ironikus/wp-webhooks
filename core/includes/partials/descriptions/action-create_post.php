@@ -54,6 +54,11 @@ $translation_ident = "action-create-post-description";
 <br>
 <hr>
 
+<h5><?php echo WPWHPRO()->helpers->translate( "import_id", $translation_ident ); ?></h5>
+<?php echo WPWHPRO()->helpers->translate( "This argument allows you to define a suggested post ID for your post. In case the ID is already taken, the post will be created using the default behavior by asigning automatically an ID. ", $translation_ident ); ?>
+<br>
+<hr>
+
 <h5><?php echo WPWHPRO()->helpers->translate( "tags_input", $translation_ident ); ?></h5>
 <?php echo WPWHPRO()->helpers->translate( "This argument supports the default tags_input variable of the <strong>wp_insert_post()</strong> function. Please use this function only if you are known to its functionality since WordPress might not add the values properly due to permissions. If you are not sure, please use the <strong>tax_input</strong> argument instead.", $translation_ident ); ?>
 <br>
