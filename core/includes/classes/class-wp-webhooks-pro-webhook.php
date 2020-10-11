@@ -574,13 +574,13 @@ class WP_Webhooks_Pro_Webhook {
 		if( isset( $webhooks[ $response_ident_value ] ) ){
 			if( $webhooks[ $response_ident_value ]['api_key'] != $response_api_key ){
 				status_header( 403 );
-				$return['msg'] = WPWHPRO()->helpers->translate( 'The given WP Webhooks Pro API Key is not valid, please enter a valid API key and try again.', 'webhooks-invalid-license-invalid' );
+				$return['msg'] = WPWHPRO()->helpers->translate( 'The given WP Webhooks API Key is not valid, please enter a valid API key and try again.', 'webhooks-invalid-license-invalid' );
 				WPWHPRO()->webhook->echo_response_data( $return );
 				exit;
 			}
 		} else{
 			status_header( 403 );
-			$return['msg'] = WPWHPRO()->helpers->translate( 'The given WP Webhooks Pro API Key is missing, please add it first.', 'webhooks-invalid-license-missing' );
+			$return['msg'] = WPWHPRO()->helpers->translate( 'The given WP Webhooks API Key is missing, please add it first.', 'webhooks-invalid-license-missing' );
 			WPWHPRO()->webhook->echo_response_data( $return );
 			exit;
 		}
