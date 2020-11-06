@@ -37,7 +37,7 @@ $translation_ident = "trigger-deleted-user-description";
 <br>
 <br>
 <?php echo WPWHPRO()->helpers->translate( "Here is the call within our code we use to fire this trigger:", $translation_ident ); ?>
-<pre>add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 2 );</pre>
+<pre>add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 3 );</pre>
 <?php echo WPWHPRO()->helpers->translate( "<strong>IMPORTANT</strong>: Please note that this webhook does not fire, by default, once the actual trigger (deleted_user) is fired, but as soon as the WordPress <strong>shutdown</strong> hook fires. This is important since we want to allow third-party plugins to make their relevant changes before we send over the data. To deactivate this functionality, please go to our <strong>Settings</strong> and activate the <strong>Deactivate Post Trigger Delay</strong> settings item. This results in the webhooks firing straight after the initial hook is called.", $translation_ident ); ?>
 <br><br><br>
 <h4><?php echo WPWHPRO()->helpers->translate( "Tipps", $translation_ident ); ?></h4>

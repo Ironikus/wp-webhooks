@@ -2764,7 +2764,7 @@ $return_args = array(
 		if( isset( $available_triggers['deleted_user'] ) ){
 			add_action( 'wpmu_delete_user', array( $this, 'ironikus_prepare_user_delete' ), 10, 1 );
 			add_action( 'delete_user', array( $this, 'ironikus_prepare_user_delete' ), 10, 1 );
-			add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 2 );
+			add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 3 );
 			add_filter( 'ironikus_demo_test_deleted_user', array( $this, 'ironikus_send_demo_user_deleted' ), 10, 3 );
         }
 
@@ -3216,14 +3216,23 @@ $return_args = array(
 	public function ironikus_trigger_deleted_user_init(){
 		WPWHPRO()->delay->add_post_delayed_trigger( array( $this, 'ironikus_trigger_user_deleted' ), func_get_args() );
 	}
-	public function ironikus_trigger_user_deleted( $user_id, $reassign ){
-		$webhooks                   = WPWHPRO()->webhook->get_hooks( 'trigger', 'deleted_user' );
-		$user_data                  = array(
+	public function ironikus_trigger_user_deleted( $user_id, $reassign, $user = null ){
+		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'deleted_user' );
+
+		$user_data = array(
 			'user_id' => $user_id,
 			'reassign' => $reassign,
-			'user' => $this->pre_action_values['delete_user_user_data'][ $user_id ],
+			'user' => null, //Keep it to preserve the order
 			'user_meta' => $this->pre_action_values['delete_user_user_meta'][ $user_id ],
 		);
+
+		//Adjust fetching of user object based on the WP 5.5 update
+		if( ! empty( $user ) ){
+			$user_data['user'] = $user;
+		} else {
+			$user_data['user'] = $this->pre_action_values['delete_user_user_data'][ $user_id ];
+		}
+
 		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
