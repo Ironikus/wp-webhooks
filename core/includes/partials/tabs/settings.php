@@ -107,10 +107,10 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 			<img class="ironikus-loader" src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/loader.gif'; ?>" />
 		</p>
 
-		<h2><?php echo WPWHPRO()->helpers->translate('Activate "Recieve Data" Actions', 'admin-settings'); ?></h2>
+		<h2><?php echo WPWHPRO()->helpers->translate('Activate "Receive Data" Actions', 'admin-settings'); ?></h2>
 
 		<div class="sub-text">
-			<?php echo WPWHPRO()->helpers->translate( 'This is a list of all available action webhooks registered on your site. To use one, just check the box and click save. After that, you will be able to use the action at the Recieve Data tab.', 'admin-settings' ); ?>
+			<?php echo WPWHPRO()->helpers->translate( 'This is a list of all available action webhooks registered on your site. To use one, just check the box and click save. After that, you will be able to use the action at the Receive Data tab.', 'admin-settings' ); ?>
 		</div>
 		<table class="table wpwhpro-settings-table form-table">
 			<tbody>

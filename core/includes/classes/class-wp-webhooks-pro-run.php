@@ -840,7 +840,7 @@ class WP_Webhooks_Pro_Run{
 
 		$tabs['home']           = WPWHPRO()->helpers->translate( 'Home', 'admin-menu' );
 		$tabs['send-data']      = WPWHPRO()->helpers->translate( 'Send Data', 'admin-menu' );
-		$tabs['recieve-data']   = WPWHPRO()->helpers->translate( 'Receive Data', 'admin-menu' );
+		$tabs['receive-data']   = WPWHPRO()->helpers->translate( 'Receive Data', 'admin-menu' );
 
 		if( WPWHPRO()->auth->is_active() ){
 			$tabs['authentication']  = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
@@ -868,8 +868,8 @@ class WP_Webhooks_Pro_Run{
 			case 'send-data':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/send-data.php' );
 				break;
-			case 'recieve-data':
-				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/recieve-data.php' );
+			case 'receive-data':
+				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/receive-data.php' );
 				break;
 			case 'settings':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/settings.php' );

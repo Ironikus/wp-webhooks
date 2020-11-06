@@ -381,7 +381,7 @@ class WP_Webhooks_Pro_Settings{
 						'label'       => WPWHPRO()->helpers->translate('Token', 'wpwhpro-fields-authentication-settings'),
 						'placeholder' => '',
 						'default_value' => '',
-						'description' => WPWHPRO()->helpers->translate('Add the bearer token you recieved from the other endpoint here. Please add only the token, without the "Bearer " in front.', 'wpwhpro-fields-authentication-settings')
+						'description' => WPWHPRO()->helpers->translate('Add the bearer token you received from the other endpoint here. Please add only the token, without the "Bearer " in front.', 'wpwhpro-fields-authentication-settings')
 					),
 				),
 			),
