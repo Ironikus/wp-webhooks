@@ -525,7 +525,7 @@ class WP_Webhooks_Pro_Webhook {
 			}
 
 			if( empty( $action ) ){
-				WPWHPRO()->helpers->log_issue( WPWHPRO()->helpers->translate( "The incoming webhook call did not contain any action", 'admin-debug-feature' ) . ': ' . $response_ident_value  );
+				WPWHPRO()->helpers->log_issue( WPWHPRO()->helpers->translate( "The incoming webhook call did not contain any action argument.", 'admin-debug-feature' ) );
 			}
 		}
 
