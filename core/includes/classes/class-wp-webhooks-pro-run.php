@@ -1458,8 +1458,9 @@ $return_args = array(
 	public function action_get_posts_content(){
 
 		$parameter = array(
-			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_Query notation. Please check the description for more information.', 'action-get_posts-content' ) ),
-			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: posts', 'action-get_posts-content' ) ),
+			'arguments'     => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_Query notation. Please check the description for more information.', 'action-get_posts-content' ) ),
+			'return_only'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: posts', 'action-get_posts-content' ) ),
+			'load_meta'    	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this argument to "yes" to add the post meta to each given post. Default: "no"', 'action-get_posts-content' ) ),
 			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_posts-content' ) )
 		);
 
@@ -2498,6 +2499,7 @@ $return_args = array(
 
 		$args     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'arguments' );
 		$return_only     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
+		$load_meta     = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'load_meta' ) === 'yes' ) ? true : false;
 		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 		$post_query = null;
 		
@@ -2518,7 +2520,7 @@ $return_args = array(
 			$return = array_map( 'trim', explode( ',', $return_only ) );
 		}
 
-		if( ! empty( $serialized_args ) && is_array( $serialized_args ) ){
+		if( is_array( $serialized_args ) ){
 			$post_query = new WP_Query( $serialized_args );
 
 			if ( is_wp_error( $post_query ) ) {
@@ -2577,7 +2579,22 @@ $return_args = array(
 
 				}
 
-				$return_args['msg'] = WPWHPRO()->helpers->translate("Query was successfully executed.", 'action-get_posts-success' );
+				if( $load_meta ){
+
+					//Add the meta data to the posts array
+					if( isset( $return_args['data']['posts'] ) && is_array( $return_args['data']['posts'] ) ){
+						foreach( $return_args['data']['posts'] as $single_post_key => $single_post ){
+							$return_args['data']['posts'][ $single_post_key ]->meta_data = get_post_meta( $single_post->ID );
+						}
+					}
+					
+					//Add the post meta to the single post
+					if( isset( $return_args['data']['post'] ) && is_object( $return_args['data']['post'] ) ){
+						$return_args['data']['post']->meta_data = get_post_meta( $return_args['data']['post']->ID );
+					}
+				}
+
+				$return_args['msg'] = WPWHPRO()->helpers->translate( "Query was successfully executed.", 'action-get_posts-success' );
 				$return_args['success'] = true;
 
 			}
