@@ -3560,85 +3560,98 @@ $return_args = array(
 	}
 	public function ironikus_trigger_post_create( $post_id, $post, $update ){
 
-		$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
+		$was_fired = false;
 
-	    if( ! $update || ! empty( $temp_post_status_change ) ){
+		$tax_output = array();
+		$taxonomies = get_taxonomies( array(),'names' );
+		if( ! empty( $taxonomies ) ){
+			$tax_terms = wp_get_post_terms( $post_id, $taxonomies );
+			foreach( $tax_terms as $sk => $sv ){
 
-			$tax_output = array();
-			$taxonomies = get_taxonomies( array(),'names' );
-			if( ! empty( $taxonomies ) ){
-				$tax_terms = wp_get_post_terms( $post_id, $taxonomies );
-				foreach( $tax_terms as $sk => $sv ){
+				if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
+					continue;
+				}
+				
+				if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
+					$tax_output[ $sv->taxonomy ] = array();
+				}
+				
+				if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
+					$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
+				}
 
-					if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
-						continue;
+				$tax_output[ $sv->taxonomy ][ $sv->slug ] = $sv;
+
+			}
+		}
+
+		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_create' );
+		$data_array = array(
+			'post_id'   => $post_id,
+			'post'      => $post,
+			'post_meta' => get_post_meta( $post_id ),
+			'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
+			'post_permalink' => get_permalink( $post_id ),
+			'taxonomies'=> $tax_output
+		);
+		$response_data = array();
+
+		foreach( $webhooks as $webhook_ident => $webhook ){
+
+			$is_valid = true;
+			$backwards_compatibility = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
+			if( ! empty( $backwards_compatibility ) ){
+				$temp_post_status_change = $backwards_compatibility;
+			} else {
+				$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident, true );
+			}
+
+			if( $update && empty( $temp_post_status_change ) ){
+				continue; //Prevent the webhook from being fired if it is a update
+			} else {
+				$was_fired = true;
+			}
+
+			if( isset( $webhook['settings'] ) ){
+				foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+					if( $settings_name === 'wpwhpro_post_create_trigger_on_post_type' && ! empty( $settings_data ) ){
+						if( ! in_array( $post->post_type, $settings_data ) ){
+							$is_valid = false;
+						}
 					}
-					
-					if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
-						$tax_output[ $sv->taxonomy ] = array();
-					}
-					
-					if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
-						$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
-					}
 
-					$tax_output[ $sv->taxonomy ][ $sv->slug ] = $sv;
+					if( $settings_name === 'wpwhpro_post_create_trigger_on_post_status' && ! empty( $settings_data ) && $post->post_status !== 'inherit' ){
 
+						if( ! in_array( $post->post_status, $settings_data ) ){
+
+							update_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident, $post->post_status );
+							$is_valid = false;
+							
+						} else {
+
+							if( ! empty( $temp_post_status_change ) ){
+								delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status' ); //Backwards compatibility
+								delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident );
+
+								do_action( 'wpwhpro/webhooks/trigger_post_create_post_status', $post_id, $post, $response_data );
+							}
+
+						}
+
+					}
 				}
 			}
 
-		    $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_create' );
-		    $data_array = array(
-			    'post_id'   => $post_id,
-			    'post'      => $post,
-				'post_meta' => get_post_meta( $post_id ),
-				'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
-				'post_permalink' => get_permalink( $post_id ),
-				'taxonomies'=> $tax_output
-		    );
-		    $response_data = array();
+			if( $is_valid ){
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+			}
+		}
 
-		    foreach( $webhooks as $webhook ){
-
-		        $is_valid = true;
-
-		        if( isset( $webhook['settings'] ) ){
-			        foreach( $webhook['settings'] as $settings_name => $settings_data ){
-
-				        if( $settings_name === 'wpwhpro_post_create_trigger_on_post_type' && ! empty( $settings_data ) ){
-					        if( ! in_array( $post->post_type, $settings_data ) ){
-						        $is_valid = false;
-					        }
-				        }
-
-				        if( $settings_name === 'wpwhpro_post_create_trigger_on_post_status' && ! empty( $settings_data ) ){
-
-					        if( ! in_array( $post->post_status, $settings_data ) ){
-
-								update_post_meta( $post_id, 'wpwhpro_create_post_temp_status', $post->post_status );
-								$is_valid = false;
-								
-					        } else {
-
-								if( ! empty( $temp_post_status_change ) ){
-									delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status' );
-
-									do_action( 'wpwhpro/webhooks/trigger_post_create_post_status', $post_id, $post, $response_data );
-								}
-
-							}
-
-				        }
-			        }
-                }
-
-                if( $is_valid ){
-	                $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
-                }
-		    }
-
-		    do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post, $response_data );
-        }
+		if( $was_fired ){
+			do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post, $response_data );
+		}
+		
 	}
 
 	/*
@@ -3673,11 +3686,7 @@ $return_args = array(
 	}
 	public function ironikus_trigger_post_update( $post_id, $post, $update ){
 
-		//Make sure we only fire the create_post on status function not within the update_post webhook
-		$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
-
-		//Only call if the create_post function wasn'T called before
-	    if( $update && ( empty( $temp_post_status_change ) && ! did_action( 'wpwhpro/webhooks/trigger_post_create_post_status' ) ) ){
+	    if( $update ){
 
 			$tax_output = array();
 			$taxonomies = get_taxonomies( array(),'names' );
