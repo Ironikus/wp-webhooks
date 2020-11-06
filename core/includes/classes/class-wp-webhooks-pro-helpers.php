@@ -506,6 +506,9 @@ class WP_Webhooks_Pro_Helpers {
 			if( is_array( $value ) ) {
 				$new_object = $object->addChild( $key );
 				$this->convert_to_xml( $new_object, $value );
+			} elseif( is_object( $value ) ) {
+				$new_object = $object->addChild( $key );
+				$this->convert_to_xml( $new_object, (array) $value );
 			} else {
 				// if the key is an integer, it needs text with it to actually work.
 				if( is_numeric( $key ) ) {
@@ -689,5 +692,27 @@ class WP_Webhooks_Pro_Helpers {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Check if a given plugin is active
+	 *
+	 * @param $plugin - Plugin identifier
+	 * @return boolean
+	 */
+	public function is_plugin_active( $plugin = null ){
+		$is_active = false;
+
+		if( ! empty( $plugin ) ){
+			switch( $plugin ){
+				case 'advanced-custom-fields':
+					if( class_exists('ACF') ){
+						$is_active = true;
+					}
+				break;
+			}
+		}
+
+		return apply_filters( 'wpwhpro/helpers/is_plugin_active', $is_active, $plugin );
 	}
 }
