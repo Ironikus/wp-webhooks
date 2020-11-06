@@ -1732,7 +1732,7 @@ $return_args = array(
 			$user_data['user_pass'] = wp_generate_password( 32, true, false );
 		}
 
-		if( ! empty( $username ) ){
+		if( ! empty( $nickname ) ){
 			$user_data['nickname'] = $nickname;
 		}
 
