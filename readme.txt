@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.5.1
-Stable Tag: 2.0.7
+Tested up to: 5.5.3
+Stable Tag: 2.1.0
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -28,7 +28,7 @@ It's time to automate your WordPress website on a whole new level!
 
 * Create, Delete, Search and Retrieve users via external webhooks on your website
 * Create, Delete, Search and Retrieve posts via external webhooks on your website (Custom post types supported)
-* Recieve data to a custom webhook action (Do whatever you want with the incoming data)
+* Receive data to a custom webhook action (Do whatever you want with the incoming data)
 * Send data on login, register, update and deletion
 * Send data on new post, update post and delete post
 * Send data on custom WordPress hook calls
@@ -110,9 +110,23 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 == Changelog ==
 
+= 2.1.0: November 06, 2020 =
+* Feature: Add post meta data to get_posts webbhook action as a separate argument (load_meta)
+* Tweak: As of the WP 5.5 release, the $user object is sent over with the deleted_user hook: https://developer.wordpress.org/reference/hooks/deleted_user/ - We made the new variable compatible
+* Tweak: Correct spelling mistake with "Receive" as "Recieve"
+* Tweak: Optimize plugin naming
+* Tweak: correct webhook response grammar mistakes
+* Tweak: Allow serialized args to be an empty JSON of the get_posts webhook action
+* Fix: issue with wrongly assigned nickname variable check
+* Fix: Fix issue with undefined variable
+* Fix: PHP warning: SimpleXMLElement::addChild() expects parameter 2 to be string, object given - It occured within the convert_to_xml() function and is now fixed
+* Dev: New helper class to check if a given plugin is active ( is_plugin_active() )
+
 = 2.0.7: September 22, 2020 =
 * Tweak: Add import_id to the create_post webhook action
 * Tweak: Added permalink to the following triggers: post_create, post_update, post_delete and post_trash
+* Tweak: Optimize the functionality on the create_post action setting for firing on the initial post status change
+* Fix: The create_post webhook action in combination with firing on the post status change, caused the post not to be triggered on a post update
 * Dev: Introduced new handler function echo_action_data() to centralize the output of a webhook action
 * Dev: Extend the wpwhpro/webhooks/response_response_type filter by a new argument: $args (https://ironikus.com/docs/knowledge-base/filter-response-type/)
 * Dev: The echo_response_data() function now returns the validated data as well
@@ -187,12 +201,12 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Feature: GET parameters are now accepted as well as action arguments (Only in real GET calls)
 * Feature: New authentication engine: You can now authenticate every webhook trigger for external APIS using API Key, Bearer Token or Basic Auth
 * Feature: New webhook action called "custom_action", which allows you to handle every incoming data within a WordPress add_action() hook
-* Feature: Change the webhook URL you want to use for testing actions within the "Recieve Data" page
+* Feature: Change the webhook URL you want to use for testing actions within the "Receive Data" page
 * Feature: Add pre-post data to the "Send Data on Post Update" trigger
 * Feature: Add additional roles while creating a user
 * Feature: You can now set the post_author for create_post actions as well using the email address instead of the ID (If the email address is known within your WP installation)
-* Tweak: Added the action argument as well the the argument list within the "Recieve Data" tab
-* Tweak: Added the action argument as well to the testing form for webhook actions within the "Recieve Data" tab
+* Tweak: Added the action argument as well the the argument list within the "Receive Data" tab
+* Tweak: Added the action argument as well to the testing form for webhook actions within the "Receive Data" tab
 * Tweak: Completely refactored settings saving process for a smooth UI experience
 * Tweak: PHP Docs have been optimized
 * Tweak: Placeholder logic was not integrated with dynamic settings fields for "Send Data" settings
@@ -295,7 +309,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 = 1.0.5: May 25, 2019 =
 * Feature: Send your triggers in different content types. Supported types: JSON (Default), XML, X-WWW-FORM-URLENCODE
-* Fix: Correct menu item name from "Recieve Data" to "Receive Data"
+* Fix: Correct menu item name from "Receive Data" to "Receive Data"
 * Fix: Remove sanitation from parsed user password to not change it at all (create_user and update_user trigger)
 * Dev: New filter to strip slashes on responses: wpwhpro/helpers/request_values_stripslashes
 * Dev: New filter for the new convert_to_xml function to change the prefix: wpwhpro/helpers/convert_to_xml_int_prefix
