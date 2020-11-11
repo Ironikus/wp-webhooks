@@ -3171,8 +3171,10 @@ $return_args = array(
 	public function trigger_user_deleted(){
 
 		$parameter = array(
-			'user_id'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The ID of the deleted user', 'trigger-deleted-user-content' ) ),
-			'reassign'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'ID of the user to reassign posts and links to. Default null, for no reassignment.', 'trigger-deleted-user-content' ) ),
+			'user_id'   	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'The ID of the deleted user', 'trigger-deleted-user-content' ) ),
+			'reassign'     	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'ID of the user to reassign posts and links to. Default null, for no reassignment.', 'trigger-deleted-user-content' ) ),
+			'user'     		=> array( 'short_description' => WPWHPRO()->helpers->translate( 'The full user data from the WP_User object.', 'trigger-deleted-user-content' ) ),
+			'user_meta'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'All of the assigned user meta of the given user.', 'trigger-deleted-user-content' ) ),
 		);
 
 		ob_start();
@@ -3245,7 +3247,176 @@ $return_args = array(
 	public function ironikus_send_demo_user_deleted( $data, $webhook, $webhook_group ){
 		$data = array(
 			'user_id' => 1234,
-			'reassign' => 1235
+			'reassign' => 1235,
+			'user' => array (
+				'data' =>
+					array (
+						'ID' => '1',
+						'user_login' => 'admin',
+						'user_pass' => '$P$BVbptZxEcZV2yeLyYeN.O4ZeG8225d.',
+						'user_nicename' => 'admin',
+						'user_email' => 'admin@ironikus.dev',
+						'user_url' => '',
+						'user_registered' => '2018-11-06 14:19:18',
+						'user_activation_key' => '',
+						'user_status' => '0',
+						'display_name' => 'admin',
+					),
+				'ID' => 1,
+				'caps' =>
+					array (
+						'administrator' => true,
+					),
+				'cap_key' => 'irn_capabilities',
+				'roles' =>
+					array (
+						0 => 'administrator',
+					),
+				'allcaps' =>
+					array (
+						'switch_themes' => true,
+						'edit_themes' => true,
+						'activate_plugins' => true,
+						'edit_plugins' => true,
+						'edit_users' => true,
+						'edit_files' => true,
+						'manage_options' => true,
+						'moderate_comments' => true,
+						'manage_categories' => true,
+						'manage_links' => true,
+						'upload_files' => true,
+						'import' => true,
+						'unfiltered_html' => true,
+						'edit_posts' => true,
+						'edit_others_posts' => true,
+						'edit_published_posts' => true,
+						'publish_posts' => true,
+						'edit_pages' => true,
+						'read' => true,
+						'level_10' => true,
+						'level_9' => true,
+						'level_8' => true,
+						'level_7' => true,
+						'level_6' => true,
+						'level_5' => true,
+						'level_4' => true,
+						'level_3' => true,
+						'level_2' => true,
+						'level_1' => true,
+						'level_0' => true,
+						'edit_others_pages' => true,
+						'edit_published_pages' => true,
+						'publish_pages' => true,
+						'delete_pages' => true,
+						'delete_others_pages' => true,
+						'delete_published_pages' => true,
+						'delete_posts' => true,
+						'delete_others_posts' => true,
+						'delete_published_posts' => true,
+						'delete_private_posts' => true,
+						'edit_private_posts' => true,
+						'read_private_posts' => true,
+						'delete_private_pages' => true,
+						'edit_private_pages' => true,
+						'read_private_pages' => true,
+						'delete_users' => true,
+						'create_users' => true,
+						'unfiltered_upload' => true,
+						'edit_dashboard' => true,
+						'update_plugins' => true,
+						'delete_plugins' => true,
+						'install_plugins' => true,
+						'update_themes' => true,
+						'install_themes' => true,
+						'update_core' => true,
+						'list_users' => true,
+						'remove_users' => true,
+						'promote_users' => true,
+						'edit_theme_options' => true,
+						'delete_themes' => true,
+						'export' => true,
+						'administrator' => true,
+					),
+				'filter' => NULL,
+			),
+			'user_meta' => array (
+				'nickname' =>
+					array (
+						0 => 'admin',
+					),
+				'first_name' =>
+					array (
+						0 => 'Jon',
+					),
+				'last_name' =>
+					array (
+						0 => 'Doe',
+					),
+				'description' =>
+					array (
+						0 => 'My descriptio ',
+					),
+				'rich_editing' =>
+					array (
+						0 => 'true',
+					),
+				'syntax_highlighting' =>
+					array (
+						0 => 'true',
+					),
+				'comment_shortcuts' =>
+					array (
+						0 => 'false',
+					),
+				'admin_color' =>
+					array (
+						0 => 'fresh',
+					),
+				'use_ssl' =>
+					array (
+						0 => '0',
+					),
+				'show_admin_bar_front' =>
+					array (
+						0 => 'true',
+					),
+				'locale' =>
+					array (
+						0 => '',
+					),
+				'irn_capabilities' =>
+					array (
+						0 => 'a:1:{s:13:"administrator";b:1;}',
+					),
+				'irn_user_level' =>
+					array (
+						0 => '10',
+					),
+				'dismissed_wp_pointers' =>
+					array (
+						0 => 'wp111_privacy',
+					),
+				'show_welcome_panel' =>
+					array (
+						0 => '1',
+					),
+				'session_tokens' =>
+					array (
+						0 => 'a:1:{}',
+					),
+				'irn_dashboard_quick_press_last_post_id' =>
+					array (
+						0 => '4',
+					),
+				'community-events-location' =>
+					array (
+						0 => 'a:1:{s:2:"ip";s:9:"127.0.0.0";}',
+					),
+				'show_try_gutenberg_panel' =>
+					array (
+						0 => '0',
+					),
+			),
 		);
 
 		return $data;
