@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.5.3
-Stable Tag: 2.1.1
+Stable Tag: 2.1.2
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -109,6 +109,9 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 2.1.2: November 13, 2020 =
+* Fix: Receive Data tab was not showing due to a non available file
 
 = 2.1.1: November 12, 2020 =
 * Fix: Missing description for deleted_user webhook trigger $user object
