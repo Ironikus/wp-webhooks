@@ -3841,6 +3841,7 @@ $return_args = array(
 			}
 
 			if( $is_valid ){
+				$data_array = apply_filters( 'wpwhpro/webhooks/trigger_create_post_results', $data_array, $post );
 				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
 			}
 		}
@@ -3937,6 +3938,7 @@ $return_args = array(
 			    }
 
 			    if( $is_valid ){
+				    $data_array = apply_filters( 'wpwhpro/webhooks/trigger_update_post_results', $data_array, $post );
 				    $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
 			    }
 		    }
