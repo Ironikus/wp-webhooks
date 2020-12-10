@@ -5,7 +5,7 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.5.3
+Tested up to: 5.6
 Stable Tag: 2.1.2
 License: GNU Version 3 or Any Later Version
 
