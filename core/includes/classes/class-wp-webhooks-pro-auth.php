@@ -17,14 +17,10 @@
  */
 class WP_Webhooks_Pro_Authentication {
 
-	private $auth_active = null;
-
 	/**
-	 * Init everything 
+	 * Init everything
 	 */
 	public function __construct() {
-
-		$this->auth_active = get_option( 'wpwhpro_activate_authentication' );
         $this->authentication_table_data = WPWHPRO()->settings->get_authentication_table_data();
         $this->auth_methods = WPWHPRO()->settings->get_authentication_methods();
 		$this->cache_table_exists = null;
@@ -37,16 +33,13 @@ class WP_Webhooks_Pro_Authentication {
 	/**
 	 * Wether the authentication feature is active or not
 	 *
+	 * Authentication will now be active by default
+	 *
+	 * @deprecated deprecated since version 4.0.0
 	 * @return boolean - True if active, false if not
 	 */
 	public function is_active(){
-
-		if( ! empty( $this->auth_active ) && $this->auth_active == 'yes' ){
-			return true;
-		} else {
-			return false;
-		}
-
+		return true;
 	}
 
 	/**
@@ -55,10 +48,6 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return void
 	 */
 	private function setup_authentication_table(){
-
-		if( ! $this->is_active() ){
-			return;
-		}
 
 		if( $this->cache_table_exists !== null ){
 			return $this->cache_table_exists;
@@ -77,16 +66,13 @@ class WP_Webhooks_Pro_Authentication {
 	 * @param string $template
 	 * @return array - an array of the authentication settings
 	 */
-	public function get_auth_templates( $template = 'all' ){
-		if( ! $this->is_active() ){
-			return false;
-		}
+	public function get_auth_templates( $template = 'all', $cached = true ){
 
 		if( ! is_numeric( $template ) && $template !== 'all' ){
 			return false;
 		}
 
-		if( ! empty( $this->cache_authentication ) ){
+		if( ! empty( $this->cache_authentication ) && $cached ){
 
 			if( $template !== 'all' ){
 				if( isset( $this->cache_authentication[ $template ] ) ){
@@ -127,7 +113,7 @@ class WP_Webhooks_Pro_Authentication {
 			return $this->cache_authentication;
 		}
     }
-    
+
     /**
 	 * Helper function to flatten authentication specific data
 	 *
@@ -151,9 +137,6 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return bool - True if deletion was succesful, false if not
 	 */
 	public function delete_authentication_template( $id ){
-		if( ! $this->is_active() ){
-			return false;
-		}
 
 		$id = intval( $id );
 
@@ -174,9 +157,6 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return mixed - int if count is available, false if not
 	 */
 	public function get_authentication_count(){
-		if( ! $this->is_active() ){
-			return false;
-		}
 
 		if( ! empty( $this->cache_authentication_count ) ){
 			return intval( $this->cache_authentication_count );
@@ -203,9 +183,6 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return bool - True if the creation was successful, false if not
 	 */
 	public function add_template( $name, $auth_type ){
-		if( ! $this->is_active() ){
-			return false;
-		}
 
 		$sql_vals = array(
 			'name' => $name,
@@ -237,9 +214,6 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return bool - True if update was successful, false if not
 	 */
 	public function update_template( $id, $data ){
-		if( ! $this->is_active() ){
-			return false;
-		}
 
 		$id = intval( $id );
 
@@ -282,9 +256,6 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return bool - wether the deletion was successful or not
 	 */
 	public function delete_table(){
-		if( ! $this->is_active() ){
-			return false;
-		}
 
 		$check = true;
 		if( WPWHPRO()->sql->table_exists( $this->authentication_table_data['table_name'] ) ){
@@ -293,7 +264,7 @@ class WP_Webhooks_Pro_Authentication {
 
 		return $check;
     }
-    
+
     public function get_html_fields_form( $current_method, $template_json ){
 
         $return = '';
@@ -306,13 +277,13 @@ class WP_Webhooks_Pro_Authentication {
         if( empty( $template_data ) ){
             $template_data = array();
         }
-           
+
         if( ! empty( $current_method ) && isset( $this->auth_methods[ $current_method ] ) ){
-                
+
             ob_start();
             ?>
-            <form id="ironikus-authentication-template-form">
-                <table class="table wpwhpro-authentication-table form-table">
+            <form id="wpwh-authentication-template-form">
+                <table class="wpwh-table wpwh-table--no-style wpwhpro-authentication-table form-table">
                     <tbody>
 
                     <?php foreach( $this->auth_methods[ $current_method ]['fields'] as $setting_name => $setting ) :
@@ -332,48 +303,39 @@ class WP_Webhooks_Pro_Authentication {
 
                         ?>
                         <tr valign="top">
-                            <td class="tb-settings-input">
-                                <?php if( in_array( $setting['type'], array( 'text' ) ) ) : ?>
-                                
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="iroikus-label-id-<?php echo $setting_name; ?>"><?php echo $setting['label']; ?></span>
-                                        </div>
-                                        <input type="<?php echo $setting['type']; ?>" class="form-control" id="iroikus-input-id-<?php echo $setting_name; ?>" name="<?php echo $setting_name; ?>" aria-describedby="iroikus-label-id-<?php echo $setting_name; ?>"  placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-                                    </div>
-
-                                <?php elseif( in_array( $setting['type'], array( 'checkbox' ) ) ) : ?>
-                                    <label for="iroikus-input-id-<?php echo $setting_name; ?>">
-                                        <strong><?php echo $setting['label']; ?></strong>
-                                    </label>
-                                    <label class="switch ">
-                                        <input id="iroikus-input-id-<?php echo $setting_name; ?>" class="default primary" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-                                        <span class="slider round"></span>
-                                    </label>
-                                <?php elseif( $setting['type'] === 'select' && isset( $setting['choices'] ) ) : ?>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <label class="input-group-text" for="iroikus-select-id-<?php echo $setting_name; ?>"><?php echo $setting['label']; ?></label>
-                                        </div>
-                                        <select id="iroikus-select-id-<?php echo $setting_name; ?>" class="custom-select" name="<?php echo $setting_name; ?><?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? '[]' : ''; ?>" <?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? 'multiple' : ''; ?>>
-                                            <?php foreach( $setting['choices'] as $choice_name => $choice_label ) : ?>
-                                            <?php
-                                                $selected = '';
-                                                if( $choice_name === $value ){
-                                                    $selected = 'selected="selected"';
-                                                }
-                                            ?>
-                                            <option value="<?php echo $choice_name; ?>" <?php echo $selected; ?>><?php echo WPWHPRO()->helpers->translate( $choice_label, 'wpwhpro-page-triggers' ); ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                <?php endif; ?>
+                            <td>
+                                <label class="wpwh-form-label pt-2" for="iroikus-label-id-<?php echo $setting_name; ?>">
+                                    <strong><?php echo $setting['label']; ?></strong>
+                                </label>
                             </td>
                             <td>
-                                <p class="description">
-                                    <?php echo $setting['description']; ?>
-                                </p>
+                                <?php if( in_array( $setting['type'], array( 'text' ) ) ) : ?>
+
+                                    <input type="<?php echo $setting['type']; ?>" class="wpwh-form-input wpwh-w-100" id="iroikus-input-id-<?php echo $setting_name; ?>" name="<?php echo $setting_name; ?>" aria-describedby="iroikus-label-id-<?php echo $setting_name; ?>"  placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+
+                                <?php elseif( in_array( $setting['type'], array( 'checkbox' ) ) ) : ?>
+                                    <label class="wpwh-form-label" for="iroikus-input-id-<?php echo $setting_name; ?>">
+                                        <strong><?php echo $setting['label']; ?></strong>
+                                    </label>
+                                    <div class="wpwh-toggle wpwh-toggle--on-off">
+                                        <input class="wpwh-toggle__input" id="iroikus-input-id-<?php echo $setting_name; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> >
+                                        <label class="wpwh-toggle__btn" for="iroikus-input-id-<?php echo $setting_name; ?>"></label>
+                                    </div>
+                                <?php elseif( $setting['type'] === 'select' && isset( $setting['choices'] ) ) : ?>
+                                    <select id="iroikus-select-id-<?php echo $setting_name; ?>" class="wpwh-form-input wpwh-w-100" name="<?php echo $setting_name; ?><?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? '[]' : ''; ?>" <?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? 'multiple' : ''; ?>>
+                                        <?php foreach( $setting['choices'] as $choice_name => $choice_label ) : ?>
+                                        <?php
+                                            $selected = '';
+                                            if( $choice_name === $value ){
+                                                $selected = 'selected="selected"';
+                                            }
+                                        ?>
+                                        <option value="<?php echo $choice_name; ?>" <?php echo $selected; ?>><?php echo WPWHPRO()->helpers->translate( $choice_label, 'wpwhpro-page-authentication' ); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
                             </td>
+                            <td><?php echo $setting['description']; ?></td>
                         </tr>
                     <?php endforeach; ?>
 
@@ -391,17 +353,17 @@ class WP_Webhooks_Pro_Authentication {
     /**
 	 * ######################
 	 * ###
-	 * #### CORE AUTHENTICATONS
+	 * #### CORE TRIGGER AUTHENTICATONS
 	 * ###
 	 * ######################
 	 */
 
     public function validate_http_api_key_body( $body, $auth_data ){
 
-        if( 
-            ! isset( $auth_data['wpwhpro_auth_api_key_add_to'] ) 
-            || ! isset( $auth_data['wpwhpro_auth_api_key_key'] ) 
-            || ! isset( $auth_data['wpwhpro_auth_api_key_value'] ) 
+        if(
+            ! isset( $auth_data['wpwhpro_auth_api_key_add_to'] )
+            || ! isset( $auth_data['wpwhpro_auth_api_key_key'] )
+            || ! isset( $auth_data['wpwhpro_auth_api_key_value'] )
         ){
             return $body;
         }
@@ -415,17 +377,17 @@ class WP_Webhooks_Pro_Authentication {
 
     public function validate_http_api_key_header( $http_args, $auth_data ){
 
-        if( 
-            ! isset( $auth_data['wpwhpro_auth_api_key_add_to'] ) 
-            || ! isset( $auth_data['wpwhpro_auth_api_key_key'] ) 
-            || ! isset( $auth_data['wpwhpro_auth_api_key_value'] ) 
+        if(
+            ! isset( $auth_data['wpwhpro_auth_api_key_add_to'] )
+            || ! isset( $auth_data['wpwhpro_auth_api_key_key'] )
+            || ! isset( $auth_data['wpwhpro_auth_api_key_value'] )
         ){
             return $http_args;
         }
 
         if( is_array( $http_args ) ){
             if( isset( $http_args['headers'] ) ){
-                if( $auth_data['wpwhpro_auth_api_key_add_to'] === 'both' || $auth_data['wpwhpro_auth_api_key_add_to'] === 'body' ){
+                if( $auth_data['wpwhpro_auth_api_key_add_to'] === 'both' || $auth_data['wpwhpro_auth_api_key_add_to'] === 'header' ){
                     $http_args['headers'][ $auth_data['wpwhpro_auth_api_key_key'] ] = $auth_data['wpwhpro_auth_api_key_value'];
                 }
             }
@@ -453,9 +415,9 @@ class WP_Webhooks_Pro_Authentication {
 
     public function validate_http_basic_auth_header( $http_args, $auth_data ){
 
-        if( 
-            ! isset( $auth_data['wpwhpro_auth_basic_auth_username'] ) 
-            || ! isset( $auth_data['wpwhpro_auth_basic_auth_password'] ) 
+        if(
+            ! isset( $auth_data['wpwhpro_auth_basic_auth_username'] )
+            || ! isset( $auth_data['wpwhpro_auth_basic_auth_password'] )
         ){
             return $http_args;
         }
@@ -468,5 +430,134 @@ class WP_Webhooks_Pro_Authentication {
 
         return $http_args;
     }
+	
+	/**
+	 * ######################
+	 * ###
+	 * #### CORE ACTION AUTHENTICATONS
+	 * ###
+	 * ######################
+	 */
+
+	 public function verify_incoming_request( $settings_data ){
+		 $return = array(
+			 'success' => false
+		 );
+
+		$template = WPWHPRO()->auth->get_auth_templates( $settings_data );
+		if( ! empty( $template ) && ! empty( $template->template ) && ! empty( $template->auth_type ) ){
+			$sub_template_data = base64_decode( $template->template );
+			if( ! empty( $sub_template_data ) && WPWHPRO()->helpers->is_json( $sub_template_data ) ){
+				$template_data = json_decode( $sub_template_data, true );
+				if( ! empty( $template_data ) ){
+
+					switch( $template->auth_type ){
+						case 'api_key':
+							$return = $this->action_validate_api_key( $template_data );
+							break;
+						case 'basic_auth':
+							$return = $this->action_validate_basic_auth( $template_data );
+							break;
+					}
+
+				}
+			}
+		}
+
+		return $return;
+	}
+
+	public function action_validate_api_key( $template_data ){
+		$return = array(
+			'success' => false
+		);
+		$response_body = WPWHPRO()->helpers->get_response_body();
+		$auth_api_key = $template_data['wpwhpro_auth_api_key_key'];
+		$auth_api_val = $template_data['wpwhpro_auth_api_key_value'];
+		$auth_api_pos = $template_data['wpwhpro_auth_api_key_add_to'];
+
+		switch( $auth_api_pos ){
+			case 'header':
+
+				$header_value = WPWHPRO()->helpers->validate_server_header( $auth_api_key );
+				
+				if( $header_value !== NULL ){
+					if( $header_value === $auth_api_val ){
+						$return['success'] = true;
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication was successful.', 'wpwhpro-page-authentication' );
+					} else {
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. API Key not valid.', 'wpwhpro-page-authentication' );
+					}
+				} else {
+					$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. No API Key found.', 'wpwhpro-page-authentication' );
+				}
+				
+				break;
+			case 'body':
+
+				$live_body_key = WPWHPRO()->helpers->validate_request_value( $response_body['content'], $auth_api_key );
+				if( ! empty( $live_body_key ) ){
+					if( $live_body_key === $auth_api_val ){
+						$return['success'] = true;
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication was successful.', 'wpwhpro-page-authentication' );
+					} else {
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. API Key not valid.', 'wpwhpro-page-authentication' );
+					}
+				} else {
+					$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. No API Key found.', 'wpwhpro-page-authentication' );
+				}
+
+				break;
+			case 'both':
+
+				$live_body_key = WPWHPRO()->helpers->validate_request_value( $response_body['content'], $auth_api_key );
+				$header_value = WPWHPRO()->helpers->validate_server_header( $auth_api_key );
+				if( $header_value !== NULL && ! empty( $live_body_key ) ){
+					if( $header_value === $auth_api_val && $live_body_key === $auth_api_val ){
+						$return['success'] = true;
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication was successful.', 'wpwhpro-page-authentication' );
+					} else {
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. API Key not valid.', 'wpwhpro-page-authentication' );
+					}
+				} else {
+					$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. No API Keys found.', 'wpwhpro-page-authentication' );
+				}
+				
+				break;
+		}
+
+		return $return;
+	}
+
+	public function action_validate_basic_auth( $template_data ){
+		$return = array(
+			'success' => false
+		);
+		
+		//User validation
+		if( isset( $_SERVER['PHP_AUTH_USER'] ) && ! empty( $_SERVER['PHP_AUTH_USER'] ) ){
+			if( $_SERVER['PHP_AUTH_USER'] === $template_data['wpwhpro_auth_basic_auth_username'] ){
+
+				//Password validation
+				if( isset( $_SERVER['PHP_AUTH_PW'] ) && ! empty( $_SERVER['PHP_AUTH_PW'] ) ){
+					if( $_SERVER['PHP_AUTH_PW'] === $template_data['wpwhpro_auth_basic_auth_password'] ){
+						$return['success'] = true;
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication was successful.', 'wpwhpro-page-authentication' );
+					} else {
+						$return['msg'] = WPWHPRO()->helpers->translate( 'Wrong username or password.', 'wpwhpro-page-authentication' );
+					}
+				} else {
+					$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. No auth password given.', 'wpwhpro-page-authentication' );
+				}
+				
+			} else {
+				$return['msg'] = WPWHPRO()->helpers->translate( 'Wrong username or password.', 'wpwhpro-page-authentication' );
+			}
+		} else {
+			$return['msg'] = WPWHPRO()->helpers->translate( 'Authentication denied. No auth user given.', 'wpwhpro-page-authentication' );
+		}
+
+		return $return;
+	}
 
 }
