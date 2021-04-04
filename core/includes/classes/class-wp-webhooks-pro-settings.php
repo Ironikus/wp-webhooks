@@ -45,6 +45,23 @@ class WP_Webhooks_Pro_Settings{
 	private $action_nonce;
 
 	/**
+	 * The trigger nonce data
+	 *
+	 * @var array
+	 * @since 4.0.0
+	 */
+	private $trigger_nonce;
+
+	/**
+	 * Backwards compatibility for other plugins
+	 * fetching the active webhooks
+	 *
+	 * @var array
+	 * @since 4.0.0
+	 */
+	private $active_webhooks = null;
+
+	/**
 	 * WP_Webhooks_Pro_Settings constructor.
 	 *
 	 * We define all of our necessary settings in here.
@@ -66,12 +83,28 @@ class WP_Webhooks_Pro_Settings{
 		$this->required_action_settings     = $this->load_required_action_settings();
 		$this->authentication_methods     = $this->load_authentication_methods();
 		$this->authentication_table_data   = $this->setup_authentication_table_data();
+		$this->settings_nonce        = array(
+			'action' => 'ironikus_wpwhpro_settings',
+			'arg'    => 'ironikus_wpwhpro_settings_nonce'
+		);
+		$this->trigger_nonce        = array(
+			'action' => 'ironikus_wpwhpro_triggers',
+			'arg'    => 'ironikus_wpwhpro_triggers_nonce'
+		);
 		$this->action_nonce        = array(
 			'action' => 'ironikus_wpwhpro_actions',
 			'arg'    => 'ironikus_wpwhpro_actions_nonce'
 		);
+		$this->authentication_nonce        = array(
+			'action' => 'ironikus_wpwhpro_authentication',
+			'arg'    => 'ironikus_wpwhpro_authentication_nonce'
+		);
+		$this->whitelabel_nonce        = array(
+			'action' => 'ironikus_wpwhpro_whitelabel',
+			'arg'    => 'ironikus_wpwhpro_whitelabel_nonce'
+		);
+		$this->license              = $this->setup_license();
 		$this->trans_strings        = $this->load_default_strings();
-		$this->active_webhooks      = $this->setup_active_webhooks();
 	}
 
 	/**
@@ -109,18 +142,6 @@ class WP_Webhooks_Pro_Settings{
 		$fields = array(
 
 			/**
-			 * Activate authentication
-			 */
-			'wpwhpro_activate_authentication' => array(
-				'id'          => 'wpwhpro_activate_authentication',
-				'type'        => 'checkbox',
-				'label'       => WPWHPRO()->helpers->translate('Activate Authentication', 'wpwhpro-fields-activate-authentication'),
-				'placeholder' => '',
-				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('This allows you to authenticate certain webhook triggers in case you want to send data to API that requires authentication. It will add a new tab within the menu', 'wpwhpro-fields-activate-authentication-tip')
-			),
-
-			/**
 			 * ACTIVATE TRANSLATIONS
 			 */
 			'wpwhpro_activate_translations' => array(
@@ -129,7 +150,8 @@ class WP_Webhooks_Pro_Settings{
 				'label'       => WPWHPRO()->helpers->translate('Activate Translations', 'wpwhpro-fields-activate-translations'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('Check this button if you want to enable our translation engine on your website.', 'wpwhpro-fields-translations-tip')
+				'dangerzone'  => false,
+				'description' => WPWHPRO()->helpers->translate('Check this button if you want to make this plugin translateable.', 'wpwhpro-fields-translations-tip')
 			),
 
 			/**
@@ -141,7 +163,8 @@ class WP_Webhooks_Pro_Settings{
 				'label'       => WPWHPRO()->helpers->translate('Deactivate Post Trigger Delay', 'wpwhpro-fields-reset'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('Since version 2.1.4, we delay every trigger until the WordPress "shutdown" hook fires. This allows us to also keep track of all plugin modifications that happen after the initial trigger fires. If you don\'t want that, simply check this box.', 'wpwhpro-fields-reset-tip')
+				'dangerzone'  => false,
+				'description' => WPWHPRO()->helpers->translate('Advanced: By default, we delay every webhook trigger until the WordPress "shutdown" hook fires. This allows us to also keep track of the changes third-party plugins make. If you do not want that, check this box.', 'wpwhpro-fields-reset-tip')
 			),
 
 			/**
@@ -153,6 +176,7 @@ class WP_Webhooks_Pro_Settings{
 				'label'       => WPWHPRO()->helpers->translate('Activate Debug Mode', 'wpwhpro-fields-reset'),
 				'placeholder' => '',
 				'required'    => false,
+				'dangerzone'  => false,
 				'description' => WPWHPRO()->helpers->translate('This feature adds additional debug information to the plugin. It logs, e.g. further details within the WordPress debug.log file about issues that occur from a configurational perspective.', 'wpwhpro-fields-reset-tip')
 			),
 
@@ -162,10 +186,11 @@ class WP_Webhooks_Pro_Settings{
 			'wpwhpro_reset_data' => array(
 				'id'          => 'wpwhpro_reset_data',
 				'type'        => 'checkbox',
-				'label'       => WPWHPRO()->helpers->translate('Reset WP Webhooks', 'wpwhpro-fields-reset'),
+				'label'       => sprintf( WPWHPRO()->helpers->translate('Reset %s', 'wpwhpro-fields-reset'), WPWHPRO_NAME ),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPWHPRO()->helpers->translate('Reset WP Webhooks and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip')
+				'dangerzone'  => true,
+				'description' => sprintf( WPWHPRO()->helpers->translate('Reset %s and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip'), WPWHPRO_NAME )
 			),
 		);
 
@@ -316,7 +341,20 @@ class WP_Webhooks_Pro_Settings{
 	 */
 	private function load_required_action_settings(){
 		$fields = array(
-			//Will soon be filled
+
+			'wpwhpro_action_authentication' => array(
+				'id'          => 'wpwhpro_action_authentication',
+				'type'        => 'select',
+				'label'       => WPWHPRO()->helpers->translate('Add authentication template', 'wpwhpro-fields-action-required-settings'),
+				'choices'     => array(
+					//Settings are loaded dynamically within the send-data.php page
+					'0' => WPWHPRO()->helpers->translate('Choose...', 'wpwhpro-fields-action-required-settings')
+				),
+				'placeholder' => '',
+				'default_value' => '',
+				'description' => WPWHPRO()->helpers->translate('Set a custom authentication template in case the other endpoint requires authentication. Currently, only API Keys and Basic Auth is allowed for webhook actions.', 'wpwhpro-fields-action-required-settings')
+			),
+
 		);
 
 		return apply_filters('wpwhpro/settings/required_action_settings', $fields);
@@ -386,7 +424,7 @@ class WP_Webhooks_Pro_Settings{
 				),
 			),
 
-			//Bearer Token Authentication
+			//Basic Authentication
 			'basic_auth' => array(
 				'name' => WPWHPRO()->helpers->translate('Basic Auth', 'wpwhpro-fields-authentication-settings'),
 				'description' => WPWHPRO()->helpers->translate('Authenticate yourself on an external API using Basic Authentication.', 'wpwhpro-fields-authentication-settings'),
@@ -418,18 +456,33 @@ class WP_Webhooks_Pro_Settings{
 	/**
 	 * Initialize all available, active webhooks
 	 *
+	 * @deprecated deprecated since version 3.0.0
 	 * @return array - active webhooks
 	 */
 	public function setup_active_webhooks(){
 
-		$webhooks = get_option( $this->active_webhook_ident_param );
+		$webhooks = array(
+			'triggers' => array(),
+			'actions' => array(),
+		);
 
-		if( empty( $webhooks ) && ! is_array( $webhooks ) ){
-			$webhooks = array(
-				'triggers' => array(),
-				'actions' => array(),
-			);
+		$triggers_data = WPWHPRO()->webhook->get_triggers();
+		if( ! empty( $triggers_data ) && is_array( $triggers_data ) ){
+			foreach( $triggers_data as $td ){
+				$trigger = $td['trigger'];
+				$webhooks['triggers'][ $trigger ] = array();
+			}
 		}
+
+		$action_data = WPWHPRO()->webhook->get_actions();
+		if( ! empty( $action_data ) && is_array( $action_data ) ){
+			foreach( $action_data as $td ){
+				$action = $td['action'];
+				$webhooks['actions'][ $action ] = array();
+			}
+		}
+
+		$this->active_webhooks = $webhooks;
 
 		return $webhooks;
 	}
@@ -566,6 +619,17 @@ class WP_Webhooks_Pro_Settings{
 	}
 
 	/**
+	 * Return the settings nonce data
+	 *
+	 * @return array - the settings nonce data
+	 */
+	public function get_settings_nonce(){
+
+		return $this->settings_nonce;
+
+	}
+
+	/**
 	 * Return the action nonce data
 	 *
 	 * @return array - the action nonce data
@@ -573,6 +637,28 @@ class WP_Webhooks_Pro_Settings{
 	public function get_action_nonce(){
 
 		return $this->action_nonce;
+
+	}
+
+	/**
+	 * Return the trigger nonce data
+	 *
+	 * @return array - the trigger nonce data
+	 */
+	public function get_trigger_nonce(){
+
+		return $this->trigger_nonce;
+
+	}
+
+	/**
+	 * Return the authentication nonce data
+	 *
+	 * @return array - the authentication nonce data
+	 */
+	public function get_authentication_nonce(){
+
+		return $this->authentication_nonce;
 
 	}
 
@@ -651,10 +737,16 @@ class WP_Webhooks_Pro_Settings{
 	 * 
 	 * @param string $type - wether you want to receive active webhooks or triggers
 	 *
+	 * @deprecated deprecated since version 3.0.0
 	 * @return array - the active webhooks
 	 */
 	public function get_active_webhooks( $type = 'all' ){
-		$return = $this->active_webhooks;
+
+		if( $this->active_webhooks === null ){
+			$return = $this->setup_active_webhooks();
+		} else {
+			$return = $this->active_webhooks;
+		}
 
 		switch( $type ){
 			case 'actions':
@@ -714,9 +806,6 @@ class WP_Webhooks_Pro_Settings{
 		}
 
 		$settings = WPWHPRO()->settings->get_settings();
-		$triggers = WPWHPRO()->webhook->get_triggers( '', false );
-		$actions = WPWHPRO()->webhook->get_actions( false );
-		$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
 	
 		// START General Settings
 		foreach( $settings as $settings_name => $setting ){
@@ -739,27 +828,6 @@ class WP_Webhooks_Pro_Settings{
 			$settings[ $settings_name ][ 'value' ] = $value;
 		}
 		// END General Settings
-	
-		// START Trigger Settings
-		foreach( $triggers as $trigger ){
-			if( isset( $new_settings[ 'wpwhpropt_' . $trigger['trigger'] ] ) ){
-				$active_webhooks['triggers'][ $trigger['trigger'] ] = array();
-			} else {
-				unset( $active_webhooks['triggers'][ $trigger['trigger'] ] );
-			}
-		}
-		// END Trigger Settings
-	
-		// START Action Settings
-		foreach( $actions as $action ){
-			if( isset( $new_settings[ 'wpwhpropa_' . $action['action'] ] ) ){
-				$active_webhooks['actions'][ $action['action'] ] = array();
-			} else {
-				unset( $active_webhooks['actions'][ $action['action'] ] );
-			}
-		}
-		// END Action Settings
-		update_option( WPWHPRO()->settings->get_active_webhooks_ident(),  $active_webhooks );
 
 		$success = true;
 
