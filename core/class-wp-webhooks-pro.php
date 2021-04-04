@@ -43,6 +43,14 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		public $sql;
 
 		/**
+		 * WPWHPRO API Object.
+		 *
+		 * @var object|WP_Webhooks_Pro_API
+		 * @since 1.0.0
+		 */
+		public $api;
+
+		/**
 		 * WPWHPRO Webhook Object.
 		 *
 		 * @var object|WP_Webhooks_Pro_Webhook
@@ -75,12 +83,12 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		public $auth;
 
 		/**
-		 * WPWHPRO API Object.
+		 * WPWHPRO Advanced Custom Fields Object.
 		 *
-		 * @var object|WP_Webhooks_Pro_API
-		 * @since 2.0.3
+		 * @var object|WP_Webhooks_Pro_ACF
+		 * @since 3.0.8
 		 */
-		public $api;
+		public $acf;
 
 		/**
 		 * Throw error on object clone.
@@ -125,9 +133,10 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 				self::$instance->sql            = new WP_Webhooks_Pro_SQL();
 				self::$instance->delay			= new WP_Webhooks_Pro_Post_Delay();
 				self::$instance->auth			= new WP_Webhooks_Pro_Authentication();
-				self::$instance->api			= new WP_Webhooks_Pro_API();
+				self::$instance->api            = new WP_Webhooks_Pro_API();
 				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
 				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();
+				self::$instance->acf      		= new WP_Webhooks_Pro_ACF();
 
 				new WP_Webhooks_Pro_Run();
 
@@ -157,6 +166,7 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-api.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-webhook.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-polling.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-acf.php';
 
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-run.php';
 		}
