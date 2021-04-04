@@ -48,7 +48,7 @@ class WP_Webhooks_Pro_Settings{
 	 * The trigger nonce data
 	 *
 	 * @var array
-	 * @since 4.0.0
+	 * @since 3.0.0
 	 */
 	private $trigger_nonce;
 
@@ -57,7 +57,7 @@ class WP_Webhooks_Pro_Settings{
 	 * fetching the active webhooks
 	 *
 	 * @var array
-	 * @since 4.0.0
+	 * @since 3.0.0
 	 */
 	private $active_webhooks = null;
 
