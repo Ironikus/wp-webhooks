@@ -36,8 +36,8 @@ class WP_Webhooks_Pro_Helpers {
 	 * WP_Webhooks_Pro_Helpers constructor.
 	 */
     public function __construct() {
-		$this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
-		$this->activate_debugging = ( get_option( 'wpwhpro_activate_debug_mode' ) == 'yes' ) ? true : false;
+        $this->activate_translations = ( get_option( 'wpwhpro_activate_translations' ) == 'yes' ) ? true : false;
+        $this->activate_debugging = ( get_option( 'wpwhpro_activate_debug_mode' ) == 'yes' ) ? true : false;
     }
 
 	/**
@@ -160,13 +160,13 @@ class WP_Webhooks_Pro_Helpers {
         } else {
 			$validated_content = $this->translate($content, 'create-admin-notice');
 		}
-		
+
 		$bootstrap_layout = apply_filters('wpwhpro/helpers/throw_admin_notice_bootstrap', false, $content, $type, $is_dismissible);
 		if( $bootstrap_layout ){
 			ob_start();
 			?>
-			<div class="alert <?php echo $bs_notice; ?> <?php echo $bs_isit; ?>"  role="alert">
-				<p><?php echo $validated_content; ?></p>
+			<div class="alert <?php echo $bs_notice; ?> <?php echo $bs_isit; ?>" role="alert">
+				<p class="m-0"><?php echo $validated_content; ?></p>
 				<?php if( ! empty( $bs_isit ) ) : ?>
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 						<span class="bs-notice-close" aria-hidden="true">&times;</span>
@@ -179,7 +179,7 @@ class WP_Webhooks_Pro_Helpers {
 			ob_start();
 			?>
 			<div class="notice <?php echo $notice; ?> <?php echo $isit; ?>">
-				<p><?php echo $validated_content; ?></p>
+				<p class="m-0"><?php echo $validated_content; ?></p>
 			</div>
 			<?php
 			$res = ob_get_clean();
@@ -254,12 +254,14 @@ class WP_Webhooks_Pro_Helpers {
 	/**
 	 * Creates the home url in a more optimized way
 	 *
+	 * @since 2.0.4
+	 *
 	 * @param $path - the default url to set the params to
 	 * @param $scheme - the available args
 	 * @return string - the validated url
 	 */
 	public function safe_home_url( $path = '', $scheme = 'irndefault' ){
-		
+
 		if( $scheme === 'irndefault' ){
 			if( is_ssl() ){
 				$scheme = 'https';
@@ -368,11 +370,13 @@ class WP_Webhooks_Pro_Helpers {
 
         //Cache current content
         if( empty( $this->incoming_content ) ){
-	        if( isset( $custom_data['content_type'] ) ){
+
+			if( isset( $custom_data['content_type'] ) ){
 				$this->incoming_content = $custom_data['content_type'];
 			} else {
 				$this->incoming_content = $_SERVER["CONTENT_TYPE"];
 			}
+
         }
 
 	    $current_content_type = $this->incoming_content;
@@ -383,7 +387,7 @@ class WP_Webhooks_Pro_Helpers {
 		} else {
 			$response = file_get_contents('php://input');
 		}
-		
+
 		$content_evaluated = false;
 
 		if( strpos( $current_content_type, 'application/json' ) !== false ){
@@ -402,6 +406,27 @@ class WP_Webhooks_Pro_Helpers {
 			} else {
 				$this->log_issue( $this->translate( "The incoming webhook content was sent as application/xml, but did not contain a valid XML: ", 'admin-debug-feature' ) . $this->display_var( $response ) );
 			}
+        }
+
+		if( strpos( $current_content_type, 'multipart/form-data' ) !== false && ! $content_evaluated ){
+
+			$multipart = array();
+
+			if( isset( $_POST ) ){
+				$multipart = array_merge( $multipart, $_POST );
+			}
+
+			if( isset( $_FILES ) ){
+				$multipart = array_merge( $multipart, $_FILES );
+			}
+
+			$return['content'] = (object) $multipart;
+			$content_evaluated = true;
+
+			if( empty( $multipart ) ){
+				$this->log_issue( $this->translate( "The incoming webhook content was sent as multipart/form-data, but did not contain any values: ", 'admin-debug-feature' ) . $this->display_var( $response ) );
+			}
+			
         }
 
 		if( strpos( $current_content_type, 'application/x-www-form-urlencoded' ) !== false && ! $content_evaluated ){
@@ -433,7 +458,7 @@ class WP_Webhooks_Pro_Helpers {
 			}
 		}
 
-		return apply_filters( 'wpwhpro/helpers/validate_response_body', $return, $current_content_type, $response );
+		return apply_filters( 'wpwhpro/helpers/validate_response_body', $return, $current_content_type, $response, $custom_data );
 	}
 
 	/**
@@ -587,7 +612,7 @@ class WP_Webhooks_Pro_Helpers {
 		if( $this->activate_debugging ){
 			error_log( $text );
 		}
-	    
+
 	}
 
 	/**
@@ -636,7 +661,7 @@ class WP_Webhooks_Pro_Helpers {
 				//other arrays will be again encoded to a json
 				$return = json_encode( $return );
 			}
-	        
+
 		}
 
 		//Validate form url encode strings again
@@ -648,10 +673,35 @@ class WP_Webhooks_Pro_Helpers {
 		}
 
         return apply_filters( 'wpwhpro/helpers/request_return_value', $return, $content, $key );
+	}
+	
+	/**
+	 * Validate a given server header and return its value
+	 *
+	 * @param string $key
+	 * @return string The server header
+	 */
+	public function validate_server_header( $key ){
+		$header = null;
+		$uppercase_header = 'HTTP_' . strtoupper( str_replace( '-', '_', $key ) );
+		
+        if( isset( $_SERVER[ $key ] ) ) {
+            $header = trim( $_SERVER[ $key ] );
+        } elseif( isset( $_SERVER[ $uppercase_header ] ) ) {
+            $header = trim( $_SERVER[ $uppercase_header ] );
+        } elseif( function_exists( 'apache_request_headers' ) ) {
+            $request_headers = apache_request_headers();
+            $request_headers = array_combine( array_map( 'ucwords', array_keys( $request_headers ) ), array_values( $request_headers ) );
+			
+			if( isset( $request_headers[ $key ] ) ) {
+                $header = trim( $request_headers[ $key ] );
+            }
+        }
+        return $header;
     }
 
 	/**
-	 * Grab the current user IP from the 
+	 * Grab the current user IP from the
 	 * server variabbles
 	 *
 	 * @return string - The IP address
@@ -676,11 +726,21 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
-	 * Check if a given plugin is installed
+	 * Get the current request method
 	 *
-	 * @param $slug - Plugin slug
-	 * @return boolean
+	 * @since 3.0.0
+	 * @return string The request method
 	 */
+	public function get_current_request_method(){
+		return apply_filters( 'wpwhpro/helpers/get_current_request_method', $_SERVER['REQUEST_METHOD'] );
+	}
+
+	/**
+	* Check if a given plugin is installed
+	*
+	* @param $slug - Plugin slug
+	* @return boolean
+	*/
 	public function is_plugin_installed( $slug ){
 		if( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -695,11 +755,11 @@ class WP_Webhooks_Pro_Helpers {
 	}
 
 	/**
-	 * Check if a given plugin is active
-	 *
-	 * @param $plugin - Plugin identifier
-	 * @return boolean
-	 */
+	* Check if a given plugin is active
+	*
+	* @param $plugin - Plugin identifier
+	* @return boolean
+	*/
 	public function is_plugin_active( $plugin = null ){
 		$is_active = false;
 
@@ -715,4 +775,6 @@ class WP_Webhooks_Pro_Helpers {
 
 		return apply_filters( 'wpwhpro/helpers/is_plugin_active', $is_active, $plugin );
 	}
+
+
 }
