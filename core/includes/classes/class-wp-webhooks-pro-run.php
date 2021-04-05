@@ -69,12 +69,15 @@ class WP_Webhooks_Pro_Run{
 		add_action( 'wp_ajax_ironikus_load_authentication_template_data',  array( $this, 'ironikus_load_authentication_template_data' ) );
 		add_action( 'wp_ajax_ironikus_save_authentication_template',  array( $this, 'ironikus_save_authentication_template' ) );
 		add_action( 'wp_ajax_ironikus_delete_authentication_template',  array( $this, 'ironikus_delete_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_save_main_settings',  array( $this, 'ironikus_save_main_settings' ) );
 		add_action( 'wp_ajax_ironikus_manage_extensions',  array( $this, 'ironikus_manage_extensions' ) );
 
 		// Load admin page tabs
 		add_filter( 'wpwhpro/admin/settings/menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
 		add_action( 'wpwhpro/admin/settings/menu/place_content', array( $this, 'add_main_settings_content' ), 10 );
+
+		// Validate settings
+		add_action( 'admin_init',  array( $this, 'ironikus_save_main_settings' ) );
+		add_action( 'admin_init',  array( $this, 'ironikus_save_whitelabel_settings' ) );
 
 		// Setup actions
 		add_filter( 'wpwhpro/webhooks/get_webhooks_actions', array( $this, 'add_webhook_actions_content' ), 10 );
@@ -86,15 +89,11 @@ class WP_Webhooks_Pro_Run{
 
 		//Reset wp webhooks
 		add_action( 'admin_init', array( $this, 'reset_wpwhpro_data' ), 10 );
-		
+
 		//Template validations
 		add_filter( 'wpwhpro/admin/webhooks/webhook_data', array( $this, 'apply_authentication_template_data' ), 100, 5 );
 		add_filter( 'wpwhpro/admin/webhooks/webhook_http_args', array( $this, 'apply_authentication_template_header' ), 100, 5 );
 
-		//Load just active ones
-		add_action( 'wpwhpro/webhooks/get_webhooks_triggers', array( $this, 'filter_active_webhooks_triggers' ), PHP_INT_MAX - 100, 2 );
-		add_action( 'wpwhpro/webhooks/get_webhooks_actions', array( $this, 'filter_active_webhooks_actions' ), PHP_INT_MAX - 100, 2 );
-	
 	}
 
 	/**
@@ -136,14 +135,22 @@ class WP_Webhooks_Pro_Run{
 	 */
 	public function enqueue_scripts_and_styles() {
 		if( WPWHPRO()->helpers->is_page( $this->page_name ) && is_admin() ) {
-			wp_enqueue_style( 'wpwhpro-admin-styles', WPWH_PLUGIN_URL . 'core/includes/assets/dist/css/admin-styles.min.css', array(), WPWH_VERSION, 'all' );
+			$is_dev_mode = defined( 'WPWH_DEV' ) && WPWH_DEV === true;
+			wp_enqueue_style( 'wpwhpro-google-fonts', 'https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&family=Poppins:wght@500&display=swap', array(), null );
+
+			// wp_enqueue_style( 'wpwhpro-admin-styles-old', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/css/styles.min.css', array(), WPWHPRO_VERSION, 'all' );
+			wp_enqueue_style( 'wpwhpro-admin-styles', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/css/admin-styles' . ( $is_dev_mode ? '' : '.min' ) . '.css', array(), WPWHPRO_VERSION, 'all' );
+
 			wp_enqueue_script( 'jquery-ui-sortable');
-			wp_enqueue_script( 'wpwhpro-admin-scripts', WPWH_PLUGIN_URL . 'core/includes/assets/dist/js/admin-scripts.min.js', array( 'jquery' ), WPWH_VERSION, true );
+
+			wp_enqueue_script( 'wpwhpro-admin-vendors', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/js/admin-vendor' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWHPRO_VERSION, true );
+			wp_enqueue_script( 'wpwhpro-admin-scripts', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/js/admin-scripts' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWHPRO_VERSION, true );
 			wp_localize_script( 'wpwhpro-admin-scripts', 'ironikus', array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( md5( $this->page_name ) ),
-				'plugin_url' => WPWH_PLUGIN_URL,
+				'plugin_url' => WPWHPRO_PLUGIN_URL,
 			));
+			// wp_enqueue_script( 'wpwhpro-admin-scripts-old', WPWHPRO_PLUGIN_URL . 'core/includes/assets-old/dist/js/admin-scripts.js', array( 'jquery' ), WPWHPRO_VERSION, true );
 		}
 	}
 
@@ -160,6 +167,38 @@ class WP_Webhooks_Pro_Run{
 		return $bool;
 	}
 
+	/*
+     * Functionality to save the main settings of the settings page
+     */
+	public function ironikus_save_main_settings(){
+
+        if( ! is_admin() || ! WPWHPRO()->helpers->is_page( $this->page_name ) ){
+			return;
+		}
+
+		if( ! isset( $_POST['wpwh_settings_submit'] ) ){
+			return;
+		}
+
+		$settings_nonce_data = WPWHPRO()->settings->get_settings_nonce();
+
+		if ( ! check_admin_referer( $settings_nonce_data['action'], $settings_nonce_data['arg'] ) ){
+			return;
+		}
+
+		if ( ! current_user_can( WPWHPRO()->settings->get_admin_cap( 'wpwh-save-settings' ) ) ){
+			return;
+		}
+
+		$current_url = WPWHPRO()->helpers->get_current_url();
+
+		WPWHPRO()->settings->save_settings( $_POST );
+
+		wp_redirect( $current_url );
+		exit;
+
+    }
+
 	/**
 	 * ######################
 	 * ###
@@ -173,7 +212,7 @@ class WP_Webhooks_Pro_Run{
 	 */
 	public function ironikus_add_webhook_trigger(){
 		check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-		
+
 		$percentage_escape		= '{irnksescprcntg}';
 		$webhook_url            = isset( $_REQUEST['webhook_url'] ) ? $_REQUEST['webhook_url'] : '';
 		$webhook_url 			= str_replace( '%', $percentage_escape, $webhook_url );
@@ -213,7 +252,7 @@ class WP_Webhooks_Pro_Run{
         echo json_encode( $response );
 		die();
 	}
-	
+
 	/**
 	 * Handler for creating a new webhook action url
 	 *
@@ -229,7 +268,7 @@ class WP_Webhooks_Pro_Run{
 		//Sanitize webhook slug properly
 		$webhook_slug = str_replace( '§', '', $webhook_slug );
 		$webhook_slug = sanitize_title( $webhook_slug );
-		
+
 		if( ! isset( $webhooks[ $webhook_slug ] ) ){
 			WPWHPRO()->webhook->create( $webhook_slug, 'action' );
 
@@ -300,7 +339,7 @@ class WP_Webhooks_Pro_Run{
 					'status' => $new_status
 				) );
 			}
-			
+
 			if( $check ){
 				$response['success'] = true;
 				$response['new_status'] = $new_status;
@@ -378,16 +417,16 @@ class WP_Webhooks_Pro_Run{
 		    $check = WPWHPRO()->auth->add_template( $auth_template, $auth_type );
 
 		    if( ! empty( $check ) ){
-				
+
 				$response['success'] = true;
-		    
+
             }
         }
 
         echo json_encode( $response );
 		die();
 	}
-	
+
 	/*
      * Functionality to load the currently chosen authentication
      */
@@ -419,14 +458,14 @@ class WP_Webhooks_Pro_Run{
 				if( isset( $check->auth_type ) && ! empty( $check->auth_type )  ){
 					$response['content'] = WPWHPRO()->auth->get_html_fields_form( $check->auth_type, $template_data );
 				}
-		    
+
             }
         }
 
         echo json_encode( $response );
 		die();
 	}
-	
+
 	/*
      * Functionality to save the current authentication template
      */
@@ -438,12 +477,12 @@ class WP_Webhooks_Pro_Run{
 		$response           = array( 'success' => false );
 
 		parse_str( $datastring, $authentication_template );
-		
+
 		//Maybe validate the incoming template data
 		if( empty( $authentication_template ) ){
 			$authentication_template = array();
 		}
-		
+
 		//Validate arrays
 		if( is_array( $authentication_template ) ){
 			$authentication_template = json_encode( $authentication_template );
@@ -457,9 +496,9 @@ class WP_Webhooks_Pro_Run{
 				) );
 
 				if( ! empty( $check ) ){
-					
+
 					$response['success'] = true;
-				
+
 				}
 			}
 		}
@@ -467,7 +506,7 @@ class WP_Webhooks_Pro_Run{
         echo json_encode( $response );
 		die();
 	}
-	
+
 	/*
      * Functionality to delete the currently chosen authentication template
      */
@@ -481,44 +520,15 @@ class WP_Webhooks_Pro_Run{
 		    $check = WPWHPRO()->auth->delete_authentication_template( intval( $data_auth_id ) );
 
 		    if( ! empty( $check ) ){
-				
+
 				$response['success'] = true;
-		    
+
             }
         }
 
         echo json_encode( $response );
 		die();
 	}
-	
-	/*
-     * Functionality to save the main settings of the settings page
-     */
-	public function ironikus_save_main_settings(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-
-        $main_settings    = isset( $_REQUEST['main_settings'] ) ? $_REQUEST['main_settings'] : '';
-		$response           = array( 
-			'success' => false,
-			'msg' => WPWHPRO()->helpers->translate('An error occured saving your data.', 'ajax-settings')
-		);
-		
-		parse_str( $main_settings, $main_settings_data );	
-
-		if( ! empty( $main_settings_data ) ){
-		    $check = WPWHPRO()->settings->save_settings( $main_settings_data );
-
-		    if( ! empty( $check ) ){
-		        $response['success'] = true;
-		        $response['msg'] = WPWHPRO()->helpers->translate('Settings successfully saved.', 'ajax-settings');
-            } else {
-				$response['msg'] = WPWHPRO()->helpers->translate('Your settings couldn\'t be saved.', 'ajax-settings');
-			}
-        }
-
-        echo json_encode( $response );
-		die();
-    }
 
     /*
      * Functionality to load all of the available demo webhook triggers
@@ -571,9 +581,9 @@ class WP_Webhooks_Pro_Run{
 
         echo json_encode( $response );
 		die();
-	}
-	
-	/*
+    }
+
+    /*
      * Manage WP Webhooks extensions
      */
 	public function ironikus_manage_extensions(){
@@ -590,27 +600,24 @@ class WP_Webhooks_Pro_Run{
 			$response['msg'] = WPWHPRO()->helpers->translate('An error occured while doing this action.', 'ajax-settings');
 			return $response;
 		}
-		
+
 		switch( $extension_status ){
 			case 'activated': //runs when the "Deactivate" button was clicked
-				$response['old_class'] = 'btn-warning';
-				$response['new_class'] = 'btn-success';
+				$response['new_class'] = 'text-green';
 				$response['new_status'] = 'deactivated';
 				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
 				$response['success'] = $this->manage_extensions_deactivate( $extension_slug );
 				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully deactivated.', 'ajax-settings');
 				break;
 			case 'deactivated': //runs when the "Activate" button was clicked
-				$response['old_class'] = 'btn-success';
-				$response['new_class'] = 'btn-warning';
+				$response['new_class'] = 'text-warning';
 				$response['new_status'] = 'activated';
 				$response['new_label'] = WPWHPRO()->helpers->translate( 'Deactivate', 'wpwhpro-page-extensions' );
 				$response['success'] = $this->manage_extensions_activate( $extension_slug );
 				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully activated.', 'ajax-settings');
 				break;
 			case 'uninstalled': //runs when the "Install" button was clicked
-				$response['old_class'] = 'btn-primary';
-				$response['new_class'] = 'btn-success';
+				$response['new_class'] = 'text-green';
 				$response['new_status'] = 'deactivated';
 				$response['delete_name'] = WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-extensions' );
 				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
@@ -618,26 +625,23 @@ class WP_Webhooks_Pro_Run{
 				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully installed.', 'ajax-settings');
 				break;
 			case 'update_active': //runs when the "Update" button was clicked and the previous status was active
-				$response['old_class'] = 'btn-dark';
-				$response['new_class'] = 'btn-warning';
+				$response['new_class'] = 'text-warning';
 				$response['new_status'] = 'activated';
 				$response['new_label'] = WPWHPRO()->helpers->translate( 'Deactivate', 'wpwhpro-page-extensions' );
 				$response['success'] = $this->manage_extensions_update( $extension_slug, $extension_download, $extension_id, $extension_version );;
 				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully updated.', 'ajax-settings');
 				break;
 			case 'update_deactive': //runs when the "Update" button was clicked and the previous status was inactive
-				$response['old_class'] = 'btn-dark';
-				$response['new_class'] = 'btn-success';
+				$response['new_class'] = 'text-green';
 				$response['new_status'] = 'deactivated';
 				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
 				$response['success'] = $this->manage_extensions_update( $extension_slug, $extension_download, $extension_id, $extension_version );;
 				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully updated.', 'ajax-settings');
 				break;
 			case 'delete': //runs when the "Delete" link was clicked
-				$response['old_class'] = 'btn-success';
-				$response['new_class'] = 'btn-primary';
+				$response['new_class'] = 'text-secondary';
 				$response['new_status'] = 'uninstalled';
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
+				$response['new_label'] = WPWHPRO()->helpers->translate( 'Install', 'wpwhpro-page-extensions' );
 				$response['success'] = $this->manage_extension_uninstall( $extension_slug );
 				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully deleted.', 'ajax-settings');
 				break;
@@ -662,7 +666,7 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		if ( is_plugin_active( $slug ) ) {
-			deactivate_plugins( $slug );    
+			deactivate_plugins( $slug );
 		}
 
 		return true;
@@ -697,7 +701,7 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		$check = $this->manage_extension_install( $slug, $dl );
-		
+
 		return $check;
 	 }
 
@@ -713,7 +717,7 @@ class WP_Webhooks_Pro_Run{
 		if( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'WP_Webhooks_Upgrader_Skin' ) ){
 			return false;
 		}
-		
+
 		wp_cache_flush();
 		$skin = new WP_Webhooks_Upgrader_Skin( array( 'plugin' => $slug ) );
 		$upgrader = new Plugin_Upgrader( $skin );
@@ -745,9 +749,9 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		if ( is_plugin_active( $slug ) ) {
-			deactivate_plugins( $slug );    
+			deactivate_plugins( $slug );
 		}
-		
+
 		$deleted = delete_plugins( array( $slug ) );
 
 		if( ! is_wp_error( $deleted ) && $deleted ) {
@@ -769,7 +773,7 @@ class WP_Webhooks_Pro_Run{
 		}
 
 		$check = $this->manage_extension_update( $slug, $dl );
-		
+
 		return $check;
 	 }
 
@@ -785,7 +789,7 @@ class WP_Webhooks_Pro_Run{
 		if( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'WP_Webhooks_Upgrader_Skin' ) ){
 			return false;
 		}
-		
+
 		wp_cache_flush();
 		$skin = new WP_Webhooks_Upgrader_Skin( array( 'plugin' => $slug ) );
 		$upgrader = new Plugin_Upgrader( $skin );
@@ -839,16 +843,31 @@ class WP_Webhooks_Pro_Run{
 	public function add_main_settings_tabs( $tabs ){
 
 		$tabs['home']           = WPWHPRO()->helpers->translate( 'Home', 'admin-menu' );
-		$tabs['send-data']      = WPWHPRO()->helpers->translate( 'Send Data', 'admin-menu' );
-		$tabs['receive-data']   = WPWHPRO()->helpers->translate( 'Receive Data', 'admin-menu' );
 
-		if( WPWHPRO()->auth->is_active() ){
-			$tabs['authentication']  = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
-		}
+		$tabs['send-data']      = array(
+			'label' => WPWHPRO()->helpers->translate( 'Send Data', 'admin-menu' ),
+			'items' => array(
+				'send-data'  	=> WPWHPRO()->helpers->translate( 'All Triggers', 'admin-menu' ),
+			)
+		);
 
-		$tabs['extensions']       = WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' );
-		$tabs['settings']       = WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' );
-		$tabs['pro']            = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
+		$tabs['receive-data']   = array(
+			'label' => WPWHPRO()->helpers->translate( 'Receive Data', 'admin-menu' ),
+			'items' => array(
+				'receive-data'  	=> WPWHPRO()->helpers->translate( 'All Actions', 'admin-menu' ),
+			),
+		);
+
+		$tabs['authentication'] = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
+		$tabs['settings']   = array(
+			'label' => WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' ),
+			'items' => array(
+				'settings'  		=> WPWHPRO()->helpers->translate( 'All Settings', 'admin-menu' ),
+				'extensions'  		=> WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' ),
+			),
+		);
+
+		$tabs['pro'] = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
 		return $tabs;
 
@@ -868,6 +887,7 @@ class WP_Webhooks_Pro_Run{
 			case 'send-data':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/send-data.php' );
 				break;
+			case 'recieve-data': // Keep it backwards compatible
 			case 'receive-data':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/receive-data.php' );
 				break;
@@ -958,72 +978,12 @@ class WP_Webhooks_Pro_Run{
 		$reset_all = get_option( 'wpwhpro_reset_data' );
 		if( $reset_all && $reset_all === 'yes' ){
 			delete_option( 'wpwhpro_reset_data' );
+
 			WPWHPRO()->webhook->reset_wpwhpro();
+
 			wp_redirect( $current_url_full );
 			die();
 		}
-    }
-
-	/**
-	 * ######################
-	 * ###
-	 * #### FILTER ACTIVE WEBHOOK FILTERS
-	 * ###
-	 * ######################
-	 */
-
-	/*
-	 * Return all available triggersm filtered by the currently specified status
-	 *
-	 * @since 1.2
-	 * @param $triggers - The webhook triggers
-	 * @param $active_webhooks - All active webhooks
-	 */
-	public function filter_active_webhooks_triggers( $triggers, $active_webhooks ){
-
-	    if( ! $active_webhooks ){
-	        return $triggers;
-        }
-
-		$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
-
-	    foreach( $triggers as $key => $trigger ){
-	        if( ! isset( $active_webhooks['triggers'][ $trigger['trigger'] ] ) ){
-	            unset($triggers[$key]);
-            }
-        }
-
-        return $triggers;
-    }
-
-	/**
-	 * ######################
-	 * ###
-	 * #### FILTER ACTIVE WEBHOOK ACTIONS
-	 * ###
-	 * ######################
-	 */
-
-	/*
-	 * Filter all available webhook actions based on the currently specified status.
-	 *
-	 * @since 1.2
-	 */
-	public function filter_active_webhooks_actions( $actions, $active_webhooks ){
-
-	    if( ! $active_webhooks ){
-	        return $actions;
-        }
-
-		$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
-
-	    foreach( $actions as $key => $action ){
-	        if( ! isset( $active_webhooks['actions'][ $action['action'] ] ) ){
-	            unset($actions[$key]);
-            }
-        }
-
-        return $actions;
     }
 
 	/**
@@ -1066,70 +1026,43 @@ class WP_Webhooks_Pro_Run{
 	 */
 	public function add_webhook_actions( $action, $webhook, $api_key ){
 
-		$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
 		$default_return = array(
             'success' => false
         );
 
-		if( empty( $active_webhooks ) || empty( $active_webhooks['actions'] ) ){
-			$default_return['msg'] = WPWHPRO()->helpers->translate("You currently don't have any actions available.", 'action-add-webhook-actions' );
-
-			WPWHPRO()->webhook->echo_response_data( $default_return );
-			die();
-        }
-
-		$available_triggers = $active_webhooks['actions'];
-
 		switch( $action ){
 			case 'create_user':
-			    if( isset( $available_triggers['create_user'] ) ){
-				    $this->action_create_user();
-                }
+			    $this->action_create_user();
+				break;
+			case 'update_user':
+				$this->action_create_user( true );
 				break;
 			case 'delete_user':
-				if( isset( $available_triggers['delete_user'] ) ){
-					$this->action_delete_user();
-				}
+				$this->action_delete_user();
 				break;
 			case 'get_users':
-				if( isset( $available_triggers['get_users'] ) ){
-					$this->action_get_users();
-				}
+				$this->action_get_users();
 				break;
 			case 'get_user':
-				if( isset( $available_triggers['get_user'] ) ){
-					$this->action_get_user();
-				}
+				$this->action_get_user();
 				break;
 			case 'create_post':
-				if( isset( $available_triggers['create_post'] ) ){
-					$this->action_create_post();
-				}
+				$this->action_create_post();
 				break;
 			case 'delete_post':
-				if( isset( $available_triggers['delete_post'] ) ){
-					$this->action_delete_post();
-				}
+				$this->action_delete_post();
 				break;
 			case 'get_posts':
-				if( isset( $available_triggers['get_posts'] ) ){
-					$this->action_get_posts();
-				}
+				$this->action_get_posts();
 				break;
 			case 'get_post':
-				if( isset( $available_triggers['get_post'] ) ){
-					$this->action_get_post();
-				}
+				$this->action_get_post();
 				break;
 			case 'custom_action':
-				if( isset( $available_triggers['custom_action'] ) ){
-					$this->action_custom_action();
-				}
+				$this->action_custom_action();
 				break;
 			case 'ironikus_test':
-				if( isset( $available_triggers['ironikus_test'] ) ){
-					$this->action_ironikus_test();
-				}
+				$this->action_ironikus_test();
 				break;
 		}
 
@@ -1145,43 +1078,127 @@ class WP_Webhooks_Pro_Run{
 	 */
 	public function action_create_user_content(){
 
-		$parameter = array(
-			'user_email'        => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'This field is required. Include the email for the user.', 'action-create-user-content' ) ),
-			'first_name'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The first name of the user.', 'action-create-user-content' ) ),
-			'last_name'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'The last name of the user.', 'action-create-user-content' ) ),
-			'nickname'          => array( 'short_description' => WPWHPRO()->helpers->translate( 'The nickname. Please note that the nickname will be sanitized by WordPress automatically.', 'action-create-user-content' ) ),
-			'user_login'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'A string with which the user can log in to your site.', 'action-create-user-content' ) ),
-			'display_name'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'The name that will be seen on the frontend of your site.', 'action-create-user-content' ) ),
-			'user_nicename'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'A URL-friendly name. Default is user\' username.', 'action-create-user-content' ) ),
-			'description'       => array( 'short_description' => WPWHPRO()->helpers->translate( 'A description for the user that will be available on the profile page.', 'action-create-user-content' ) ),
-			'rich_editing'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'Wether the user should be able to use the Rich editor. Set it to "yes" or "no". Default "no".', 'action-create-user-content' ) ),
-			'user_registered'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The date the user gets registered. Date structure: Y-m-d H:i:s', 'action-create-user-content' ) ),
-			'user_url'          => array( 'short_description' => WPWHPRO()->helpers->translate( 'Include a website url.', 'action-create-user-content' ) ),
-			'role'              => array( 'short_description' => WPWHPRO()->helpers->translate( 'The main user role. If not set, default is subscriber.', 'action-create-user-content' ) ),
-			'additional_roles'  => array( 'short_description' => WPWHPRO()->helpers->translate( 'This allows to add multiple roles to a user. For more information, please read the description.', 'action-create-user-content' ) ),
-			'user_pass'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user password. If not defined, we generate a 32 character long password dynamically.', 'action-create-user-content' ) ),
-			'send_email'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user with the data.', 'action-create-user-content' ) ),
-			'do_action'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-create-user-content' ) )
-		);
+		$translation_ident = 'action-create-user-content';
 
-		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-create-user-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the user id with the key "user_id" and the user data with the key "user_data". E.g. array( \'data\' => array(...) )', 'action-create-user-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-create-user-content' ) ),
-        );
+		$parameter = array(
+			'user_email'        => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'This field is required. Include the email for the user.', $translation_ident ) ),
+			'first_name'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The first name of the user.', $translation_ident ) ),
+			'last_name'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'The last name of the user.', $translation_ident ) ),
+			'nickname'          => array( 'short_description' => WPWHPRO()->helpers->translate( 'The nickname. Please note that the nickname will be sanitized by WordPress automatically.', $translation_ident ) ),
+			'user_login'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'A string with which the user can log in to your site.', $translation_ident ) ),
+			'display_name'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'The name that will be seen on the frontend of your site.', $translation_ident ) ),
+			'user_nicename'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'A URL-friendly name. Default is user\' username.', $translation_ident ) ),
+			'description'       => array( 'short_description' => WPWHPRO()->helpers->translate( 'A description for the user that will be available on the profile page.', $translation_ident ) ),
+			'rich_editing'      => array( 'short_description' => WPWHPRO()->helpers->translate( 'Wether the user should be able to use the Rich editor. Set it to "yes" or "no". Default "no".', $translation_ident ) ),
+			'user_registered'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The date the user gets registered. Date structure: Y-m-d H:i:s', $translation_ident ) ),
+			'user_url'          => array( 'short_description' => WPWHPRO()->helpers->translate( 'Include a website url.', $translation_ident ) ),
+			'role'              => array(
+				'short_description' => WPWHPRO()->helpers->translate( 'The main user role. If not set, default is subscriber.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "<p>The slug of the role. The default roles have the following slugs: </p>", $translation_ident ) . '<p><ul><li>administrator</li> <li>editor</li> <li>author</li> <li>contributor</li> <li>subscriber</li></ul></p>',
+			),
+			'additional_roles'  => array( 'short_description' => WPWHPRO()->helpers->translate( 'This allows to add multiple roles to a user.', $translation_ident ) ),
+			'user_pass'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user password. If not defined, we generate a 32 character long password dynamically.', $translation_ident ) ),
+			'send_email'        => array(
+				'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user with the data.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "In case you set the <strong>send_email</strong> argument to <strong>yes</strong>, we will send an email from this WordPress site to the user email, containing his login details.", $translation_ident )
+			),
+			'do_action'         => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
+		);
 
 		ob_start();
 		?>
-        <pre>
-$return_args = array(
-    'success' => false,
-    'data' => array(
-        'user_id' => 0,
-        'user_data' => array()
-    )
-);
-        </pre>
-        <?php
+<?php echo WPWHPRO()->helpers->translate( "This argument allows you to add or remove additional roles on the user. There are two possible ways of doing that:", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong><?php echo WPWHPRO()->helpers->translate( "String method", $translation_ident ); ?></strong>
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "This method allows you to add or remove the user roles using a simple string. To make it work, simply add the slug of the role and define the action (add/remove) after, separated by double points (:). If you want to add multiple roles, simply separate them with a semicolon (;). Please refer to the example down below.", $translation_ident ); ?>
+        <pre>editor:add;custom-role:add;custom-role-1:remove</pre>
+    </li>
+    <li>
+        <strong><?php echo WPWHPRO()->helpers->translate( "JSON method", $translation_ident ); ?></strong>
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "We also support a JSON formatted string, which contains the role slug as the JSON key and the action (add/remove) as the value. Please refer to the example below:", $translation_ident ); ?>
+        <pre>{
+  "editor": "add",
+  "custom-role": "add",
+  "custom-role-1": "remove"
+}</pre>
+    </li>
+</ol>
+		<?php
+		$parameter['additional_roles']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The do_action argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the create_user action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $user_data, $user_id, $user_meta, $update ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$user_data</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the data that is used to create the user.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user_id</strong> (integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the user id of the newly created user. Please note that it can also contain a wp_error object since it is the response of the wp_insert_user() function.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user_meta</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the unformatted user meta as you sent it over within the webhook request as a string.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$update</strong> (bool)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "This value will be set to 'false' for the create_user webhook.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
+		$returns = array(
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the user id with the key "user_id" and the user data with the key "user_data". E.g. array( \'data\' => array(...) )', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
+        );
+
+		$return_code_data = array(
+			"success" => true,
+			"msg" => "User successfully created.",
+			"data" => array(
+				"user_id" => 131,
+				"user_data" => array(
+					"user_email" => "demo_user@email.email",
+					"role" => "subscriber",
+					"nickname" => "nickname",
+					"user_login" => "userlogin",
+					"user_nicename" => "The Nice Name",
+					"description" => "This is a user description",
+					"rich_editing" => true,
+					"user_registered" => "2020-12-11 14:10:10",
+					"user_url" => "https://somedomain.com",
+					"display_name" => "username",
+					"first_name" => "Jon",
+					"last_name" => "Doe",
+					"user_pass" => "SomeCustomUserpass123",
+					"additional_roles" => "author:add"
+				),
+			)
+		);
+		ob_start();
+			echo WPWHPRO()->helpers->display_var( $return_code_data );
 		$returns_code = ob_get_clean();
 
 		ob_start();
@@ -1192,8 +1209,8 @@ $return_args = array(
 			'action'            => 'create_user',
 			'parameter'         => $parameter,
 			'returns'           => $returns,
-			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Create a new user via webhooks.', 'action-create-user-content' ),
+			'returns_code'      => '<pre>' . $returns_code . '</pre>',
+			'short_description' => WPWHPRO()->helpers->translate( 'Create a new user via webhooks.', $translation_ident ),
 			'description'       => $description
 		);
 
@@ -1204,18 +1221,62 @@ $return_args = array(
 	 */
 	public function action_delete_user_content(){
 
+		$translation_ident = "action-delete-user-content";
+
 		$parameter = array(
-			'user_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the numeric id of the user.', 'action-delete-user-content' ) ),
-			'user_email'    => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the assigned email of the user.', 'action-delete-user-content' ) ),
-			'send_email'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user that the account got deleted.', 'action-delete-user-content' ) ),
-			'remove_from_network'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to delete a user from the whole network. WARNING: This will delete all posts authored by the user. Default: "no"', 'action-delete-user-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-delete-user-content' ) )
+			'user_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the numeric id of the user.', $translation_ident ) ),
+			'user_email'    => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the assigned email of the user.', $translation_ident ) ),
+			'send_email'    => array(
+				'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user that the account got deleted.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "In case you set the <strong>send_email</strong> argument to <strong>yes</strong>, we will send an email from this WordPress site to the user email, containing the notice of the deleted account.", $translation_ident )
+			),
+			'remove_from_network'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to delete a user from the whole network. WARNING: This will delete all posts authored by the user. Default: "no"', $translation_ident ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
 		);
 
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>delete_user</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $user, $user_id, $user_email, $send_email ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$user</strong> (object)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the WordPress user object.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user_id</strong> (integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the user id of the deleted user. Please note that it can also contain a wp_error object since it is the response of the wp_insert_user() function.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user_email</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the user email.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$send_email</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Returns either yes or no, depending on your settings for the send_email argument.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-delete-user-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the user id with the key "user_id" and the user delete success boolean with the key "user_deleted". E.g. array( \'data\' => array(...) )', 'action-delete-user-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-delete-user-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the user id with the key "user_id" and the user delete success boolean with the key "user_deleted". E.g. array( \'data\' => array(...) )', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1242,7 +1303,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Delete a user via WP Webhooks.', 'action-create-user-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Delete a user via ' . $this->page_title . '.', 'action-create-user-content' ),
             'description'       => $description
 		);
 
@@ -1253,16 +1314,84 @@ $return_args = array(
 	 */
 	public function action_get_users_content(){
 
+		$translation_ident = 'action-get_users-content';
+
 		$parameter = array(
-			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_User_Query notation. Please check the description for more information.', 'action-get_users-content' ) ),
-			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: get_results', 'action-get_users-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_users-content' ) )
+			'arguments'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_User_Query notation.', $translation_ident ) ),
+			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: get_results', $translation_ident ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
 		);
 
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "This argument contains a JSON formatted string, which includes certain arguments from the WordPress user query called <strong>WP_User_Query</strong>. For further details, please check out the following link:", $translation_ident ); ?>
+<br>
+<a href="https://codex.wordpress.org/Class_Reference/WP_User_Query" title="wordpress.org" target="_blank">https://codex.wordpress.org/Class_Reference/WP_User_Query</a>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Here is an example on how the JSON is set up:", $translation_ident ); ?>
+<pre>{"search":"Max","number":5}</pre>
+<?php echo WPWHPRO()->helpers->translate( "The example above will filter the users for the name \"Max\" and returns maximum five users with that name.", $translation_ident ); ?>
+		<?php
+		$parameter['arguments']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "You can also manipulate the output of the query using the <strong>return_only</strong> parameter. This allows you to, for example, output either only the search results, the total count, the whole query object or any combination in between. Here is an example that returns all of the data:", $translation_ident ); ?>
+<pre>get_total,get_results,all,meta_data<?php echo ( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ) ? 'acf_data' : ''; ?></pre>
+<?php echo WPWHPRO()->helpers->translate( "The <code>all</code> argument returns the whole WP_Query object, but not the results of the query. If you want the results of the query, you can use the <code>get_results</code> value. To use the <code>meta_data</code> setting, you also need to set the <code>get_results</code> key since the meta data will be attached to every user entry.", $translation_ident ); ?>
+<?php 
+
+if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+	echo '<br>' . WPWHPRO()->helpers->translate( "Since you have Advanced Custom Fields installed and active, you can also use the <code>acf_data</code> value for the <code>return_only</code> argument. Please keep in mind that you need to set the <code>get_results</code> argument as well.", $translation_ident );
+}
+
+?>
+		<?php
+		$parameter['return_only']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>get_users</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $return_args, $user_query, $args, $return_only ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user_query</strong> (object)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The full WP_User_Query object.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$args</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The string formatted JSON construct that was sent by the caller within the arguments argument.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$return_only</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The string that was sent by the caller via the return_only argument.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_users-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the user query. This depends on the parameters you send.', 'action-get_users-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_users-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the user query. This depends on the parameters you send.', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1286,7 +1415,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Search for users on your WordPress website', 'action-get_users-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Search for users on your WordPress website', $translation_ident ),
             'description'       => $description
 		);
 
@@ -1297,16 +1426,60 @@ $return_args = array(
 	 */
 	public function action_get_user_content(){
 
+		$translation_ident = "action-get_user-content";
+
 		$parameter = array(
-			'user_value'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The user id of the user. You can also use certain other values. Please check the descripton for more details.', 'action-get_user-content' ) ),
-			'value_type'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'You can choose between certain value types. Possible: id, slug, email, login', 'action-get_user-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_user-content' ) )
+			'user_value'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The user id of the user. You can also use certain other values by changing the value_type argument.', $translation_ident ) ),
+			'value_type'    => array(
+				'short_description' => WPWHPRO()->helpers->translate( 'You can choose between certain value types. Possible: id, slug, email, login', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "This argument is used to change the data you can add within the <strong>user_value</strong> argument. Possible values are: <strong>id, ID, slug, email, login</strong>", $translation_ident )
+			),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
 		);
 
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>get_user</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $return_args, $user_value, $value_type, $user ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user_value</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The value you included into the user_value argument.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$value_type</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The value you included into the value_type argument.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$user</strong> (mixed)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Returns null in case an the user_value wasn't set, the user object on success or a wp_error object in case an error occurs.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_user-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the user qury. This depends on the parameters you send.', 'action-get_user-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_user-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the user qury. This depends on the parameters you send.', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1330,7 +1503,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', 'action-get_user-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', $translation_ident ),
             'description'       => $description
 		);
 
@@ -1341,38 +1514,218 @@ $return_args = array(
 	 */
 	public function action_create_post_content(){
 
+		$translation_ident = 'action-create-post-content';
+
 		$parameter = array(
-			'post_author'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(mixed) The ID or the email of the user who added the post. Default is the current user ID.', 'action-create-post-content' ) ),
-			'post_date'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The date of the post. Default is the current time. Format: 2018-12-31 11:11:11', 'action-create-post-content' ) ),
-			'post_date_gmt'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The date of the post in the GMT timezone. Default is the value of $post_date.', 'action-create-post-content' ) ),
-			'post_content'          => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post content. Default empty.', 'action-create-post-content' ) ),
-			'post_content_filtered' => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The filtered post content. Default empty.', 'action-create-post-content' ) ),
-			'post_title'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post title. Default empty.', 'action-create-post-content' ) ),
-			'post_excerpt'          => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post excerpt. Default empty.', 'action-create-post-content' ) ),
-			'post_status'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post status. Default \'draft\'.', 'action-create-post-content' ) ),
-			'post_type'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post type. Default \'post\'.', 'action-create-post-content' ) ),
-			'comment_status'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Whether the post can accept comments. Accepts \'open\' or \'closed\'. Default is the value of \'default_comment_status\' option.', 'action-create-post-content' ) ),
-			'ping_status'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Whether the post can accept pings. Accepts \'open\' or \'closed\'. Default is the value of \'default_ping_status\' option.', 'action-create-post-content' ) ),
-			'post_password'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The password to access the post. Default empty.', 'action-create-post-content' ) ),
-			'post_name'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post name. Default is the sanitized post title when creating a new post.', 'action-create-post-content' ) ),
-			'to_ping'               => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Space or carriage return-separated list of URLs to ping. Default empty.', 'action-create-post-content' ) ),
-			'pinged'                => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Space or carriage return-separated list of URLs that have been pinged. Default empty.', 'action-create-post-content' ) ),
-			'post_parent'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) Set this for the post it belongs to, if any. Default 0.', 'action-create-post-content' ) ),
-			'menu_order'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) The order the post should be displayed in. Default 0.', 'action-create-post-content' ) ),
-			'post_mime_type'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The mime type of the post. Default empty.', 'action-create-post-content' ) ),
-			'guid'                  => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Global Unique ID for referencing the post. Default empty.', 'action-create-post-content' ) ),
-			'import_id'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(integer) In case you want to give your post a specific post id, please define it here. See the description for further details.', 'action-create-post-content' ) ),
-			'post_category'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of category names, slugs, or IDs. Defaults to value of the \'default_category\' option. Example: cat_1,cat_2,cat_3', 'action-create-post-content' ) ),
-			'tags_input'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of tag names, slugs, or IDs. Default empty.', 'action-create-post-content' ) ),
-			'tax_input'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A simple or JSON formatted string containing existing taxonomy terms. Default empty. More details within the description.', 'action-update-post-content' ) ),
-			'wp_error'              => array( 'short_description' => WPWHPRO()->helpers->translate( 'Whether to return a WP_Error on failure. Posible values: "yes" or "no". Default value: "no".', 'action-create-post-content' ) ),
-			'do_action'             => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-create-post-content' ) )
+			'post_author'           => array(
+				'short_description' => WPWHPRO()->helpers->translate( '(mixed) The ID or the email of the user who added the post. Default is the current user ID.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "The post author argument accepts either the user id of a user, or the email address of an existing user. In case you choose the email adress, we try to match it with the users on your WordPress site. In case we couldn't find a user for the given email, we leave the field empty.", $translation_ident ),
+			),
+			'post_date'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The date of the post. Default is the current time. Format: 2018-12-31 11:11:11', $translation_ident ) ),
+			'post_date_gmt'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The date of the post in the GMT timezone. Default is the value of $post_date.', $translation_ident ) ),
+			'post_content'          => array(
+				'short_description' => WPWHPRO()->helpers->translate( '(string) The post content. Default empty.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "The post content is the main content area of the post. It can contain HTML or any other kind of content necessary for your functionality.", $translation_ident )
+			),
+			'post_content_filtered' => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The filtered post content. Default empty.', $translation_ident ) ),
+			'post_title'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post title. Default empty.', $translation_ident ) ),
+			'post_excerpt'          => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post excerpt. Default empty.', $translation_ident ) ),
+			'post_status'           => array(
+				'short_description' => WPWHPRO()->helpers->translate( '(string) The post status. Default \'draft\'.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "The post status defines further details about how your post will be treated. By default, WordPress offers the following post statuses: <strong>draft, pending, private, publish</strong>. Please note that other plugins can extend the post status values to offer a bigger variety, e.g. Woocommerce.", $translation_ident ),
+			),
+			'post_type'             => array(
+				'short_description' => WPWHPRO()->helpers->translate( '(string) The post type. Default \'post\'.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "The post type determines to which group of posts your currently created post belongs. Please use the slug of the post type to assign it properly.", $translation_ident ),
+			),
+			'comment_status'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Whether the post can accept comments. Accepts \'open\' or \'closed\'. Default is the value of \'default_comment_status\' option.', $translation_ident ) ),
+			'ping_status'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Whether the post can accept pings. Accepts \'open\' or \'closed\'. Default is the value of \'default_ping_status\' option.', $translation_ident ) ),
+			'post_password'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The password to access the post. Default empty.', $translation_ident ) ),
+			'post_name'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The post name. Default is the sanitized post title when creating a new post.', $translation_ident ) ),
+			'to_ping'               => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Space or carriage return-separated list of URLs to ping. Default empty.', $translation_ident ) ),
+			'pinged'                => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Space or carriage return-separated list of URLs that have been pinged. Default empty.', $translation_ident ) ),
+			'post_parent'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) Set this for the post it belongs to, if any. Default 0.', $translation_ident ) ),
+			'menu_order'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(int) The order the post should be displayed in. Default 0.', $translation_ident ) ),
+			'post_mime_type'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) The mime type of the post. Default empty.', $translation_ident ) ),
+			'guid'                  => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) Global Unique ID for referencing the post. Default empty.', $translation_ident ) ),
+			'import_id'             => array(
+				'short_description' => WPWHPRO()->helpers->translate( '(integer) In case you want to give your post a specific post id, please define it here.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "This argument allows you to define a suggested post ID for your post. In case the ID is already taken, the post will be created using the default behavior by asigning automatically an ID. ", $translation_ident ),
+			),
+			'post_category'         => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of category IDs. Defaults to value of the \'default_category\' option. Example: cat_1,cat_2,cat_3', $translation_ident ) ),
+			'tags_input'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A comma separated list of tag names, slugs, or IDs. Default empty.', $translation_ident ) ),
+			'tax_input'             => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A simple or JSON formatted string containing existing taxonomy terms. Default empty.', $translation_ident ) ),
+			'wp_error'              => array(
+				'short_description' => WPWHPRO()->helpers->translate( 'Whether to return a WP_Error on failure. Posible values: "yes" or "no". Default value: "no".', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "In case you set the <strong>wp_error</strong> argument to <strong>yes</strong>, we will return the WP Error object within the response if the webhook action call. It is recommended to only use this for debugging.", $translation_ident ),
+			),
+			'do_action'             => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
 		);
 
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "This argument supports the default tags_input variable of the <strong>wp_insert_post()</strong> function. Please use this function only if you are known to its functionality since WordPress might not add the values properly due to permissions. If you are not sure, please use the <strong>tax_input</strong> argument instead.", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Here is an example:", $translation_ident ); ?>
+<pre>342,5678,2</pre>
+<?php echo WPWHPRO()->helpers->translate( "This argument supports a comma separated list of tag names, slugs, or IDs.", $translation_ident ); ?>
+		<?php
+		$parameter['tags_input']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "This argument allows you to add/append/delete any kind of taxonomies on your post. It uses a custom functionality that adds the taxonomies independently of the <strong>wp_update_post()</strong> function.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "To make it work, we offer certain different features and methods to make the most out of the taxonomy management. Down below, you will find further information about the whole functionality.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong><?php echo WPWHPRO()->helpers->translate( "String method", $translation_ident ); ?></strong>
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "This method allows you to add/update/delete or bulk manage the post taxonomies using a simple string. Both the string and the JSON method support custom taxonomies too. In case you use more complex taxonomies that use semicolons or double points within the slugs, you need to use the JSON method.", $translation_ident ); ?>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Replace existing taxonomy items", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "This method allows you to replace already existing taxonomy items on the post. In case a taxonomy item does not exists at the point you want to add it, it will be ignored.", $translation_ident ); ?>
+                <pre>taxonomy_1,tax_item_1:tax_item_2:tax_item_3;taxonomy_2,tax_item_5:tax_item_7:tax_item_8</pre>
+                <?php echo WPWHPRO()->helpers->translate( "To separate the taxonomies from the single taxonomy items, please use a comma \",\". In case you want to add multiple items per taxonomy, you can separate them via a double point \":\". To separate multiple taxonomies from each other, please separate them with a semicolon \";\" (It is not necessary to set a semicolon at the end of the last one)", $translation_ident ); ?>
+            </li>
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Remove all taxonomy items for a single taxonomy", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "In case you want to remove all taxonomy items from one or multiple taxonomies, you can set <strong>ironikus-remove-all;</strong> in front of a semicolon-separated list of the taxonomies you want to remove all items for. Here is an example:", $translation_ident ); ?>
+                <pre>ironikus-remove-all;taxonomy_1;taxonomy_2</pre>
+            </li>
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Remove single taxonomy items for a taxonomy", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "You can also remove only single taxonomy items for one or multiple taxonomies. Here is an example:", $translation_ident ); ?>
+                <pre>ironikus-append;taxonomy_1,value_1:value_2-ironikus-delete:value_3;taxonomy_2,value_5:value_6:value_7-ironikus-delete</pre>
+                <?php echo WPWHPRO()->helpers->translate( "In the example above, we append the taxonomies taxonomy_1 and taxonomy_2. We also add the taxonomy items value_1, value_3, value_5 and value_6. We also remove the taxonomy items value_2 and value_7.", $translation_ident ); ?>
+            </li>
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Append taxonomy items", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "You can also append any taxonomy items without the existing ones being replaced. To do that, simply add <strong>ironikus-append;</strong> at the beginning of the string.", $translation_ident ); ?>
+                <pre>ironikus-append;taxonomy_1,value_1:value_2:value_3;taxonomy_2,value_1:value_2:value_3</pre>
+                <?php echo WPWHPRO()->helpers->translate( "In the example above, we append the taxonomies taxonomy_1 and taxonomy_2 with multiple taxonomy items on the post. The already assigned ones won't be replaced.", $translation_ident ); ?>
+            </li>
+        </ul>
+    </li>
+    <li>
+    <strong><?php echo WPWHPRO()->helpers->translate( "JSON method", $translation_ident ); ?></strong>
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "This method allows you to add/update/delete or bulk manage the post taxonomies using a simple string. Both the string and the JSON method support custom taxonomies too.", $translation_ident ); ?>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Replace existing taxonomy items", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "This JSON allows you to replace already existing taxonomy items on the post. In case a taxonomy item does not exists at the point you want to add it, it will be ignored.", $translation_ident ); ?>
+                <pre>{
+  "category": [
+    "test-category",
+    "second-category"
+  ],
+  "post_tag": [
+    "dog",
+    "male",
+    "simple"
+  ]
+}</pre>
+                <?php echo WPWHPRO()->helpers->translate( "The key on the first layer of the JSON is the slug of the taxonomy. As a value, it accepts multiple slugs of the single taxonomy terms. To add multiple taxonomies, simply append them on the first layer of the JSON.", $translation_ident ); ?>
+            </li>
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Remove all taxonomy items for a single taxonomy", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "In case you want to remove all taxonomy items from one or multiple taxonomies, you can set <strong>ironikus-remove-all</strong> as a separate value with the <strong>wpwhtype</strong> key. The <strong>wpwhtype</strong> key is a reserved key for further actions on the data. Here is an example:", $translation_ident ); ?>
+                <pre>{
+  "wpwhtype": "ironikus-remove-all",
+  "category": [],
+  "post_tag": []
+}</pre>
+            </li>
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Append taxonomy items", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "You can also append any taxonomy items without the existing ones being replaced. To do that, simply add <strong>ironikus-append</strong> to the <strong>wpwhtype</strong> key. The <strong>wpwhtype</strong> key is a reserved key for further actions on the data. All the taxonomies you add after, will be added to the existing ones on the post.", $translation_ident ); ?>
+                <pre>{
+  "wpwhtype": "ironikus-append",
+  "category": [
+    "test-category",
+    "second-category"
+  ],
+  "post_tag": [
+    "dog"
+  ]
+}</pre>
+                <?php echo WPWHPRO()->helpers->translate( "In the example above, we append the taxonomies category and post_tag with multiple taxonomy items on the post. The already assigned ones won't be replaced.", $translation_ident ); ?>
+            </li>
+            <li class="list-group-item">
+                <strong><?php echo WPWHPRO()->helpers->translate( "Remove single taxonomy items for a taxonomy", $translation_ident ); ?></strong>
+                <br>
+                <?php echo WPWHPRO()->helpers->translate( "You can also remove only single taxonomy items for one or multiple taxonomies. To do that, simply append <strong>-ironikus-delete</strong> at the end of the taxonomy term slug. This specific taxonomy term will then be removed from the post. Here is an example:", $translation_ident ); ?>
+                <pre>{
+  "wpwhtype": "ironikus-append",
+  "category": [
+    "test-category",
+    "second-category-ironikus-delete"
+  ],
+  "post_tag": [
+    "dog-ironikus-delete"
+  ]
+}</pre>
+                <?php echo WPWHPRO()->helpers->translate( "In the example above, we append the taxonomies category and post_tag. We also add the taxonomy item test-category. We also remove the taxonomy items second-category and dog.", $translation_ident ); ?>
+            </li>
+        </ul>
+    </li>
+</ol>
+		<?php
+		$parameter['tax_input']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The do_action argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the create_post action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $post_data, $post_id, $meta_input, $return_args ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$post_data</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the data that is used to create the post and some additional data as the meta input.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$post_id</strong> (integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the post id of the newly created post. Please note that it can also contain a wp_error object since it is the response of the wp_insert_user() function.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$meta_input</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the unformatted post meta as you sent it over within the webhook request as a string.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-create-post-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the post id with the key "post_id" and the post data with the key "post_data". E.g. array( \'data\' => array(...) )', 'action-create-post-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-create-post-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the post id with the key "post_id" and the post data with the key "post_data". E.g. array( \'data\' => array(...) )', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1399,7 +1752,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Insert/Create a post. You have all functionalities available from wp_insert_post', 'action-create-post-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Insert/Create a post. You have all functionalities available from wp_insert_post', $translation_ident ),
 			'description'       => $description
 		);
 
@@ -1410,16 +1763,60 @@ $return_args = array(
 	 */
 	public function action_delete_post_content(){
 
+		$translation_ident = 'action-delete-post-content';
+
 		$parameter = array(
-			'post_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of your specified post. This field is required.', 'action-delete-post-content' ) ),
-			'force_delete'  => array( 'short_description' => WPWHPRO()->helpers->translate( '(optional) Whether to bypass trash and force deletion (added in WordPress 2.9). Possible values: "yes" and "no". Default: "no". Please note that soft deletion just works for the "post" and "page" post type.', 'action-delete-post-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-delete-post-content' ) )
+			'post_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of your specified post. This field is required.', $translation_ident ) ),
+			'force_delete'  => array(
+				'short_description' => WPWHPRO()->helpers->translate( '(optional) Whether to bypass trash and force deletion (added in WordPress 2.9). Possible values: "yes" and "no". Default: "no". Please note that soft deletion just works for the "post" and "page" post type.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "In case you set the <strong>force_delete</strong> argument to <strong>yes</strong>, the post will be completely removed from your WordPress website.", $translation_ident ),
+			),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
 		);
 
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>delete_post</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $post, $post_id, $check, $force_delete ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$post</strong> (object)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the WordPress post object of the already deleted post.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$post_id</strong> (integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the post id of the deleted post.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$check</strong> (mixed)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the response of the wp_delete_post() function.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$force_delete</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Returns either yes or no, depending on your settings for the force_delete argument.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-delete-post-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Post related data as an array. We return the post id with the key "post_id" and the force delete boolean with the key "force_delete". E.g. array( \'data\' => array(...) )', 'action-delete-post-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-delete-post-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Post related data as an array. We return the post id with the key "post_id" and the force delete boolean with the key "force_delete". E.g. array( \'data\' => array(...) )', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1446,7 +1843,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Delete a post via WP Webhooks.', 'action-create-post-content' ),
+			'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s Pro.', $translation_ident ), WPWHPRO_NAME ),
 			'description'       => $description
 		);
 
@@ -1457,17 +1854,108 @@ $return_args = array(
 	 */
 	public function action_get_posts_content(){
 
+		$translation_ident = 'action-get_posts-content';
+
 		$parameter = array(
-			'arguments'     => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_Query notation. Please check the description for more information.', 'action-get_posts-content' ) ),
-			'return_only'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: posts', 'action-get_posts-content' ) ),
-			'load_meta'    	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this argument to "yes" to add the post meta to each given post. Default: "no"', 'action-get_posts-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_posts-content' ) )
+			'arguments'			=> array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'A string containing a JSON construct in the WP_Query notation.', $translation_ident ) ),
+			'return_only'		=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Define the data you want to return. Please check the description for more information. Default: posts', $translation_ident ) ),
+			'load_meta'			=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this argument to "yes" to add the post meta to each given post. Default: "no"', $translation_ident ) ),
+			'load_acf'			=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this argument to "yes" to add the Advanced Custom Fields related post meta to each given post. Default: "no"', $translation_ident ) ),
+			'load_taxonomies'	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Single value or comma separated list of the taxonomies you want to addto the response.', $translation_ident ) ),
+			'do_action'			=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the plugin fires this webhook.', $translation_ident ) )
 		);
 
+		if( ! WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+			unset( $parameter['load_acf'] );
+		}
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "This argument contains a JSON formatted string, which includes certain arguments from the WordPress post query called <strong>WP_Query</strong>. For further details, please check out the following link:", $translation_ident ); ?>
+<br>
+<a href="https://developer.wordpress.org/reference/classes/wp_query/" title="wordpress.org" target="_blank">https://developer.wordpress.org/reference/classes/wp_query/</a>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Here is an example on how the JSON is set up:", $translation_ident ); ?>
+<pre>{"post_type":"post","posts_per_page":8}</pre>
+<?php echo WPWHPRO()->helpers->translate( "The example above will filter the posts for the post type \"post\" and returns maximum eight posts.", $translation_ident ); ?>
+		<?php
+		$parameter['arguments']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "You can also manipulate the output of the query using the <strong>return_only</strong> parameter. This allows you to output only certain elements or the whole WP_Query class. Here is an example:", $translation_ident ); ?>
+<pre>posts,post_count,found_posts,max_num_pages</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's a list of all available values for the <strong>return_only</strong> argument. In case you want to use multiple ones, simply separate them with a comma.", $translation_ident ); ?>
+<ol>
+    <li>all</li>
+    <li>posts</li>
+    <li>post</li>
+    <li>post_count</li>
+    <li>found_posts</li>
+    <li>max_num_pages</li>
+    <li>current_post</li>
+    <li>query_vars</li>
+    <li>query</li>
+    <li>tax_query</li>
+    <li>meta_query</li>
+    <li>date_query</li>
+    <li>request</li>
+    <li>in_the_loop</li>
+    <li>current_post</li>
+</ol>
+		<?php
+		$parameter['return_only']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "You can also attach the assigned taxonomies of the returned posts. This argument accepts a string of a single taxonomy slug or a comma separated list of multiple taxonomy slugs. Please see the example down below:", $translation_ident ); ?>
+<pre>post_tag,custom_taxonomy_1,custom_taxonomy_2</pre>
+		<?php
+		$parameter['load_taxonomies']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>get_posts</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $return_args, $post_query, $args, $return_only ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$post_query</strong> (object)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The full WP_Query object.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$args</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The string formatted JSON construct that was sent by the caller within the arguments argument.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$return_only</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The string that was sent by the caller via the return_only argument.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_posts-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the post query. This depends on the parameters you send.', 'action-get_posts-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_posts-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the post query. This depends on the parameters you send.', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1491,7 +1979,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Search for posts on your WordPress website', 'action-get_posts-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Search for posts on your WordPress website', $translation_ident ),
             'description'       => $description
 		);
 
@@ -1502,18 +1990,99 @@ $return_args = array(
 	 */
 	public function action_get_post_content(){
 
+		$translation_ident = 'action-get_post-content';
+
 		$parameter = array(
-			'post_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the post you want to fetch.', 'action-get_post-content' ) ),
-			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Select the values you want to return. Default is all. Please see the description for more details.', 'action-get_post-content' ) ),
-			'thumbnail_size'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Pass the size of the thumbnail of your given post id. Default is full. Please see the description for more details.', 'action-get_post-content' ) ),
-			'post_taxonomies'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Single value or comma separated list of the taxonomies you want to return. Default: post_tag. Please see the description for more details.', 'action-get_post-content' ) ),
-			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', 'action-get_post-content' ) )
+			'post_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the post you want to fetch.', $translation_ident ) ),
+			'return_only'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Select the values you want to return. Default is all.', $translation_ident ) ),
+			'thumbnail_size'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Pass the size of the thumbnail of your given post id. Default is full.', $translation_ident ) ),
+			'post_taxonomies'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Single value or comma separated list of the taxonomies you want to return. Default: post_tag.', $translation_ident ) ),
+			'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after our plugin fires this webhook.', $translation_ident ) )
 		);
 
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "You can also manipulate the result of the post data gathering using the <strong>return_only</strong> parameter. This allows you to output only certain elements of the request. Here is an example:", $translation_ident ); ?>
+<pre>post,post_thumbnail,post_terms,post_meta,post_permalink</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's a list of all available values for the <strong>return_only</strong> argument. In case you want to use multiple ones, simply separate them with a comma.", $translation_ident ); ?>
+<ol>
+    <li><strong>all</strong></li>
+    <li><strong>post</strong></li>
+    <li><strong>post_thumbnail</strong></li>
+    <li><strong>post_terms</strong></li>
+    <li><strong>post_meta</strong></li>
+    <li><strong>post_permalink</strong></li>
+	<?php if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+		echo '<li><strong>acf_data</strong> (' . WPWHPRO()->helpers->translate( "Integrates Advanced Custom Fields", $translation_ident ) . ')</li>';
+	} ?>
+</ol>
+		<?php
+		$parameter['return_only']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "This argument allows you to return one or multiple thumbnail_sizes for the given post thumbnail. By default, we output only the full image. Here is an example: ", $translation_ident ); ?>
+<pre>full,medium</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's a list of all available sizes for the <strong>thumbnail_size</strong> argument (The availalbe sizes may vary since you can also use third-party size definitions). In case you want to use multiple ones, simply separate them with a comma.", $translation_ident ); ?>
+<ol>
+    <li><strong>thumbnail</strong> <?php echo WPWHPRO()->helpers->translate( "(150px square)", $translation_ident ); ?></li>
+    <li><strong>medium</strong> <?php echo WPWHPRO()->helpers->translate( "(maximum 300px width and height)", $translation_ident ); ?></li>
+    <li><strong>large</strong> <?php echo WPWHPRO()->helpers->translate( "(maximum 1024px width and height)", $translation_ident ); ?></li>
+    <li><strong>full</strong> <?php echo WPWHPRO()->helpers->translate( "(full/original image size you uploaded)", $translation_ident ); ?></li>
+</ol>
+		<?php
+		$parameter['thumbnail_size']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "You can also customize the output of the returned taxonomies using the <strong>post_taxonomies</strong> argument. Default is post_tag. This argument accepts a string of a single taxonomy slug or a comma separated list of multiple taxonomy slugs. Please see the example down below:", $translation_ident ); ?>
+<pre>post_tag,custom_taxonomy_1,custom_taxonomy_2</pre>
+		<?php
+		$parameter['post_taxonomies']['description'] = ob_get_clean();
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>get_post</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 4 );
+function my_custom_callback_function( $return_args, $post_id, $thumbnail_size, $post_taxonomies ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$post_id</strong> (integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The id of the currently fetched post.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$thumbnail_size</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The string formatted thumbnail sizes sent by the caller within the thumbnail_size argument.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$post_taxonomies</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The string formatted taxonomy slugs sent by the caller within the post_taxonomies argument.", $translation_ident ); ?>
+    </li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 		$returns = array(
-			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-get_post-content' ) ),
-			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the single post. This depends on the parameters you send.', 'action-get_post-content' ) ),
-			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-get_post-content' ) ),
+			'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+			'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'The data construct of the single post. This depends on the parameters you send.', $translation_ident ) ),
+			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1537,7 +2106,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', 'action-get_post-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', $translation_ident ),
             'description'       => $description
 		);
 
@@ -1548,12 +2117,17 @@ $return_args = array(
 	 */
 	public function action_custom_action_content(){
 
+		$translation_ident = 'action-ironikus-custom_action-content';
+
 		$parameter = array(
-			'wpwh_identifier'       => array( 'short_description' => WPWHPRO()->helpers->translate( 'This value is send over within the WordPress hooks to identify the incoming action. You can use it to fire your customizatios only on specific webhooks. For more information, please check the description.', 'action-ironikus-custom_action-content' ) )
+			'wpwh_identifier'       => array(
+				'short_description' => WPWHPRO()->helpers->translate( 'This value is send over within the WordPress hooks to identify the incoming action. You can use it to fire your customizatios only on specific webhooks.', $translation_ident ),
+				'description' => WPWHPRO()->helpers->translate( "Set this argument to identify your webhook call within the add_filter() function. It can be used to diversify between multiple calls that use this custom action. You can set it to e.g. <strong>validate-user</strong> and then check within the add_filter() callback against it to only fire it for this specific webhook call. You can also define this argument within the URL as a parameter, e.g. <code>&wpwh_identifier=my-custom-identifier</code>. In case you have defined the wpwh_identifier within the payload and the URL, we prioritize the parameter set within the payload.", $translation_ident ),
+			),
 		);
 
 		$returns = array(
-			'custom'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'This webhook returns whatever you define withiin the filters. Please check the description for more detials.', 'action-ironikus-custom_action-content' ) ),
+			'custom'        => array( 'short_description' => WPWHPRO()->helpers->translate( 'This webhook returns whatever you define withiin the filters. Please check the description for more detials.', $translation_ident ) ),
 		);
 
 		ob_start();
@@ -1577,7 +2151,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Do whatever you like with the incoming data by defining this custom action.', 'action-ironikus-custom_action-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Do whatever you like with the incoming data by defining this custom action.', $translation_ident ),
 			'description'       => $description
 		);
 
@@ -1619,7 +2193,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => WPWHPRO()->helpers->translate( 'Test a webhooks functionality. (Advanced)', 'action-ironikus-test-content' ),
+			'short_description' => WPWHPRO()->helpers->translate( 'Test the functionality of this plugin by sending over a demo request.', 'action-ironikus-test-content' ),
 			'description'       => $description
 		);
 
@@ -1701,7 +2275,7 @@ $return_args = array(
 		$user_pass          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_pass' );
 		$do_action          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 
-		$rich_editing     = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'rich_editing' ) == 'yes' ) ? true : false;
+		$rich_editing     	= ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'rich_editing' ) == 'yes' ) ? true : false;
 		$send_email         = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'send_email' ) == 'yes' ) ? 'yes' : 'no';
 		$additional_roles   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'additional_roles' );
 
@@ -1786,7 +2360,7 @@ $return_args = array(
 		$user_id = wp_insert_user( $user_data );
 
 		if ( ! is_wp_error( $user_id ) && is_numeric( $user_id ) ) {
-			
+
 			//Manage user roles
 			if( ! empty( $additional_roles ) ){
 
@@ -1814,11 +2388,11 @@ $return_args = array(
 					foreach( $additional_roles_data as $single_additional_role ){
 
 						$additional_roles_data = explode( ':', trim( $single_additional_role, ':' ) );
-						if( 
-							! empty( $additional_roles_data ) 
-							&& is_array( $additional_roles_data ) 
-							&& ! empty( $additional_roles_data[0] ) 
-							&& ! empty( $additional_roles_data[1] ) 
+						if(
+							! empty( $additional_roles_data )
+							&& is_array( $additional_roles_data )
+							&& ! empty( $additional_roles_data[0] )
+							&& ! empty( $additional_roles_data[1] )
 						){
 
 							switch( $additional_roles_data[1] ){
@@ -1842,9 +2416,9 @@ $return_args = array(
 
 			$return_args['msg'] = WPWHPRO()->helpers->translate("User successfully created.", 'action-create-user-success' );
 
+			$return_args['success'] = true;
 			$return_args['data']['user_id'] = $user_id;
 			$return_args['data']['user_data'] = $user_data;
-			$return_args['success'] = true;
 
 			if( apply_filters( 'wpwhpro/run/create_action_user_email_notification', true ) && $send_email == 'yes' ){
 				wp_new_user_notification( $user_id, null, 'both' );
@@ -1943,7 +2517,7 @@ $return_args = array(
 				$return_args['msg'] = WPWHPRO()->helpers->translate("Could not delete user because the user not given.", 'action-delete-user-error' );
 			}
 		}
-		
+
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $user, $user_id, $user_email, $send_email );
 		}
@@ -1968,7 +2542,7 @@ $return_args = array(
 		$value_type     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'value_type' );
 		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 		$user = null;
-		
+
 		if( empty( $user_value ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the user_value argument. Please define it first.", 'action-get_user-failure' );
 
@@ -1987,7 +2561,7 @@ $return_args = array(
 				$return_args['msg'] = WPWHPRO()->helpers->translate( $user->get_error_message(), 'action-get_user-failure' );
 			} else {
 
-				if( ! empty( $user ) ){
+				if( ! empty( $user ) && ! is_wp_error( $user ) ){
 
 					$user_meta = array();
 					if( isset( $user->ID ) ){
@@ -1998,6 +2572,12 @@ $return_args = array(
 					$return_args['success'] = true;
 					$return_args['data'] = $user;
 					$return_args['user_meta'] = $user_meta;
+					$return_args['user_posts_url'] = get_author_posts_url( $user->ID );
+
+					if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+						$return_args['acf_meta'] = get_fields( 'user_' . $user->ID );
+					}
+
 				} else {
 					$return_args['data'] = $user;
 					$return_args['msg'] = WPWHPRO()->helpers->translate("No user found.", 'action-get_users-success' );
@@ -2008,7 +2588,7 @@ $return_args = array(
 		} else {
 			$return_args['msg'] = WPWHPRO()->helpers->translate("There is an issue with your defined arguments. Please check them first.", 'action-get_user-failure' );
 		}
-		
+
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $return_args, $user_value, $value_type, $user );
 		}
@@ -2033,7 +2613,7 @@ $return_args = array(
 		$return_only     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
 		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 		$user_query = null;
-		
+
 		if( empty( $args ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate("arguments is a required parameter. Please define it.", 'action-get_users-failure' );
 
@@ -2077,16 +2657,26 @@ $return_args = array(
 				//Manually attach additional data to the query
 				foreach( $return as $single_return ){
 
-					switch( $single_return ){
-						case 'meta_data':
+					if( $single_return === 'meta_data' ){
+						if( isset( $return_args['data']['get_results'] ) && ! empty( $return_args['data']['get_results'] ) ){
+							foreach( $return_args['data']['get_results'] as $user_key => $user_data ){
+								if( isset( $user_data->data ) && isset( $user_data->data->ID ) ){
+									$return_args['data']['get_results'][ $user_key ]->data->meta_data = get_user_meta( $user_data->data->ID );
+								}
+							}
+						}
+					}
+
+					if( $single_return === 'acf_data' ){
+						if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
 							if( isset( $return_args['data']['get_results'] ) && ! empty( $return_args['data']['get_results'] ) ){
 								foreach( $return_args['data']['get_results'] as $user_key => $user_data ){
 									if( isset( $user_data->data ) && isset( $user_data->data->ID ) ){
-										$return_args['data']['get_results'][ $user_key ]->data->meta_data = get_user_meta( $user_data->data->ID );
+										$return_args['data']['get_results'][ $user_key ]->data->acf_data = get_fields( 'user_' . $user_data->data->ID );
 									}
 								}
 							}
-							break;
+						}
 					}
 
 				}
@@ -2099,7 +2689,7 @@ $return_args = array(
 		} else {
 			$return_args['msg'] = WPWHPRO()->helpers->translate("The arguments parameter does not contain a valid json. Please check it first.", 'action-get_users-failure' );
 		}
-		
+
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $return_args, $user_query, $args, $return_only );
 		}
@@ -2227,11 +2817,11 @@ $return_args = array(
 		}
 
 		if( ! empty( $post_modified ) ){
-			$post_data['post_modified'] = $post_modified;
+			$post_data['post_modified'] = date( "Y-m-d H:i:s", strtotime( $post_modified ) );
 		}
 
 		if( ! empty( $post_modified_gmt ) ){
-			$post_data['post_modified_gmt'] = $post_modified_gmt;
+			$post_data['post_modified_gmt'] = date( "Y-m-d H:i:s", strtotime( $post_modified_gmt ) );
 		}
 
 		if( ! empty( $post_parent ) ){
@@ -2288,101 +2878,95 @@ $return_args = array(
 				if( WPWHPRO()->helpers->is_json( $tax_input ) ){
 					$post_tax_data = json_decode( $tax_input, true );
 					foreach( $post_tax_data as $taxkey => $single_meta ){
-	
+
 						//Validate special values
 						if( $taxkey == 'wpwhtype' && $single_meta == 'ironikus-append' ){
 							$tax_append = true;
 							continue;
 						}
-	
+
 						if( $taxkey == 'wpwhtype' && $single_meta == 'ironikus-remove-all' ){
 							$remove_all = true;
 							continue;
 						}
-	
+
 						$meta_key           = sanitize_text_field( $taxkey );
 						$meta_values        = $single_meta;
-	
+
 						if( ! empty( $meta_key ) ){
-	
+
 							if( ! is_array( $meta_values ) ){
 								$meta_values = array( $meta_values );
 							}
-	
+
 							//separate for deletion and for creation
 							foreach( $meta_values as $svalue ){
 								if( strpos( $svalue, '-ironikus-delete' ) !== FALSE ){
-	
+
 									if( ! isset( $tax_data['delete'][ $meta_key ] ) ){
 										$tax_data['delete'][ $meta_key ] = array();
 									}
-	
+
 									//Replace deletion value to correct original value
 									$tax_data['delete'][ $meta_key ][] = str_replace( '-ironikus-delete', '', $svalue );
 								} else {
-	
+
 									if( ! isset( $tax_data['create'][ $meta_key ] ) ){
 										$tax_data['create'][ $meta_key ] = array();
 									}
-	
+
 									$tax_data['create'][ $meta_key ][] = $svalue;
 								}
 							}
-	
+
 						}
 					}
 				} else {
 					$post_tax_data = explode( ';', trim( $tax_input, ';' ) );
 					foreach( $post_tax_data as $single_meta ){
-	
+
 						//Validate special values
 						if( $single_meta == 'ironikus-append' ){
 							$tax_append = true;
 							continue;
 						}
-	
+
 						if( $single_meta == 'ironikus-remove-all' ){
 							$remove_all = true;
 							continue;
 						}
-	
+
 						$single_meta_data   = explode( ',', $single_meta );
 						$meta_key           = sanitize_text_field( $single_meta_data[0] );
 						$meta_values        = explode( ':', $single_meta_data[1] );
-	
+
 						if( ! empty( $meta_key ) ){
-	
+
 							if( ! is_array( $meta_values ) ){
 								$meta_values = array( $meta_values );
 							}
-	
+
 							//separate for deletion and for creation
 							foreach( $meta_values as $svalue ){
 								if( strpos( $svalue, '-ironikus-delete' ) !== FALSE ){
-	
+
 									if( ! isset( $tax_data['delete'][ $meta_key ] ) ){
 										$tax_data['delete'][ $meta_key ] = array();
 									}
-	
+
 									//Replace deletion value to correct original value
 									$tax_data['delete'][ $meta_key ][] = str_replace( '-ironikus-delete', '', $svalue );
 								} else {
-	
+
 									if( ! isset( $tax_data['create'][ $meta_key ] ) ){
 										$tax_data['create'][ $meta_key ] = array();
 									}
-	
+
 									$tax_data['create'][ $meta_key ][] = $svalue;
 								}
 							}
-	
-						}
-					}
-				}
 
-				if( ! empty( $tax_data['delete'] ) ){
-					foreach( $tax_data['delete'] as $tax_key => $tax_values ){
-						wp_remove_object_terms( $post_id, $tax_values, $tax_key );
+						}
 					}
 				}
 
@@ -2403,9 +2987,10 @@ $return_args = array(
 			$post_data['tax_input'] = $tax_input;
 
 			$return_args['msg'] = WPWHPRO()->helpers->translate("Post successfully created", 'action-create-post-success' );
+
+			$return_args['success'] = true;
 			$return_args['data']['post_data'] = $post_data;
 			$return_args['data']['post_id'] = $post_id;
-			$return_args['success'] = true;
 
 		} else {
 
@@ -2497,12 +3082,14 @@ $return_args = array(
             'data' => array()
 		);
 
-		$args     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'arguments' );
-		$return_only     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
-		$load_meta     = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'load_meta' ) === 'yes' ) ? true : false;
-		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+		$args = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'arguments' );
+		$return_only = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
+		$load_meta = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'load_meta' ) === 'yes' ) ? true : false;
+		$load_acf = ( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'load_acf' ) === 'yes' ) ? true : false;
+		$load_taxonomies = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'load_taxonomies' );
+		$do_action = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 		$post_query = null;
-		
+
 		if( empty( $args ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate("arguments is a required parameter. Please define it.", 'action-get_posts-failure' );
 
@@ -2587,10 +3174,42 @@ $return_args = array(
 							$return_args['data']['posts'][ $single_post_key ]->meta_data = get_post_meta( $single_post->ID );
 						}
 					}
-					
+
 					//Add the post meta to the single post
 					if( isset( $return_args['data']['post'] ) && is_object( $return_args['data']['post'] ) ){
 						$return_args['data']['post']->meta_data = get_post_meta( $return_args['data']['post']->ID );
+					}
+				}
+
+				if( $load_acf && WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+
+					//Add the meta data to the posts array
+					if( isset( $return_args['data']['posts'] ) && is_array( $return_args['data']['posts'] ) ){
+						foreach( $return_args['data']['posts'] as $single_post_key => $single_post ){
+							$return_args['data']['posts'][ $single_post_key ]->acf_data = get_fields( $single_post->ID );
+						}
+					}
+
+					//Add the post meta to the single post
+					if( isset( $return_args['data']['post'] ) && is_object( $return_args['data']['post'] ) ){
+						$return_args['data']['post']->acf_data = get_fields( $return_args['data']['post']->ID );
+					}
+				}
+
+				if( ! empty( $load_taxonomies ) ){
+
+					$post_taxonomies_out = array_map( 'trim', explode( ',', $load_taxonomies ) );
+
+					//Add the taxonomies to the posts array
+					if( isset( $return_args['data']['posts'] ) && is_array( $return_args['data']['posts'] ) ){
+						foreach( $return_args['data']['posts'] as $single_post_key => $single_post ){
+							$return_args['data']['posts'][ $single_post_key ]->taxonomies = wp_get_post_terms( $single_post->ID, $post_taxonomies_out );
+						}
+					}
+
+					//Add the taxonomies to the single post
+					if( isset( $return_args['data']['post'] ) && is_object( $return_args['data']['post'] ) ){
+						$return_args['data']['post']->taxonomies = wp_get_post_terms( $return_args['data']['post']->ID, $post_taxonomies_out );
 					}
 				}
 
@@ -2602,7 +3221,7 @@ $return_args = array(
 		} else {
 			$return_args['msg'] = WPWHPRO()->helpers->translate("The arguments parameter does not contain a valid json. Please check it first.", 'action-get_posts-failure' );
 		}
-		
+
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $return_args, $post_query, $args, $return_only );
 		}
@@ -2628,7 +3247,7 @@ $return_args = array(
 		$thumbnail_size     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'thumbnail_size' );
 		$post_taxonomies     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_taxonomies' );
 		$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
-		
+
 		if( empty( $post_id ) ){
 			$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the post_id argument. Please define it first.", 'action-get_post-failure' );
 
@@ -2658,6 +3277,11 @@ $return_args = array(
 			$post_meta = get_post_meta( $post_id );
 			$permalink = get_permalink( $post_id );
 
+			$acf_data = '';
+			if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+				$acf_data = get_fields( $post_id );
+			}
+
 			if ( is_wp_error( $post ) ) {
 				$return_args['msg'] = WPWHPRO()->helpers->translate( $post->get_error_message(), 'action-get_post-failure' );
 			} else {
@@ -2671,6 +3295,11 @@ $return_args = array(
 							$return_args['data'][ 'post_terms' ] = $post_terms;
 							$return_args['data'][ 'post_meta' ] = $post_meta;
 							$return_args['data'][ 'post_permalink' ] = $permalink;
+
+							if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+								$return_args['data'][ 'acf_data' ] = $acf_data;
+							}
+
 							break;
 						case 'post':
 							$return_args['data'][ $single_return ] = $post;
@@ -2687,6 +3316,11 @@ $return_args = array(
 						case 'post_permalink':
 							$return_args['data'][ $single_return ] = $permalink;
 							break;
+						case 'acf_data':
+							if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+								$return_args['data'][ $single_return ] = $acf_data;
+							}
+							break;
 					}
 				}
 
@@ -2698,7 +3332,7 @@ $return_args = array(
 		} else {
 			$return_args['msg'] = WPWHPRO()->helpers->translate("There is an issue with your defined arguments. Please check them first.", 'action-get_post-failure' );
 		}
-		
+
 		if( ! empty( $do_action ) ){
 			do_action( $do_action, $return_args, $post_id, $thumbnail_size, $post_taxonomies );
 		}
@@ -2743,59 +3377,56 @@ $return_args = array(
 	 */
 	public function add_webhook_triggers(){
 
-		$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
-		$available_triggers = $active_webhooks['triggers'];
-
-		if( isset( $available_triggers['create_user'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'create_user' ) ) ){
 			add_action( 'user_register', array( $this, 'ironikus_trigger_user_register_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_user_create', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['login_user'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'login_user' ) ) ){
 			add_action( 'wp_login', array( $this, 'ironikus_trigger_user_login_init' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_user_login', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['update_user'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'update_user' ) ) ){
 			add_action( 'profile_update', array( $this, 'ironikus_trigger_user_update_init' ), 10, 2 );
 			add_filter( 'ironikus_demo_test_user_update', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['deleted_user'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'deleted_user' ) ) ){
 			add_action( 'wpmu_delete_user', array( $this, 'ironikus_prepare_user_delete' ), 10, 1 );
 			add_action( 'delete_user', array( $this, 'ironikus_prepare_user_delete' ), 10, 1 );
 			add_action( 'deleted_user', array( $this, 'ironikus_trigger_deleted_user_init' ), 10, 3 );
 			add_filter( 'ironikus_demo_test_deleted_user', array( $this, 'ironikus_send_demo_user_deleted' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['post_create'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'post_create' ) ) ){
 			add_action( 'add_attachment', array( $this, 'ironikus_trigger_post_create_attachment_init' ), 10, 1 );
 			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_create_init' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['post_update'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'post_update' ) ) ){
 			add_action( 'post_updated', array( $this, 'ironikus_prepare_post_update' ), 10, 3 );
 			add_action( 'wp_insert_post', array( $this, 'ironikus_trigger_post_update_init' ), 10, 3 );
 			add_action( 'attachment_updated', array( $this, 'ironikus_trigger_post_update_attachment_init' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['post_create'] ) || isset( $available_triggers['post_update'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'post_create' ) ) || ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'post_update' ) ) ){
 			add_filter( 'ironikus_demo_test_post_create', array( $this, 'ironikus_send_demo_post_create' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['post_delete'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'post_delete' ) ) ){
 			add_action( 'before_delete_post', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
 			add_action( 'delete_attachment', array( $this, 'ironikus_prepare_post_delete' ), 10, 1 );
 			add_action( 'delete_post', array( $this, 'ironikus_trigger_post_delete_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
-		}
-		
-		if( isset( $available_triggers['post_trash'] ) ){
+        }
+
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'post_trash' ) ) ){
 			add_action( 'trashed_post', array( $this, 'ironikus_trigger_post_trash_init' ), 10, 1 );
 			add_filter( 'ironikus_demo_test_post_delete', array( $this, 'ironikus_send_demo_post_delete' ), 10, 3 );
         }
 
-		if( isset( $available_triggers['custom_action'] ) ){
+		if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'custom_action' ) ) ){
 			add_action( 'wp_webhooks_send_to_webhook', array( $this, 'wp_webhooks_send_to_webhook_action' ), 10, 2 );
 			add_filter( 'wp_webhooks_send_to_webhook_filter', array( $this, 'wp_webhooks_send_to_webhook_action_filter' ), 10, 4 );
 			add_filter( 'ironikus_demo_test_custom_action', array( $this, 'ironikus_send_demo_custom_action' ), 10 );
@@ -2816,6 +3447,10 @@ $return_args = array(
 			'user_object' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The request will send the full user object as an array. Please see https://codex.wordpress.org/Class_Reference/WP_User for more details.', 'trigger-create-user-content' ) ),
 			'user_meta'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-create-user-content' ) ),
 		);
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-create-user-content' ) );
+        }
 
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-create_user.php' );
@@ -2838,7 +3473,7 @@ $return_args = array(
 	 *
 	 * @param $data - The default data
 	 * @param $webhook - The current webhook
-	 * @param $webbhook_group - The current trigger this webhook belongs to
+	 * @param $webhook_group - The current trigger this webhook belongs to
 	 *
 	 * @return array - The demo data
 	 */
@@ -3022,6 +3657,23 @@ $return_args = array(
 	        $data['user_old_data'] = array();
         }
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $data['acf_data'] = array(
+                'demo_repeater_field' => array(
+                    array(
+                        'demo_field_1' => 'Demo Value 1',
+                        'demo_field_2' => 'Demo Value 2',
+                    ),
+                    array(
+                        'demo_field_1' => 'Demo Value 1',
+                        'demo_field_2' => 'Demo Value 2',
+                    ),
+                ),
+                'demo_text_field' => 'Some demo text',
+                'demo_true_false' => true,
+            );
+        }
+
         return $data;
     }
 
@@ -3039,8 +3691,20 @@ $return_args = array(
 		$user_data['user_meta'] = get_user_meta( $user_id );
 		$response_data = array();
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $user_data['acf_data'] = get_fields( 'user_' . $user_id );
+        }
+
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+
+			$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+			if( $webhook_name !== null ){
+				$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			} else {
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			}
+
         }
 
         do_action( 'wpwhpro/webhooks/trigger_user_register', $user_id, $user_data, $response_data );
@@ -3060,6 +3724,10 @@ $return_args = array(
 			'user_meta'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-login-user-content' ) ),
 			'user_login'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user login is included as well. This is the value the user used to make the login. It is also located on the first layoer of the array.', 'trigger-login-user-content' ) ),
 		);
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-create-user-content' ) );
+        }
 
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-login_user.php' );
@@ -3099,8 +3767,20 @@ $return_args = array(
 		$user_data['user_login'] = get_user_meta( $user_login );
 		$response_data = array();
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $user_data['acf_data'] = get_fields( 'user_' . $user_id );
+        }
+
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+
+			$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+			if( $webhook_name !== null ){
+				$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			} else {
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			}
+
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_user_login', $user_id, $user_data, $response_data );
@@ -3122,6 +3802,10 @@ $return_args = array(
 			'user_meta'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-update-user-content' ) ),
 			'user_old_data' => array( 'short_description' => WPWHPRO()->helpers->translate( 'This is the object with the previous user object as an array. You can recheck your data on it as well.', 'trigger-update-user-content' ) ),
 		);
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-create-user-content' ) );
+        }
 
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-update_user.php' );
@@ -3152,8 +3836,20 @@ $return_args = array(
 		$user_data['user_old_data'] = $old_data;
 		$response_data = array();
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $user_data['acf_data'] = get_fields( 'user_' . $user_id );
+        }
+
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+
+			$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+			if( $webhook_name !== null ){
+				$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			} else {
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			}
+
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_user_update', $user_id, $user_data, $response_data );
@@ -3177,6 +3873,10 @@ $return_args = array(
 			'user_meta'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'All of the assigned user meta of the given user.', 'trigger-deleted-user-content' ) ),
 		);
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-create-user-content' ) );
+        }
+
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-deleted_user.php' );
 		$description = ob_get_clean();
@@ -3199,7 +3899,7 @@ $return_args = array(
 	 * @since 2.0.2
 	 */
 	public function ironikus_prepare_user_delete( $user_id ){
-		
+
 		if( ! isset( $this->pre_action_values['delete_user_user_data'] ) ){
 			$this->pre_action_values['delete_user_user_data'] = array();
 		}
@@ -3210,6 +3910,10 @@ $return_args = array(
 
 		$this->pre_action_values['delete_user_user_data'][ $user_id ] = get_userdata( $user_id );
 		$this->pre_action_values['delete_user_user_meta'][ $user_id ] = get_user_meta( $user_id );
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+			$this->pre_action_values['delete_user_user_acf_data'][ $user_id ] = get_fields( 'user_' . $user_id );
+        }
 	}
 
 	/*
@@ -3235,10 +3939,22 @@ $return_args = array(
 			$user_data['user'] = $this->pre_action_values['delete_user_user_data'][ $user_id ];
 		}
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+			$user_data['acf_data'] = $this->pre_action_values['delete_user_user_acf_data'][ $user_id ];
+        }
+
 		$response_data = array();
 
 		foreach( $webhooks as $webhook ){
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+
+			$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+			if( $webhook_name !== null ){
+				$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			} else {
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+			}
+
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_user_deleted', $user_id, $user_data, $response_data );
@@ -3419,6 +4135,23 @@ $return_args = array(
 			),
 		);
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $data['acf_data'] = array(
+                'demo_repeater_field' => array(
+                    array(
+                        'demo_field_1' => 'Demo Value 1',
+                        'demo_field_2' => 'Demo Value 2',
+                    ),
+                    array(
+                        'demo_field_1' => 'Demo Value 1',
+                        'demo_field_2' => 'Demo Value 2',
+                    ),
+                ),
+                'demo_text_field' => 'Some demo text',
+                'demo_true_false' => true,
+            );
+        }
+
 		return $data;
 	}
 
@@ -3455,6 +4188,10 @@ $return_args = array(
 			'post_permalink' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The permalink of the currently given post.', 'trigger-post-create' ) ),
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-create' ) ),
 		);
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields post meta is also pushed to the post object. You will find it on the first layer of the object as well. ', 'trigger-post-create' ) );
+        }
 
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_create.php' );
@@ -3529,6 +4266,10 @@ $return_args = array(
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-update' ) ),
 		);
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields post meta is also pushed to the post object. You will find it on the first layer of the object as well. ', 'trigger-post-update' ) );
+        }
+
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_update.php' );
 		$description = ob_get_clean();
@@ -3545,6 +4286,14 @@ $return_args = array(
 					'placeholder' => '',
 					'required'    => false,
 					'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+				),
+				'wpwhpro_post_update_trigger_on_post_status' => array(
+					'id'          => 'wpwhpro_post_update_trigger_on_post_status',
+					'type'        => 'text',
+					'label'       => WPWHPRO()->helpers->translate('Trigger on post status change', 'wpwhpro-fields-trigger-on-post-type'),
+					'placeholder' => '',
+					'required'    => false,
+					'description' => WPWHPRO()->helpers->translate('Define specifc post statuses that you want to fire the trigger on. In case you want to add multiple once, please comma-separate them (e.g.: publish,draft). If none are set, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
 				),
 			)
 		);
@@ -3591,6 +4340,10 @@ $return_args = array(
 			'post_permalink' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The permalink of the currently given post.', 'trigger-post-delete' ) ),
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-delete' ) ),
 		);
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields post meta is also pushed to the post object. You will find it on the first layer of the object as well. ', 'trigger-post-delete' ) );
+        }
 
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_delete.php' );
@@ -3661,6 +4414,10 @@ $return_args = array(
 			'taxonomies' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array containing the taxonomy data of the assigned taxonomies. Custom Taxonomies are supported too.', 'trigger-post-trash' ) ),
 		);
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $parameter['acf_data'] = array( 'short_description' => WPWHPRO()->helpers->translate( 'The Advanced Custom Fields post meta is also pushed to the post object. You will find it on the first layer of the object as well. ', 'trigger-post-trash' ) );
+        }
+
 		ob_start();
 			include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger-post_trash.php' );
 		$description = ob_get_clean();
@@ -3694,7 +4451,6 @@ $return_args = array(
 
 	}
 
-
 	/*
 	 * Register the post delete trigger as an element
 	 *
@@ -3727,7 +4483,7 @@ $return_args = array(
 
 	/*
 	 * Trigger webhook to fire as well on attachment creation
-	 * 
+	 *
 	 * This is a related issue to the already mentioned one
 	 * here: https://github.com/Ironikus/wp-webhooks/issues/2
 	 *
@@ -3750,6 +4506,9 @@ $return_args = array(
 	/*
 	 * Register the register post trigger logic
 	 *
+	 * The webhook needs to be cancelled on a webhook level since the post delay
+	 * requires a check on the update hook as well.
+	 *
 	 * @since 1.2
 	 */
 	public function ironikus_trigger_post_create_init(){
@@ -3768,11 +4527,11 @@ $return_args = array(
 				if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
 					continue;
 				}
-				
+
 				if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
 					$tax_output[ $sv->taxonomy ] = array();
 				}
-				
+
 				if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
 					$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
 				}
@@ -3792,15 +4551,19 @@ $return_args = array(
 			'taxonomies'=> $tax_output
 		);
 		$response_data = array();
+		$backwards_compatibility = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $data_array['acf_data'] = get_fields( $post_id );
+        }
 
 		foreach( $webhooks as $webhook_ident => $webhook ){
 
 			$is_valid = true;
-			$backwards_compatibility = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status', true );
-			if( ! empty( $backwards_compatibility ) ){
+			$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident, true );
+
+			if( ! empty( $backwards_compatibility ) && empty( $temp_post_status_change ) ){
 				$temp_post_status_change = $backwards_compatibility;
-			} else {
-				$temp_post_status_change = get_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident, true );
 			}
 
 			if( $update && empty( $temp_post_status_change ) ){
@@ -3824,11 +4587,10 @@ $return_args = array(
 
 							update_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident, $post->post_status );
 							$is_valid = false;
-							
+
 						} else {
 
 							if( ! empty( $temp_post_status_change ) ){
-								delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status' ); //Backwards compatibility
 								delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status_' . $webhook_ident );
 
 								do_action( 'wpwhpro/webhooks/trigger_post_create_post_status', $post_id, $post, $response_data );
@@ -3841,14 +4603,24 @@ $return_args = array(
 			}
 
 			if( $is_valid ){
-				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+				if( $webhook_name !== null ){
+					$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				} else {
+					$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				}
 			}
+		}
+
+		if( ! empty( $backwards_compatibility ) ){
+			delete_post_meta( $post_id, 'wpwhpro_create_post_temp_status' ); //Backwards compatibility
 		}
 
 		if( $was_fired ){
 			do_action( 'wpwhpro/webhooks/trigger_post_create', $post_id, $post, $response_data );
 		}
-		
+
 	}
 
 	/*
@@ -3862,7 +4634,7 @@ $return_args = array(
 
 	/*
 	 * Add attachment logic to default post_update funnctionality
-	 * 
+	 *
 	 * @see https://github.com/Ironikus/wp-webhooks/issues/2
 	 * @since 2.1.8
 	 */
@@ -3894,11 +4666,11 @@ $return_args = array(
 					if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
 						continue;
 					}
-					
+
 					if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
 						$tax_output[ $sv->taxonomy ] = array();
 					}
-					
+
 					if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
 						$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
 					}
@@ -3908,17 +4680,23 @@ $return_args = array(
 				}
 			}
 
+			$post_before = isset( $this->pre_action_values['update_post_post_before'] ) ? $this->pre_action_values['update_post_post_before'] : false;
+
 		    $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_update' );
 		    $data_array = array(
 			    'post_id'   => $post_id,
 			    'post'      => $post,
 				'post_meta' => get_post_meta( $post_id ),
-				'post_before' => isset( $this->pre_action_values['update_post_post_before'] ) ? $this->pre_action_values['update_post_post_before'] : false,
+				'post_before' => $post_before,
 				'post_thumbnail' => get_the_post_thumbnail_url( $post_id,'full' ),
 				'post_permalink' => get_permalink( $post_id ),
 				'taxonomies'=> $tax_output
 		    );
 		    $response_data = array();
+
+			if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+				$data_array['acf_data'] = get_fields( $post_id );
+			}
 
 		    foreach( $webhooks as $webhook ){
 
@@ -3933,11 +4711,30 @@ $return_args = array(
 						    }
 					    }
 
+					    if( $settings_name === 'wpwhpro_post_update_trigger_on_post_status' && ! empty( $settings_data ) ){
+						    
+							$allowed_statuses = explode( ',', $settings_data );
+							if( is_array( $allowed_statuses ) && is_object( $post_before ) ){
+
+								if( $post_before->post_status === $post->post_status || ! in_array( $post->post_status, $allowed_statuses ) ){
+									$is_valid = false;
+								}
+								
+							}
+							
+					    }
+
 				    }
 			    }
 
 			    if( $is_valid ){
-				    $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+					$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+					if( $webhook_name !== null ){
+						$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+					} else {
+						$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+					}
 			    }
 		    }
 
@@ -3951,7 +4748,6 @@ $return_args = array(
 	 * @since 2.0.2
 	 */
 	public function ironikus_prepare_post_delete( $post_ID ){
-
 		if( ! isset( $this->pre_action_values['delete_post_post_data'] ) ){
 			$this->pre_action_values['delete_post_post_data'] = array();
 		}
@@ -3965,6 +4761,10 @@ $return_args = array(
 		$this->pre_action_values['delete_post_post_thumbnail_url'][ $post_ID ] = get_the_post_thumbnail_url( $post_ID,'full' );
 		$this->pre_action_values['delete_post_post_permalink'][ $post_ID ] = get_permalink( $post_ID );
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+			$this->pre_action_values['delete_post_post_acf_data'][ $post_ID ] = get_fields( $post_ID );
+		}
+
 		//add the taxonomy
 		$tax_output = array();
 		$taxonomies = get_taxonomies( array(),'names' );
@@ -3975,11 +4775,11 @@ $return_args = array(
 				if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
 					continue;
 				}
-				
+
 				if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
 					$tax_output[ $sv->taxonomy ] = array();
 				}
-				
+
 				if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
 					$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
 				}
@@ -4007,12 +4807,16 @@ $return_args = array(
         $data_array = array(
             'post_id' => $post_id,
             'post'      => $post,
-			'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
-			'post_thumbnail' => $this->pre_action_values['delete_post_post_thumbnail_url'][ $post_id ],
-			'post_permalink' => $this->pre_action_values['delete_post_post_permalink'][ $post_id ],
-			'taxonomies' => $this->pre_action_values['delete_post_post_taxonomies'][ $post_id ],
+            'post_meta' => $this->pre_action_values['delete_post_post_meta'][ $post_id ],
+            'post_thumbnail' => $this->pre_action_values['delete_post_post_thumbnail_url'][ $post_id ],
+            'post_permalink' => $this->pre_action_values['delete_post_post_permalink'][ $post_id ],
+            'taxonomies' => $this->pre_action_values['delete_post_post_taxonomies'][ $post_id ],
         );
 		$response_data = array();
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+			$data_array['acf_data'] = $this->pre_action_values['delete_post_post_acf_data'][ $post_id ];
+		}
 
         foreach( $webhooks as $webhook ){
 
@@ -4031,7 +4835,13 @@ $return_args = array(
 	        }
 
 	        if( $is_valid ) {
-		        $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+				if( $webhook_name !== null ){
+					$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				} else {
+					$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				}
 	        }
         }
 
@@ -4108,9 +4918,9 @@ $return_args = array(
 				'post_thumbnail' => 'https://mydomain.com/images/image.jpg',
 				'post_permalink' => 'https://mydomain.com/the-post/permalink',
 				'taxonomies' => array (
-					'category' => 
+					'category' =>
 					array (
-					  'uncategorized' => 
+					  'uncategorized' =>
 					  array (
 						'term_id' => 1,
 						'name' => 'Uncategorized',
@@ -4123,7 +4933,7 @@ $return_args = array(
 						'count' => 7,
 						'filter' => 'raw',
 					  ),
-					  'secondcat' => 
+					  'secondcat' =>
 					  array (
 						'term_id' => 2,
 						'name' => 'Second Cat',
@@ -4140,11 +4950,28 @@ $return_args = array(
 				),
         );
 
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+			$data['acf_data'] = array(
+				'demo_repeater_field' => array(
+					array(
+						'demo_field_1' => 'Demo Value 1',
+						'demo_field_2' => 'Demo Value 2',
+					),
+					array(
+						'demo_field_1' => 'Demo Value 1',
+						'demo_field_2' => 'Demo Value 2',
+					),
+				),
+				'demo_text_field' => 'Some demo text',
+				'demo_true_false' => true,
+			);
+		}
+
 		return $data;
 	}
 
 	/*
-	 * Register the post trash trigger logic
+	 * Register the post delete trigger logic
 	 *
 	 * @since 2.0.4
 	 */
@@ -4154,7 +4981,7 @@ $return_args = array(
 	public function ironikus_trigger_post_trash( $post_id ){
 
 		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'post_trash' );
-		
+
 		$tax_output = array();
 		$taxonomies = get_taxonomies( array(),'names' );
 		if( ! empty( $taxonomies ) ){
@@ -4164,11 +4991,11 @@ $return_args = array(
 				if( ! isset( $sv->taxonomy ) || ! isset( $sv->slug ) ){
 					continue;
 				}
-				
+
 				if( ! isset( $tax_output[ $sv->taxonomy ] ) ){
 					$tax_output[ $sv->taxonomy ] = array();
 				}
-				
+
 				if( ! isset( $tax_output[ $sv->taxonomy ][ $sv->slug ] ) ){
 					$tax_output[ $sv->taxonomy ][ $sv->slug ] = array();
 				}
@@ -4182,12 +5009,16 @@ $return_args = array(
         $data_array = array(
             'post_id' => $post_id,
             'post'      => $post,
-            'post_meta' => get_post_meta( $post_id ),
+			'post_meta' => get_post_meta( $post_id ),
 			'post_thumbnail' => get_the_post_thumbnail_url( $post_id, 'full' ),
 			'post_permalink' => get_permalink( $post_id ),
 			'taxonomies' => $tax_output
         );
 		$response_data = array();
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $data_array['acf_data'] = get_fields( $post_id );
+        }
 
         foreach( $webhooks as $webhook ){
 
@@ -4206,7 +5037,13 @@ $return_args = array(
 	        }
 
 	        if( $is_valid ) {
-		        $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+				if( $webhook_name !== null ){
+					$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				} else {
+					$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data_array );
+				}
 	        }
         }
 
@@ -4220,7 +5057,7 @@ $return_args = array(
 	 */
 	public function ironikus_send_demo_post_delete( $data, $webhook, $webhook_group ) {
 
-		return array( 
+		$data = array(
 			'post_id' => 12345,
 			'post' => array (
 				'ID' => 1,
@@ -4276,38 +5113,57 @@ $return_args = array(
 			),
 			'post_thumbnail' => 'https://mydomain.com/images/image.jpg',
 			'post_permalink' => 'https://mydomain.com/the-post/permalink',
-				'taxonomies' => array (
-					'category' => 
-					array (
-					  'uncategorized' => 
-					  array (
-						'term_id' => 1,
-						'name' => 'Uncategorized',
-						'slug' => 'uncategorized',
-						'term_group' => 0,
-						'term_taxonomy_id' => 1,
-						'taxonomy' => 'category',
-						'description' => '',
-						'parent' => 10,
-						'count' => 7,
-						'filter' => 'raw',
-					  ),
-					  'secondcat' => 
-					  array (
-						'term_id' => 2,
-						'name' => 'Second Cat',
-						'slug' => 'secondcat',
-						'term_group' => 0,
-						'term_taxonomy_id' => 2,
-						'taxonomy' => 'category',
-						'description' => '',
-						'parent' => 1,
-						'count' => 1,
-						'filter' => 'raw',
-					  ),
-					),
+			'taxonomies' => array (
+				'category' =>
+				array (
+				  'uncategorized' =>
+				  array (
+					'term_id' => 1,
+					'name' => 'Uncategorized',
+					'slug' => 'uncategorized',
+					'term_group' => 0,
+					'term_taxonomy_id' => 1,
+					'taxonomy' => 'category',
+					'description' => '',
+					'parent' => 10,
+					'count' => 7,
+					'filter' => 'raw',
+				  ),
+				  'secondcat' =>
+				  array (
+					'term_id' => 2,
+					'name' => 'Second Cat',
+					'slug' => 'secondcat',
+					'term_group' => 0,
+					'term_taxonomy_id' => 2,
+					'taxonomy' => 'category',
+					'description' => '',
+					'parent' => 1,
+					'count' => 1,
+					'filter' => 'raw',
+				  ),
 				),
+			),
 		);
+
+		if( WPWHPRO()->helpers->is_plugin_active( 'advanced-custom-fields' ) ){
+            $data['acf_data'] = array(
+                'demo_repeater_field' => array(
+                    array(
+                        'demo_field_1' => 'Demo Value 1',
+                        'demo_field_2' => 'Demo Value 2',
+                    ),
+                    array(
+                        'demo_field_1' => 'Demo Value 1',
+                        'demo_field_2' => 'Demo Value 2',
+                    ),
+                ),
+                'demo_text_field' => 'Some demo text',
+                'demo_true_false' => true,
+            );
+        }
+
+		return $data;
 	}
 
 	/*
@@ -4330,7 +5186,13 @@ $return_args = array(
 				}
 			}
 
-			$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data );
+			$webhook_name = ( is_array($webhook) && isset( $webhook['webhook_name'] ) ) ? $webhook['webhook_name'] : null;
+
+			if( $webhook_name !== null ){
+				$response_data[ $webhook_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data );
+			} else {
+				$response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $data );
+			}
 		}
 
 		do_action( 'wpwhpro/webhooks/trigger_custom_action', $data, $response_data );
@@ -4344,7 +5206,7 @@ $return_args = array(
 	public function wp_webhooks_send_to_webhook_action_filter( $response_data, $data, $webhook_names = array(), $http_args = array() ){
 
 		$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'custom_action' );
-		
+
 		if( ! is_array( $response_data ) ){
 			$response_data = array();
 		}
