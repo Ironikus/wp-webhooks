@@ -65,8 +65,3 @@ function wpwh_fire_my_custom_logic( $return_args, $identifier, $response_body ){
 <br>
 <h4><?php echo WPWHPRO()->helpers->translate( "Tipp", $translation_ident ); ?></h4>
 <?php echo WPWHPRO()->helpers->translate( "Since this webhook action requires you to still set the action as mentioned above (to let our plugin know you want to fire a custom_action), you can also set the action parameter within the webhook URL you define within your external endpoint (instead of within the body). E.g.: <code>&action=custom_action</code> - This way you can avoid modifying the webhook request payload in the first place.", $translation_ident ); ?>
-<br><br>
-<h4><?php echo WPWHPRO()->helpers->translate( "Special Arguments", $translation_ident ); ?></h4>
-<br>
-<h5><?php echo WPWHPRO()->helpers->translate( "wpwh_identifier", $translation_ident ); ?></h5>
-<?php echo WPWHPRO()->helpers->translate( "Set this argument to identify your webhook call within the add_filter() function. It can be used to diversify between multiple calls that use this custom action. You can set it to e.g. <strong>validate-user</strong> and then check within the add_filter() callback against it to only fire it for this specific webhook call. You can also define this argument within the URL as a parameter, e.g. <code>&wpwh_identifier=my-custom-identifier</code>. In case you have defined the wpwh_identifier within the payload and the URL, we prioritize the parameter set within the payload.", $translation_ident ); ?>
