@@ -59,11 +59,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
     <div class="tab-pane fade show active" id="nav-webhook-urls" role="tabpanel" aria-labelledby="nav-webhook-urls-tab">
         <div class="wpwh-content">
             <p class="mb-4">
-            <?php if( WPWHPRO()->whitelabel->is_active() && ! empty( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_receive_data' ) ) ) : ?>
-                <?php echo WPWHPRO()->helpers->translate( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_receive_data' ), 'admin-settings-license' ); ?>
-            <?php else : ?>
                 <?php echo sprintf(WPWHPRO()->helpers->translate( 'Use the webhook URL down below to connect your external service with your site. This URL receives data from external endpoints and does certain actions on your WordPress site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking <a class="text-secondary" href="%s" target="_blank" >here</a>.', 'wpwhpro-page-actions' ), 'https://ironikus.com/docs/knowledge-base/how-to-use-wp-webhooks/'); ?>
-            <?php endif; ?>
             </p>
         </div>
         <div class="wpwh-table-container">

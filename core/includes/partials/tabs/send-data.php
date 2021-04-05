@@ -52,11 +52,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
   <div class="wpwh-title-area mb-5">
     <h1><?php echo WPWHPRO()->helpers->translate( 'Available Webhook Triggers', 'wpwhpro-page-triggers' ); ?></h1>
     <p class="wpwh-text-small">
-		<?php if( WPWHPRO()->whitelabel->is_active() && ! empty( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_send_data' ) ) ) : ?>
-			<?php echo WPWHPRO()->helpers->translate( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
-		<?php else : ?>
-			<?php echo sprintf( WPWHPRO()->helpers->translate( 'Below you will find a list of all available %1$s triggers. To use one, you need to specify a URL that should be triggered to send the available data. For more information on that, you can check out each webhook trigger description or our product documentation by clicking <a class="text-secondary" title="Go to our product documentation" target="_blank" href="%2$s">here</a>.', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/knowledge-base/how-to-use-wp-webhooks/'); ?>
-		<?php endif; ?>
+		<?php echo sprintf( WPWHPRO()->helpers->translate( 'Below you will find a list of all available %1$s triggers. To use one, you need to specify a URL that should be triggered to send the available data. For more information on that, you can check out each webhook trigger description or our product documentation by clicking <a class="text-secondary" title="Go to our product documentation" target="_blank" href="%2$s">here</a>.', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/knowledge-base/how-to-use-wp-webhooks/'); ?>
 	</p>
   </div>
 

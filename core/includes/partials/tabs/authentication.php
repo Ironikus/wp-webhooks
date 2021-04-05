@@ -66,11 +66,7 @@ foreach( $webhook_actions as $action_name => $wa ){
   <div class="wpwh-title-area mb-4">
     <h1><?php echo WPWHPRO()->helpers->translate( 'Trigger Authentication', 'wpwhpro-page-authentication' ); ?></h1>
     <p class="wpwh-text-small">
-      <?php if( WPWHPRO()->whitelabel->is_active() && ! empty( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_authentication' ) ) ) : ?>
-        <?php echo WPWHPRO()->helpers->translate( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_authentication' ), 'admin-settings-license' ); ?>
-      <?php else : ?>
         <?php echo sprintf(WPWHPRO()->helpers->translate( 'Create your own authentication template down below. This allows you to authenticate your outgoing "Send Data" webhook triggers to a given endpoint. For more information, please check out the authentication documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-authentication' ), 'https://ironikus.com/docs/knowledge-base/how-to-use-authentication/'); ?>
-      <?php endif; ?>
     </p>
   </div>
 
@@ -141,7 +137,7 @@ foreach( $webhook_actions as $action_name => $wa ){
               <td class="p-0 align-middle text-center">
                 <div class="dropdown">
 									<button type="button" class="wpwh-btn wpwh-btn--link px-2 py-3 wpwh-dropdown-trigger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<img src="<?php echo WPWHPRO_PLUGIN_URL . 'core/includes/assets/img/settings.svg'; ?>" alt="Settings Icon">
+										<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/settings.svg'; ?>" alt="Settings Icon">
 										<span class="sr-only">Options</span>
 									</button>
 									<div class="dropdown-menu">
@@ -152,7 +148,7 @@ foreach( $webhook_actions as $action_name => $wa ){
 
                       data-wpwh-auth-id="<?php echo $template_id; ?>"
 										>
-											<img src="<?php echo WPWHPRO_PLUGIN_URL . 'core/includes/assets/img/delete.svg'; ?>" alt="Delete">
+											<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/delete.svg'; ?>" alt="Delete">
 											<span><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-logs' ); ?></span>
 										</button>
                     <button
@@ -163,7 +159,7 @@ foreach( $webhook_actions as $action_name => $wa ){
                       data-wpwh-template-name="<?php echo $template->name; ?>"
                       data-modal-id="#editAuthTemplateModal"
                     >
-                      <img src="<?php echo WPWHPRO_PLUGIN_URL . 'core/includes/assets/img/cog.svg'; ?>" alt="<?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-logs' ); ?>">
+                      <img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/cog.svg'; ?>" alt="<?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-logs' ); ?>">
                       <span><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-logs' ); ?></span>
                     </button>
 									</div>

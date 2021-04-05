@@ -21,11 +21,7 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 
 		<div class="wpwh-title-area mb-4">
 			<h2><?php echo WPWHPRO()->helpers->translate( 'Global Settings', 'wpwhpro-page-settings' ); ?></h2>
-			<?php if( WPWHPRO()->whitelabel->is_active() && ! empty( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_settings' ) ) ) : ?>
-				<p class="wpwh-text-small"><?php echo WPWHPRO()->helpers->translate( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_settings' ), 'admin-settings-license' ); ?></p>
-			<?php else : ?>
-				<p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.', 'wpwhpro-page-settings' ), WPWHPRO_NAME ); ?></p>
-			<?php endif; ?>
+			<p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.', 'wpwhpro-page-settings' ), WPWH_NAME ); ?></p>
 		</div>
 
 		<div class="wpwh-settings">
@@ -68,7 +64,7 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 
 		<div class="wpwh-title-area mb-4 mt-4">
 			<h2 class="wpwh-text-danger"><?php echo WPWHPRO()->helpers->translate( 'Danger Zone', 'wpwhpro-page-settings' ); ?></h2>
-			<p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'The settings down below are very powerful and have a huge impact to the functionality of the plugin. Please use them with caution.', 'wpwhpro-page-settings' ), WPWHPRO_NAME ); ?></p>
+			<p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'The settings down below are very powerful and have a huge impact to the functionality of the plugin. Please use them with caution.', 'wpwhpro-page-settings' ), WPWH_NAME ); ?></p>
 		</div>
 
 		<div class="wpwh-settings">

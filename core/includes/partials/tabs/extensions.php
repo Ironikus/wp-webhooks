@@ -13,11 +13,7 @@ if( isset( $plugin_update_list->response ) ){
 <div class="wpwh-container">
     <div class="wpwh-title-area mb-4">
         <h2><?php echo WPWHPRO()->helpers->translate( 'Extensions for WP Webhooks Pro', 'wpwhpro-page-extensions' ); ?></h2>
-        <?php if( WPWHPRO()->whitelabel->is_active() && ! empty( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_extensions' ) ) ) : ?>
-            <p class="wpwh-text-small"><?php echo WPWHPRO()->helpers->translate( WPWHPRO()->whitelabel->get_setting( 'wpwhpro_whitelabel_custom_text_extensions' ), 'admin-settings-license' ); ?></p>
-        <?php else : ?>
-            <p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'This page contains all approved extensions for WP Webhooks Pro. You will be able to fully manage each of the extensions right within this plugin. In case you want to list your very own plugin here, feel free to reach out to us.', 'wpwhpro-page-extensions' ), WPWHPRO_NAME ); ?></p>
-        <?php endif; ?>
+        <p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'This page contains all approved extensions for WP Webhooks Pro. You will be able to fully manage each of the extensions right within this plugin. In case you want to list your very own plugin here, feel free to reach out to us.', 'wpwhpro-page-extensions' ), WPWH_NAME ); ?></p>
     </div>
 
     <div class="row">

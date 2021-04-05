@@ -127,7 +127,7 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 				self::$instance->auth			= new WP_Webhooks_Pro_Authentication();
 				self::$instance->api            = new WP_Webhooks_Pro_API();
 				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
-				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();´
+				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();
 
 				new WP_Webhooks_Pro_Run();
 

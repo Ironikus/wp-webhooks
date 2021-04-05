@@ -99,11 +99,6 @@ class WP_Webhooks_Pro_Settings{
 			'action' => 'ironikus_wpwhpro_authentication',
 			'arg'    => 'ironikus_wpwhpro_authentication_nonce'
 		);
-		$this->whitelabel_nonce        = array(
-			'action' => 'ironikus_wpwhpro_whitelabel',
-			'arg'    => 'ironikus_wpwhpro_whitelabel_nonce'
-		);
-		$this->license              = $this->setup_license();
 		$this->trans_strings        = $this->load_default_strings();
 	}
 
@@ -186,11 +181,11 @@ class WP_Webhooks_Pro_Settings{
 			'wpwhpro_reset_data' => array(
 				'id'          => 'wpwhpro_reset_data',
 				'type'        => 'checkbox',
-				'label'       => sprintf( WPWHPRO()->helpers->translate('Reset %s', 'wpwhpro-fields-reset'), WPWHPRO_NAME ),
+				'label'       => sprintf( WPWHPRO()->helpers->translate('Reset %s', 'wpwhpro-fields-reset'), WPWH_NAME ),
 				'placeholder' => '',
 				'required'    => false,
 				'dangerzone'  => true,
-				'description' => sprintf( WPWHPRO()->helpers->translate('Reset %s and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip'), WPWHPRO_NAME )
+				'description' => sprintf( WPWHPRO()->helpers->translate('Reset %s and set it back to its default settings (Excludes license & Extensions). BE CAREFUL: Once you activate the button and click save, all of your saved data for the plugin is gone.', 'wpwhpro-fields-reset-tip'), WPWH_NAME )
 			),
 		);
 

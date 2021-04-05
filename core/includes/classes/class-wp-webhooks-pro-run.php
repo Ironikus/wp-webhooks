@@ -77,7 +77,6 @@ class WP_Webhooks_Pro_Run{
 
 		// Validate settings
 		add_action( 'admin_init',  array( $this, 'ironikus_save_main_settings' ) );
-		add_action( 'admin_init',  array( $this, 'ironikus_save_whitelabel_settings' ) );
 
 		// Setup actions
 		add_filter( 'wpwhpro/webhooks/get_webhooks_actions', array( $this, 'add_webhook_actions_content' ), 10 );
@@ -138,19 +137,19 @@ class WP_Webhooks_Pro_Run{
 			$is_dev_mode = defined( 'WPWH_DEV' ) && WPWH_DEV === true;
 			wp_enqueue_style( 'wpwhpro-google-fonts', 'https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&family=Poppins:wght@500&display=swap', array(), null );
 
-			// wp_enqueue_style( 'wpwhpro-admin-styles-old', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/css/styles.min.css', array(), WPWHPRO_VERSION, 'all' );
-			wp_enqueue_style( 'wpwhpro-admin-styles', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/css/admin-styles' . ( $is_dev_mode ? '' : '.min' ) . '.css', array(), WPWHPRO_VERSION, 'all' );
+			// wp_enqueue_style( 'wpwhpro-admin-styles-old', WPWH_PLUGIN_URL . 'core/includes/assets/dist/css/styles.min.css', array(), WPWH_VERSION, 'all' );
+			wp_enqueue_style( 'wpwhpro-admin-styles', WPWH_PLUGIN_URL . 'core/includes/assets/dist/css/admin-styles' . ( $is_dev_mode ? '' : '.min' ) . '.css', array(), WPWH_VERSION, 'all' );
 
 			wp_enqueue_script( 'jquery-ui-sortable');
 
-			wp_enqueue_script( 'wpwhpro-admin-vendors', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/js/admin-vendor' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWHPRO_VERSION, true );
-			wp_enqueue_script( 'wpwhpro-admin-scripts', WPWHPRO_PLUGIN_URL . 'core/includes/assets/dist/js/admin-scripts' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWHPRO_VERSION, true );
+			wp_enqueue_script( 'wpwhpro-admin-vendors', WPWH_PLUGIN_URL . 'core/includes/assets/dist/js/admin-vendor' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWH_VERSION, true );
+			wp_enqueue_script( 'wpwhpro-admin-scripts', WPWH_PLUGIN_URL . 'core/includes/assets/dist/js/admin-scripts' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWH_VERSION, true );
 			wp_localize_script( 'wpwhpro-admin-scripts', 'ironikus', array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( md5( $this->page_name ) ),
-				'plugin_url' => WPWHPRO_PLUGIN_URL,
+				'plugin_url' => WPWH_PLUGIN_URL,
 			));
-			// wp_enqueue_script( 'wpwhpro-admin-scripts-old', WPWHPRO_PLUGIN_URL . 'core/includes/assets-old/dist/js/admin-scripts.js', array( 'jquery' ), WPWHPRO_VERSION, true );
+			// wp_enqueue_script( 'wpwhpro-admin-scripts-old', WPWH_PLUGIN_URL . 'core/includes/assets-old/dist/js/admin-scripts.js', array( 'jquery' ), WPWH_VERSION, true );
 		}
 	}
 
@@ -1843,7 +1842,7 @@ $return_args = array(
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
-			'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s Pro.', $translation_ident ), WPWHPRO_NAME ),
+			'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s Pro.', $translation_ident ), WPWH_NAME ),
 			'description'       => $description
 		);
 
