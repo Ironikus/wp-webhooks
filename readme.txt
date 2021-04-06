@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
-Tested up to: 5.6
-Stable Tag: 2.1.2
+Tested up to: 5.7
+Stable Tag: 3.0.0
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -109,6 +109,51 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 3.0.0: April 06, 2020 =
+* Feature: Fully reworked and optimized design
+* Feature: "Send Data On Post Update" can now be triggered only on specific post statuses
+* Feature: Full ACF integration for the "Send Data On Register" trigger
+* Feature: Full ACF integration for the "Send Data On Login" trigger
+* Feature: Full ACF integration for the "Send Data On User Update" trigger
+* Feature: Full ACF integration for the "Send Data On User Deletion" trigger
+* Feature: Full ACF integration for the "Send Data On New Post" trigger
+* Feature: Full ACF integration for the "Send Data On Post Update" trigger
+* Feature: Full ACF integration for the "Send Data On Post Deletion" trigger
+* Feature: Full ACF integration for the "Send Data On Post Trash" trigger
+* Feature: Full ACF integration for the "get_users" action
+* Feature: Full ACF integration for the "get_user" action
+* Feature: Full ACF integration for the "get_posts" action
+* Feature: Full ACF integration for the "get_post" action
+* Feature: Add filter for webhook URL on webhook triggers
+* Feature: Secure webhook actions with Basic Auth and API Keys
+* Feature: New argument load_taxonomies for the get_posts action to also return the assigned taxonomies of your choice
+* Feature: Add support for multipart/form-data
+* Feature: Integrated details to each action argument (Popup)
+* Feature: Add new webhook property called "webhook_url_name" to webhook trigger and action calls and logs
+* Feature: Add new key to trigger response data called body_validated, which shows the original body filtered and validated for further use
+* Tweak: Authentication is integrated into the core and always active
+* Tweak: Optimize menu setup and group related menu items
+* Tweak: Integrate Authentication into core, always active, and remove activate/deactivate possibility
+* Tweak: All actions and triggers are active by default
+* Tweak: Make trigger response connectable by using the trigger name as an array key
+* Tweak: Optimize performance for previously available active_webhooks feature
+* Tweak: Optimize webhook action return values
+* Tweak: Optimize webhok action return value description
+* Fix: Authentication for API tokens did not work properly if the API token was added only to the header
+* Fix: Issue with same id namings within the "Receive Data" tab
+* Fix: Optimize backwards compatibility for post status changes to also fire on multiple webhooks
+* Fix: Notice with undefined identkey variable
+* Fix: Not all data of WP Webhooks has been reset on the reset feature
+* Dev: New helper function get_current_request_method()
+* Dev: New function WPWHPRO()->webhook->get_current__webhook_action() to fetch the webhook action in case the current instance runs on an incoming webhook call
+* Dev: New filter wpwhpro/webhooks/get_current_webhook_action
+* Dev: Deprecated WPWHPRO()->settings->get_active_webhooks() and WPWHPRO()->settings->setup_active_webhooks()
+* Dev: Add new webhook property called $webhook_url_name to default webhook trigger data
+* Dev: Extend wpwhpro/helpers/validate_response_body filter by another variable called $custom_data
+* Dev: New helper function to fetch server header: WPWHPRO()->helpers->validate_server_header( 'key' )
+* Dev: Place the authentication response on the right position (after the webhook authentication)
+* Dev: Trigger settings required the default_value to not be prefilled with a 1, now not anymore
 
 = 2.1.2: November 13, 2020 =
 * Fix: Receive Data tab was not showing due to a non available file
