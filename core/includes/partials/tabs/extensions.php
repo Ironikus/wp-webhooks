@@ -56,7 +56,7 @@ if( isset( $plugin_update_list->response ) ){
                                         <?php if( $plugin_premium && ( $license_status === false || $license_status !== 'valid' ) ) : ?>
                                             <a
                                                 class="text-primary wpwh-extension-manage"
-                                                href="<?php echo get_admin_url(); ?>options-general.php?page=wp-webhooks-pro&wpwhprovrs=license"
+                                                href="<?php echo get_admin_url(); ?>options-general.php?page=wp-webhooks-pro&wpwhprovrs=pro"
                                                 title="<?php echo WPWHPRO()->helpers->translate( 'Activate your licene first', 'wpwhpro-page-extensions' ); ?>"
                                             >
                                                 <?php echo WPWHPRO()->helpers->translate( 'License', 'wpwhpro-page-extensions' ); ?>
@@ -109,7 +109,7 @@ if( isset( $plugin_update_list->response ) ){
                                     <?php if( $plugin_premium && ( $license_status === false || $license_status !== 'valid' ) ) : ?>
                                         <a
                                             class="text-primary"
-                                            href="<?php echo get_admin_url(); ?>options-general.php?page=wp-webhooks-pro&wpwhprovrs=license"
+                                            href="<?php echo get_admin_url(); ?>options-general.php?page=wp-webhooks-pro&wpwhprovrs=pro"
                                             title="<?php echo WPWHPRO()->helpers->translate( 'Activate your licene first', 'wpwhpro-page-extensions' ); ?>"
                                         >
                                             <?php echo WPWHPRO()->helpers->translate( 'License', 'wpwhpro-page-extensions' ); ?>

@@ -1,26 +1,19 @@
-<h2>Unlock massive features for your website!</h2>
-<p class="lead">
-	Experience a service you have never seen before! With <strong><a href="https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks&utm_medium=notice-pro&utm_campaign=WP%20Webhooks%20Pro" title="WP Webhooks Pro">WP Webhooks Pro</a></strong> you will be able to push your WordPress website to the next level.<br>
-	Down below you will find a list of our features you get as a premium member:
-</p>
+<div class="wpwh-container">
 
-<ol>
-	<li>Create users with user meta </li>
-	<li>Update users and user meta</li>
-	<li>Delete users</li>
-	<li>Create posts with post meta</li>
-	<li>Update posts with post meta</li>
-	<li>Delete posts</li>
-	<li>Data Mapping engine to fully customize your data</li>
-	<li>Whitelabel feature</li>
-	<li>IP Whitelist feature for enhanced security</li>
-	<li>In-plugin support</li>
-	<li>A loooooooot of more features, extensions and possibilities</li>
-</ol>
-
-<a class="btn btn-primary" href="https://ironikus.com/compare-wp-webhooks-pro/" target="_blank" title="Compare WP Webhooks Pro">Compare WP Webhooks with WP Webhooks Pro here</a>
-
-<h2 style="margin-top:20px">Free premium Extensions</h2>
-<p class="lead">
-	We also offer you all of our premium extensions <strong>completely for free</strong> on top of <a href="https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks&utm_medium=notice-pro&utm_campaign=WP%20Webhooks%20Pro" title="WP Webhooks Pro">WP Webhooks Pro</a>! <br>
-</p>
+	<div class="wpwh-box wpwh-box--big mb-3">
+		<div class="wpwh-box__body">
+			<h2 class="mb-3"><strong>Go Pro</strong> and unlock massive benefits!</h2>
+			<ul class="wpwh-checklist wpwh-checklist--two-col">
+				<li><strong>Free</strong> access to all of our <a href="https://ironikus.com/products/?fwp_download_categories=wpwh-pro-extension" target="_blank" rel="noopener noreferrer" class="text-secondary"><strong>pro extensions</strong></a>.</li>
+				<li>Create users and posts with custom post meta (Advanced custom fields supported)</li>
+				<li>Enhanced security through IP whitelists, security tokens and permission limitations</li>
+				<li>Logs to keep track of all incoming and outgoing webhook calls</li>
+				<li>Our powerful Data Mapping Engine to directly integrate services with your WordPress website</li>
+				<li>Personal Assistant Bot within the plugin</li>
+				<li>Bulk webhook action: Fire multiple webhook actions within a single call</li>
+				<li>Whitelabel feature (For unlimited license holders)</li>
+			</ul>
+			<a href="https://ironikus.com/compare-wp-webhooks-pro/" target="_blank" class="wpwh-btn wpwh-btn--secondary" rel="noopener noreferrer">Go Pro</a>
+		</div>
+	</div>
+</div>
