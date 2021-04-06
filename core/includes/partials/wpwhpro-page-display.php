@@ -50,11 +50,13 @@ if( isset( $_GET['wpwhprovrs'] ) && $_GET['wpwhprovrs'] != 'home' ){
 	    do_action( 'wpwhpro/admin/settings/menu/place_content', $active_val );
 	$current_content = ob_get_clean();
 
-    if( ! empty( $current_content ) ){
-        ob_start();
-            include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/home.php' );
-        $current_content = ob_get_clean();
-    }
+    /**
+     * Possibility to filter the content after
+     * creating its output
+     */
+    $current_content = apply_filters( 'wpwhpro/admin/settings/menu/filter_content', $current_content, $active_val );
+
+    $current_content = WPWHPRO()->helpers->validate_local_tags( $current_content );
     
 }
 
