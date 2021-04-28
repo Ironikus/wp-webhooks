@@ -578,8 +578,8 @@ class WP_Webhooks_Pro_Webhook {
 			if( $webhooks[ $response_ident_value ]['status'] === 'inactive' ){
 				status_header( 403 );
 				$return['msg'] = sprintf( WPWHPRO()->helpers->translate( 'Your current %s webhook is deactivated. Please activate it first.', 'webhooks-deactivated-webhook' ), WPWH_NAME );
-				WPWHPRO()->webhook->echo_response_data( $return );
-				exit;
+				$webhook_response = WPWHPRO()->webhook->echo_response_data( $return );
+				die();
 			}
 		}
 		
@@ -594,14 +594,14 @@ class WP_Webhooks_Pro_Webhook {
 			if( $webhooks[ $response_ident_value ]['api_key'] != $response_api_key ){
 				status_header( 403 );
 				$return['msg'] = sprintf( WPWHPRO()->helpers->translate( 'The given %s API Key is not valid, please enter a valid API key and try again.', 'webhooks-invalid-license-invalid' ), WPWH_NAME );
-				WPWHPRO()->webhook->echo_response_data( $return );
-				exit;
+				$webhook_response = WPWHPRO()->webhook->echo_response_data( $return );
+				die();
 			}
 		} else {
 			status_header( 403 );
 			$return['msg'] = sprintf( WPWHPRO()->helpers->translate( 'The given %s API Key is missing, please add it first.', 'webhooks-invalid-license-missing' ), WPWH_NAME );
-			WPWHPRO()->webhook->echo_response_data( $return );
-			exit;
+			$webhook_response = WPWHPRO()->webhook->echo_response_data( $return );
+			die();
 		}
 
 		$this->current_webhook_action = $webhooks[ $response_ident_value ];
@@ -614,7 +614,7 @@ class WP_Webhooks_Pro_Webhook {
 				'domain' => home_url(),
 				'name' => ( ! empty( $response_ident_value ) ) ? $response_ident_value : 'none'
 			);
-			WPWHPRO()->webhook->echo_response_data( $return_auth );
+			$webhook_response = WPWHPRO()->webhook->echo_response_data( $return_auth );
 			die();
 		}
 
@@ -630,8 +630,8 @@ class WP_Webhooks_Pro_Webhook {
 						if( empty( $is_valid_auth['success'] ) ){
 							status_header( 401 );
 							$return['msg'] = $is_valid_auth['msg'];
-							WPWHPRO()->webhook->echo_response_data( $return );
-							exit;
+							$webhook_response = WPWHPRO()->webhook->echo_response_data( $return );
+							die();
 						}
 					}
 				}
@@ -640,10 +640,26 @@ class WP_Webhooks_Pro_Webhook {
 
 		}
 
-		/*
-		 * Register all of our available action actions
-		 */
+		//Deprecated since 3.1.0
 		do_action( 'wpwhpro/webhooks/add_webhooks_actions', $action, $response_ident_value, $response_api_key );
+
+		$default_return_data = array(
+            'success' => false,
+			'action' => $action,
+			'msg' => WPWHPRO()->helpers->translate("It looks like your current webhook call has no action argument defined, it is deactivated or it does not have any action function.", 'action-add-webhook-actions' ),
+        );
+
+		$return_data = apply_filters( 'wpwhpro/webhooks/add_webhooks_actions', $default_return_data, $action, $response_ident_value, $response_api_key );
+
+		if( $return_data === $default_return_data ){
+			$webhook_response = WPWHPRO()->webhook->echo_response_data( $return_data );
+		} elseif( $return_data === null ){
+			$webhook_response = WPWHPRO()->webhook->echo_response_data( $default_return_data );
+		} else {
+			$webhook_response = WPWHPRO()->webhook->echo_action_data( $return_data );
+		}
+
+		die();
 	}
 
 	public function generate_trigger_signature( $data, $secret ) {
