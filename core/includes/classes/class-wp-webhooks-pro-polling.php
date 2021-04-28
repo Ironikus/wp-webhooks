@@ -34,7 +34,7 @@ class WP_Webhooks_Pro_Polling {
 	 */
 	public function add_hooks(){
 
-		add_action( 'wpwhpro/webhooks/add_webhooks_actions', array( $this, 'add_webhook_action_pollings' ), 10, 1 );
+		add_filter( 'wpwhpro/webhooks/add_webhook_actions', array( $this, 'add_webhook_action_pollings' ), 10, 4 );
 
 	}
 
@@ -45,18 +45,19 @@ class WP_Webhooks_Pro_Polling {
 	 * @param string $action - The currently called action
 	 * @return void
 	 */
-	public function add_webhook_action_pollings( $action ){
+	public function add_webhook_action_pollings( $response, $action, $response_ident_value, $response_api_key ){
 
 		if( strpos( $action, 'polling_' ) === FALSE ){
-			return;
+			return $response;
 		}
 
 		switch( $action ){
 			case 'polling_user':
-			$this->poll_users();
+				$response = $this->poll_users();
 			break;
 		}
 
+		return $response;
 	}
 
 	/**
@@ -123,8 +124,7 @@ class WP_Webhooks_Pro_Polling {
 			$return_args = $user_results;
 		}
 
-		WPWHPRO()->webhook->echo_response_data( $return_args );
-		die();
+		return $return_args;
 
 	}
 }
