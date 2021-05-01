@@ -9,6 +9,10 @@ if( isset( $plugin_update_list->response ) ){
     $plugin_update_list = $plugin_update_list->response;
 }
 
+if( ! is_array( $plugin_update_list ) ){
+    $plugin_update_list = array();
+}
+
 ?>
 <div class="wpwh-container">
     <div class="wpwh-title-area mb-4">
