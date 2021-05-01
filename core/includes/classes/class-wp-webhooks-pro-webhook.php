@@ -640,7 +640,7 @@ class WP_Webhooks_Pro_Webhook {
 
 		}
 
-		//Deprecated since 3.1.0
+		//Keep the old hook to keep other extensions working (Extensions need to adjust as this way we won't be able to catch the response)
 		do_action( 'wpwhpro/webhooks/add_webhooks_actions', $action, $response_ident_value, $response_api_key );
 
 		$default_return_data = array(
@@ -649,7 +649,7 @@ class WP_Webhooks_Pro_Webhook {
 			'msg' => WPWHPRO()->helpers->translate("It looks like your current webhook call has no action argument defined, it is deactivated or it does not have any action function.", 'action-add-webhook-actions' ),
         );
 
-		$return_data = apply_filters( 'wpwhpro/webhooks/add_webhooks_actions', $default_return_data, $action, $response_ident_value, $response_api_key );
+		$return_data = apply_filters( 'wpwhpro/webhooks/add_webhook_actions', $default_return_data, $action, $response_ident_value, $response_api_key );
 
 		if( $return_data === $default_return_data ){
 			$webhook_response = WPWHPRO()->webhook->echo_response_data( $return_data );
