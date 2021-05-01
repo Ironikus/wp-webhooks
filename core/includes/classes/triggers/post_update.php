@@ -146,13 +146,21 @@ add_action( 'attachment_updated', array( $this, 'ironikus_trigger_post_update_at
                         'required'    => false,
                         'description' => WPWHPRO()->helpers->translate('Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
                     ),
+                    'wpwhpro_post_update_trigger_on_specific_status' => array(
+                        'id'          => 'wpwhpro_post_update_trigger_on_specific_status',
+                        'type'        => 'text',
+                        'label'       => WPWHPRO()->helpers->translate('Trigger on post status', 'wpwhpro-fields-trigger-on-post-type'),
+                        'placeholder' => '',
+                        'required'    => false,
+                        'description' => WPWHPRO()->helpers->translate('Fires as long as the post has one of your chosen post statuses. In case you want to add multiple once, please comma-separate them (e.g.: publish,draft). If none are set, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+                    ),
                     'wpwhpro_post_update_trigger_on_post_status' => array(
                         'id'          => 'wpwhpro_post_update_trigger_on_post_status',
                         'type'        => 'text',
                         'label'       => WPWHPRO()->helpers->translate('Trigger on post status change', 'wpwhpro-fields-trigger-on-post-type'),
                         'placeholder' => '',
                         'required'    => false,
-                        'description' => WPWHPRO()->helpers->translate('Define specifc post statuses that you want to fire the trigger on. In case you want to add multiple once, please comma-separate them (e.g.: publish,draft). If none are set, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
+                        'description' => WPWHPRO()->helpers->translate('Fires once a post status changed to one of your chosen ones. Define specifc post statuses that you want to fire the trigger on. In case you want to add multiple once, please comma-separate them (e.g.: publish,draft). If none are set, all are triggered.', 'wpwhpro-fields-trigger-on-post-type-tip')
                     ),
                 )
             );
@@ -256,6 +264,19 @@ add_action( 'attachment_updated', array( $this, 'ironikus_trigger_post_update_at
                                 if( ! in_array( $post->post_type, $settings_data ) ){
                                     $is_valid = false;
                                 }
+                            }
+
+                            if( $settings_name === 'wpwhpro_post_update_trigger_on_specific_status' && ! empty( $settings_data ) ){
+                                
+                                $allowed_statuses = explode( ',', $settings_data );
+                                if( is_array( $allowed_statuses ) && is_object( $post ) ){
+
+                                    if( ! in_array( $post->post_status, $allowed_statuses ) ){
+                                        $is_valid = false;
+                                    }
+                                    
+                                }
+                                
                             }
 
                             if( $settings_name === 'wpwhpro_post_update_trigger_on_post_status' && ! empty( $settings_data ) ){
