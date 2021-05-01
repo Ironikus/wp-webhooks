@@ -6,7 +6,7 @@ Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
 Requires at least: 4.7
 Tested up to: 5.7
-Stable Tag: 3.0.0
+Stable Tag: 3.1.0
 License: GNU Version 3 or Any Later Version
 
 Extend your website with the most powerful webhook system.
@@ -14,13 +14,14 @@ Extend your website with the most powerful webhook system.
 == Description ==
 
 If you want to do certain actions on your WordPress site from somewhere else, this is your plugin! It will turn your website into an optimized webhook system so that you can connect your third party apps manually, via Zapier, automate.io or other third-party services to your WordPress website.
-It allows you to receive data from other services to, for example, create a user or a post on your WordPress website, as well as it can send data for you on certain actions.
+It also allows you to receive data from other services to, for example, create a user or a post on your WordPress website, as well as it can send data for you on certain actions. For a full list of features, please check out the details down below. 
 It's time to automate your WordPress website on a whole new level!
 
 = Usage examples =
 * Create a WordPress user as soon as a new signup happens on Teachable
 * Create a WordPress post using Alexa (Voice Control)
 * Create WordPress users from an Excel list
+* Create a user via some Airtable data
 * Send data to intercom when a user logs into your WordPress website
 * Fire your own PHP code based on incoming data
 
@@ -44,7 +45,7 @@ It's time to automate your WordPress website on a whole new level!
 * Optimized settings page for more control
 * Supports XML, JSON, plain text/HTML and form urlencode
 * Supports the following request methods: POST (Default), GET, HEAD, PUT, DELETE, TRACE, OPTIONS, PATCH
-* Supports Zapier, Integromat, automate.io and more
+* Supports Pabbly, Integromat, automate.io, Zapier and much more
 
 = Free Extensions =
 On wordpress.org you will also find more free extensions to equip your favorite plugins via webhooks.
@@ -70,14 +71,16 @@ Sounds like a catchy title, right? Actually, it really is the truth. Why? We wil
 
 Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
-* Create users with user meta
-* Update users and user meta
+* Create users with user meta (ACF supported)
+* Update users and user meta (ACF supported)
 * Delete users
 * Add and/or remove multiple user roles
-* Create posts with post meta
-* Update posts with post meta
+* Create posts with post meta (ACF supported)
+* Update posts with post meta (ACF supported)
 * Delete posts
-* Data Mapping engine to revalidate your incoming/outgoing data
+* Bulk webhook action to trigger multiple actions at the same time
+* Shortcode webhook action that fires once the shortcode is called
+* Data Mapping engine to manipulate your incoming/outgoing data
 * Whitelabel feature (see comparison table)
 * Log feature for easier debugging
 * IP Whitelist feature for enhanced security
@@ -87,12 +90,13 @@ Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-web
 
 Our free premium extensions for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
-* Woocommerce integration: This extension allows you to do certain Woocommerce action on your website
-* Create Blog Post Via Email: Yes, it will allow you to create WordPress posts via Email
-* Execute PHP Code: It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
-* Remote File Control: Manage your local files on the server via webhooks. You can also create new local files from a given URL
-* Manage Media Files: Create WordPress attachments from local or remote files, delete them and much more
-* Code Trigger: This is a next-level extension. You can run code through a webhook everytime WordPress get's called.
+* [Woocommerce integration](https://ironikus.com/downloads/woocommerce-integration/): This extension allows you to do certain Woocommerce action on your website
+* [Email Integration](https://ironikus.com/downloads/wp-webhooks-emails/): Send emails from your WordPress website using webhook actions
+* [Create Blog Post Via Email](https://ironikus.com/downloads/wpwh-pro-send-blog-post-by-email/): Yes, it will allow you to create WordPress posts via Email
+* [Execute PHP Code](https://ironikus.com/downloads/execute-php-code/): It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
+* [Remote File Control](https://ironikus.com/downloads/remote-file-control/): Manage your local files on the server via webhooks. You can also create new local files from a given URL
+* [Manage Media Files](https://ironikus.com/downloads/manage-media-files/): Create WordPress attachments from local or remote files, delete them and much more
+* [Code Trigger](https://ironikus.com/downloads/code-trigger/): This is a next-level extension. You can run code through a webhook everytime WordPress get's called.
 
 = Questions? =
 
@@ -109,6 +113,17 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 3.1.0: May 01, 2020 =
+* Feature: Allow the "Send Data on Post Update" to only trigger on specific post statuses
+* Feature: Allow a custom bearer token scheme for auth templates
+* Tweak: Better handling for webhook action responses (centralized through a new filter)
+* Tweak: Correct response data for successful delete_post webhook
+* Tweak: Add internal slug to triggers for better usability
+* Fix: $response_data for trigger overwrote response if multiple webhooks have been used within webhook trigger groups
+* Fix: Wrong logo was shown
+* Fix: When no plugin updates have been available, the extension page threw a fatal error
+* Dev: Switch webhooks to separate classes for a better and more constrolled handling
 
 = 3.0.0: April 06, 2020 =
 * Feature: Fully reworked and optimized design
