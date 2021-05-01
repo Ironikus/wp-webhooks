@@ -405,7 +405,14 @@ class WP_Webhooks_Pro_Authentication {
         if( is_array( $http_args ) ){
             if( isset( $http_args['headers'] ) ){
                 if( ! empty( $auth_data['wpwhpro_auth_bearer_token_token'] ) ){
-                    $http_args['headers']['Authorization'] = 'Bearer ' . $auth_data['wpwhpro_auth_bearer_token_token'];
+                    
+					$scheme = 'Bearer';
+					if( isset( $auth_data['wpwhpro_auth_bearer_token_scheme'] ) && ! empty( $auth_data['wpwhpro_auth_bearer_token_scheme'] ) ){
+						$scheme = $auth_data['wpwhpro_auth_bearer_token_scheme'];
+					}
+
+                    $http_args['headers']['Authorization'] = $scheme . ' ' . $auth_data['wpwhpro_auth_bearer_token_token'];
+
                 }
             }
         }

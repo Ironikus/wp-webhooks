@@ -408,6 +408,14 @@ class WP_Webhooks_Pro_Settings{
 				'name' => WPWHPRO()->helpers->translate('Bearer Token', 'wpwhpro-fields-authentication-settings'),
 				'description' => WPWHPRO()->helpers->translate('Authenticate yourself on an external API using a Bearer token.', 'wpwhpro-fields-authentication-settings'),
 				'fields' => array(
+					'wpwhpro_auth_bearer_token_scheme' => array(
+						'id'          => 'wpwhpro_auth_bearer_token_scheme',
+						'type'        => 'text',
+						'label'       => WPWHPRO()->helpers->translate('Scheme', 'wpwhpro-fields-authentication-settings'),
+						'placeholder' => 'Bearer',
+						'default_value' => 'Bearer',
+						'description' => WPWHPRO()->helpers->translate('In case you use a custom scheme, you can adjust it here. In most cases, you can leave it at "Bearer".', 'wpwhpro-fields-authentication-settings')
+					),
 					'wpwhpro_auth_bearer_token_token' => array(
 						'id'          => 'wpwhpro_auth_bearer_token_token',
 						'type'        => 'text',
