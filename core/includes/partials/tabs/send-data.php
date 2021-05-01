@@ -123,7 +123,10 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 						?>
 						<div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-<?php echo $identkey; ?>" <?php echo ! $is_active ? 'style="display: none;"' : ''; ?>>
 							<div class="wpwh-table-header">
-								<h2 class="mb-2" data-wpwh-trigger-name><?php echo $trigger_name; ?></h2>
+								<div class="d-flex align-items-center justify-content-between">
+									<h2 class="mb-2" data-wpwh-trigger-name><?php echo $trigger_name; ?></h2>
+									<div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $webhook_name; ?></div>
+								</div>
 								<div class="wpwh-content mb-4">
 									<?php echo $trigger['short_description']; ?>
 								</div>
