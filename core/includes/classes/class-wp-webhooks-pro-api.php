@@ -21,7 +21,7 @@ class WP_Webhooks_Pro_API {
 	 * This is the main page for handling api requests
 	 * @var string
 	 */
-	protected $api_url = 'https://ironikus.com';
+	protected $api_url = 'https://wp-webhooks.com';
 
 	/**
 	 * ################################
