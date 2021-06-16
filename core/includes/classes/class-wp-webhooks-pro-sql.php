@@ -107,7 +107,9 @@ class WP_Webhooks_Pro_SQL{
 			$table_name = $prefix . $table_name;
 		}
 
-		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name){
+		$query = $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name );
+
+		if( $wpdb->get_var( $query ) == $table_name ){
 			$return = true;
 		}
 
