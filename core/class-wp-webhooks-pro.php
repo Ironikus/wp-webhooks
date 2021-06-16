@@ -91,6 +91,14 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		public $auth;
 
 		/**
+		 * WPWHPRO Advanced Custom Fields Object.
+		 *
+		 * @var object|WP_Webhooks_Pro_ACF
+		 * @since 3.2.0
+		 */
+		public $acf;
+
+		/**
 		 * Throw error on object clone.
 		 *
 		 * Cloning instances of the class is forbidden.
@@ -137,6 +145,7 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 				self::$instance->integrations   = new WP_Webhooks_Pro_Integrations();
 				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
 				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();
+				self::$instance->acf      		= new WP_Webhooks_Pro_ACF();
 
 				/**
 				 * Used to launch our integrations
@@ -173,6 +182,7 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-integrations.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-webhook.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-polling.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-acf.php';
 
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-run.php';
 		}
