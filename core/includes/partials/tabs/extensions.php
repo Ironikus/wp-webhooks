@@ -24,6 +24,11 @@ if( ! is_array( $plugin_update_list ) ){
         <?php if( ! empty( $extensions_list ) ) : ?>
             <?php foreach( $extensions_list as $slug => $data ) :
 
+            //Hide deprecated extensions
+            if( isset( $data['extension_deprecated'] ) && ! empty( $data['extension_deprecated'] ) ){
+                continue;
+            }
+
             $plugin_installed = WPWHPRO()->helpers->is_plugin_installed( $data['extension_plugin_slug'] );
             $plugin_active = ( in_array( $data['extension_plugin_slug'], $active_plugins ) ) ? true : false;
             $plugin_premium = ( $data['type'] === 'premium' ) ? true : false;
