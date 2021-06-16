@@ -71,7 +71,7 @@ class WP_Webhooks_Pro_Post_Delay {
      /**
       * Launch a single trigger
       *
-      * @param array $trigger - The trigger data containing a callbacl and arguments
+      * @param array $trigger - The trigger data containing a callback and arguments
       * @return void
       */
     public function launch_trigger( $trigger ){
@@ -91,13 +91,14 @@ class WP_Webhooks_Pro_Post_Delay {
      * @param array $arguments - arguments that should be parsed to the function
      * @return mixed - Bool if is not active 
      */
-	public function add_post_delayed_trigger( $callback, $arguments = array() ){
+	public function add_post_delayed_trigger( $callback, $arguments = array(), $options = '' ){
 
         //Terminate the trigger immediately if the logic is deactivated
         if( ! $this->is_active ){
             $this->launch_trigger( array(
                 'callback' => $callback,
                 'arguments' => $arguments,
+                'options' => $options,
             ) );
             return false;
         }
@@ -108,6 +109,7 @@ class WP_Webhooks_Pro_Post_Delay {
             $triggers[] = array(
                 'callback' => $callback,
                 'arguments' => $arguments,
+                'options' => $options,
             );
         }
 
