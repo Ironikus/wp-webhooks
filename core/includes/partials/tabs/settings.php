@@ -5,9 +5,6 @@
  */
 
 $settings = WPWHPRO()->settings->get_settings();
-$triggers = WPWHPRO()->webhook->get_triggers( '', false );
-$actions = WPWHPRO()->webhook->get_actions( false );
-$current_url_full = WPWHPRO()->helpers->get_current_url();
 $settings_nonce_data = WPWHPRO()->settings->get_settings_nonce();
 
 if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
