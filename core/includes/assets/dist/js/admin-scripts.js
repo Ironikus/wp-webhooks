@@ -1668,14 +1668,20 @@ var Triggers = function Triggers() {
         $searchItems = $triggerEl.find('.wpwh-trigger-search__items'),
         $triggerItems = $triggerEl.find('.wpwh-trigger-item'),
         $triggerIds = $triggerEl.find('[data-wpwh-trigger-id]'),
-        $fallbackMsg = $('<div class="wpwh-trigger-search__item">No trigger available based on your search</div>'),
+        $groups = $triggerEl.find('.wpwh-trigger-search__item--group'),
+        $fallbackMsg = $('<div class="wpwh-trigger-search__item wpwh-trigger-search__item--default">No trigger available based on your search</div>'),
         $content = $triggerEl.find('[data-wpwh-trigger-content]'),
         $name = $triggerEl.find('[data-wpwh-trigger-name]'),
         $tbody = $triggerEl.find('tbody');
 
+    var pageType = '';
+
     // Append fallback message to the items and hide it.
     $searchItems.append($fallbackMsg);
     $fallbackMsg.hide();
+
+    // Set page type, e.g., is it 'send-data' or 'receive-data'
+    pageType = getUrlParam('wpwhprovrs');
 
     // When you start typing in the $search, filter items
     $search.on('keyup', function (e) {
@@ -1704,6 +1710,18 @@ var Triggers = function Triggers() {
         return true;
       }).hide();
 
+      // Show hide groups
+      $groups.show().filter(function (i, el) {
+
+        var $nextVisible = $(this).nextAll().filter(':visible').eq(0);
+
+        if (!$nextVisible.length || $nextVisible.hasClass('wpwh-trigger-search__item--group') || $nextVisible.hasClass('wpwh-trigger-search__item--default')) {
+          return true;
+        }
+
+        return false;
+      }).hide();
+
       // Show the fallback message if search doesn't find anything
       // Hide it otherwise
       if ($toHide.length === $triggerIds.length) {
@@ -1730,7 +1748,11 @@ var Triggers = function Triggers() {
           scrollTop: $(id).offset().top - ($('#wpadminbar').outerHeight() + 10)
         });
 
-        insertParamToUrl('wpwh-trigger', triggerId);
+        if (pageType == 'receive-data') {
+          insertParamToUrl('wpwh-action', triggerId);
+        } else {
+          insertParamToUrl('wpwh-trigger', triggerId);
+        }
       }
     });
 
@@ -1743,6 +1765,103 @@ var Triggers = function Triggers() {
 };
 
 exports.default = Triggers;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "jquery")))
+
+/***/ }),
+
+/***/ "./core/includes/assets/js/custom/webhook-search.js":
+/*!**********************************************************!*\
+  !*** ./core/includes/assets/js/custom/webhook-search.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var WebhookSearch = function WebhookSearch() {
+
+  var $window = $(window),
+      $body = $('body');
+
+  var $instances = $('[data-wpwh-webook-search]');
+
+  // Run through all triggers instances
+  $instances.each(function (i, el) {
+
+    var $instance = $(el);
+    var $search = $instance.find('[data-wpwh-webhook-search]'),
+        $items = $instance.find('tbody tr'),
+        $fallbackMsg = $('<tr class="wpwh-text-center"><td>No webhook is available based on your search</tr>');
+
+    if ($search.length) {
+
+      /**
+       * Search Input
+       *
+       * @param {object} $el
+       */
+      var searchInput = function searchInput($el) {
+        var thisVal = $el.val().toLowerCase();
+
+        // Filter the items that need to be hidden and hide them
+        var $toHide = $items.show().filter(function (i, el) {
+
+          var name = $(this).data('wpwh-webhook-search-name') || '';
+          var url = $(this).data('wpwh-webhook-search-url') || '';
+
+          console.log(name, url);
+          console.log(name.toLowerCase().includes(thisVal));
+          console.log(url.toLowerCase().includes(thisVal));
+
+          if (name.toLowerCase().includes(thisVal) || url.toLowerCase().includes(thisVal)) {
+            return false;
+          }
+
+          return true;
+        }).hide();
+
+        // Show the fallback message if search doesn't find anything
+        // Hide it otherwise
+        if ($toHide.length === $items.length) {
+          $fallbackMsg.show();
+        } else {
+          $fallbackMsg.hide();
+        }
+      };
+
+      var pageType = '';
+
+      $fallbackMsg.find('td').attr('colspan', $instance.find('thead td, thead th').length);
+
+      // Append fallback message to the items and hide it.
+      $instance.find('tbody').append($fallbackMsg);
+      $fallbackMsg.hide();
+
+      // Set page type, e.g., is it 'send-data' or 'receive-data'
+      pageType = getUrlParam('wpwhprovrs');
+
+      // On $search input
+      $search.on('keydown', function (e) {
+
+        if (e.code === 'Tab' || e.code === 'Enter') {
+          e.preventDefault();
+        }
+
+        searchInput($(this));
+      });
+
+      $search[0].addEventListener('search', function (e) {
+        searchInput($(this));
+      });
+    }
+  });
+};
+
+exports.default = WebhookSearch;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "jquery")))
 
 /***/ }),
@@ -1860,6 +1979,8 @@ exports.default = function () {
         var _webhookSlug = $thisEl.data('wpwh-webhook-slug');
         var _webhookGroup = $thisEl.data('wpwh-webhook-group');
         var webhookStatus = $thisEl.data('wpwh-webhook-status');
+        var $statusCell = $thisEl.closest('tr').find('.wpwh-status-cell');
+        var $statusCellTip = $statusCell.find('[data-tippy-content]');
 
         $.ajax({
           url: ironikus.ajax_url,
@@ -1899,10 +2020,26 @@ exports.default = function () {
                   $eventElement.addClass('is-active').removeClass('is-inactive');
                   $thisEl.find('.img-deactivate').show();
                   $thisEl.find('.img-activate').hide();
+
+                  // Update Status Cell's state.
+                  $statusCell.toggleClass('wpwh-status-cell--active wpwh-status-cell--inactive');
+
+                  // Update Status Cell Tooltip's content
+                  if ($statusCellTip.length) {
+                    $statusCellTip[0]._tippy.setContent('inactive');
+                  }
                 } else {
                   $eventElement.addClass('is-inactive').removeClass('is-active');
                   $thisEl.find('.img-deactivate').hide();
                   $thisEl.find('.img-activate').show();
+
+                  // Update Status Cell's state.
+                  $statusCell.toggleClass('wpwh-status-cell--inactive wpwh-status-cell--active');
+
+                  // Update Status Cell Tooltip's content
+                  if ($statusCellTip.length) {
+                    $statusCellTip[0]._tippy.setContent('active');
+                  }
                 }
 
                 // Based on success, add classes to the parent element.
@@ -2073,6 +2210,8 @@ __webpack_require__(/*! bootstrap/js/dist/collapse */ "./node_modules/bootstrap/
 
 __webpack_require__(/*! bootstrap/js/dist/dropdown */ "./node_modules/bootstrap/js/dist/dropdown.js");
 
+__webpack_require__(/*! bootstrap/js/dist/alert */ "./node_modules/bootstrap/js/dist/alert.js");
+
 __webpack_require__(/*! simplebar */ "./node_modules/simplebar/dist/simplebar.esm.js");
 
 __webpack_require__(/*! ./vendor/jsonviewer */ "./core/includes/assets/js/vendor/jsonviewer.js");
@@ -2082,6 +2221,10 @@ __webpack_require__(/*! ./vendor/jquery.matchHeight-min */ "./core/includes/asse
 var _insertParamToURL = __webpack_require__(/*! ./vendor/insertParamToURL */ "./core/includes/assets/js/vendor/insertParamToURL.js");
 
 var _insertParamToURL2 = _interopRequireDefault(_insertParamToURL);
+
+var _getUrlParam = __webpack_require__(/*! ./vendor/getUrlParam */ "./core/includes/assets/js/vendor/getUrlParam.js");
+
+var _getUrlParam2 = _interopRequireDefault(_getUrlParam);
 
 var _triggers = __webpack_require__(/*! ./custom/triggers */ "./core/includes/assets/js/custom/triggers.js");
 
@@ -2099,6 +2242,10 @@ var _dataMapping = __webpack_require__(/*! ./custom/data-mapping */ "./core/incl
 
 var _dataMapping2 = _interopRequireDefault(_dataMapping);
 
+var _webhookSearch = __webpack_require__(/*! ./custom/webhook-search */ "./core/includes/assets/js/custom/webhook-search.js");
+
+var _webhookSearch2 = _interopRequireDefault(_webhookSearch);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -2110,6 +2257,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 window.$ = jQuery;
 window.tippy = _tippy2.default;
 window.insertParamToUrl = _insertParamToURL2.default;
+window.getUrlParam = _getUrlParam2.default;
 
 // Custom Imports
 
@@ -2124,6 +2272,7 @@ jQuery(document).ready(function ($) {
   (0, _ajaxScripts2.default)();
   (0, _wpwhEvents2.default)();
   (0, _dataMapping2.default)();
+  (0, _webhookSearch2.default)();
 
   // Tippy
   (0, _tippy2.default)('[data-tippy-content]', {
@@ -2160,8 +2309,74 @@ jQuery(document).ready(function ($) {
     window.location.hash = this.hash;
     $('html,body').scrollTop(scrollmem);
   });
+
+  // Copy to clipboard input
+  $('.wpwh-copy-wrapper').each(function (i, el) {
+    var $thisEl = $(el);
+
+    $thisEl.find('input').on('click', function (e) {
+      $(this).trigger('select');
+      document.execCommand('copy');
+    });
+
+    (0, _tippy2.default)($thisEl[0], {
+      arrow: true,
+      animation: 'fade',
+      trigger: 'click',
+      content: $thisEl.data('wpwh-tippy-content') || 'copied!',
+      offset: [0, 15],
+      onShow: function onShow(instance) {
+        setTimeout(function () {
+          instance.hide();
+        }, 1500);
+      }
+    });
+  });
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "jquery")))
+
+/***/ }),
+
+/***/ "./core/includes/assets/js/vendor/getUrlParam.js":
+/*!*******************************************************!*\
+  !*** ./core/includes/assets/js/vendor/getUrlParam.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Get URL Parameter
+ *
+ * Usage:
+ * var searchText = getUrlParam( 'search' );
+ *
+ * @param  {string} sParam    parameter name, e.g., "search"
+ * @param  {string} link      (optional) if you want to get the parameter from
+ *                            a different URL then current page url.
+ * @return {multiple}         returns the 'value' of parameter
+ */
+var getUrlParam = function getUrlParam(sParam, link) {
+    var sPageURL = link ? link : decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
+exports.default = getUrlParam;
 
 /***/ }),
 

@@ -2279,6 +2279,10 @@ a.wpwh-text-green:hover { color: #217d72 !important; }
 
 .wpwh .wpwh-main .alert { max-width: 1117px; margin-left: auto; margin-right: auto; }
 
+.wpwh .wpwh-main .alert .close { cursor: pointer; }
+
+.wpwh .wpwh-main .alert .close span { margin-top: -3px; display: block; }
+
 .wpwh .modal { z-index: 9999; }
 
 .wpwh .modal .modal-dialog { margin-top: 60px; margin-top:  3.75rem; margin-bottom: 60px; margin-bottom:  3.75rem; }
@@ -2529,11 +2533,17 @@ a.wpwh-text-green:hover { color: #217d72 !important; }
 
 .wpwh .wpwh-trigger-search__item { display: block; padding: 15px 20px; padding:  0.9375rem 1.25rem; border-top: 1px solid rgba(57, 57, 57, 0.15); }
 
+.wpwh .wpwh-trigger-search__item--group { background-color: rgba(42, 157, 143, 0.1); font-weight: bold; color: #264653; }
+
+.wpwh .wpwh-trigger-search__item--group-icon { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-align: center; -webkit-align-items: center; -ms-flex-align: center; align-items: center; }
+
 .wpwh .wpwh-trigger-search__item:hover { background-color: rgba(42, 157, 143, 0.05); }
 
 .wpwh .wpwh-trigger-search__item.wpwh-trigger-search__item--active { background-color: rgba(42, 157, 143, 0.1); }
 
 .wpwh .wpwh-trigger-search__item:focus { outline: none; -webkit-box-shadow: none; box-shadow: none; }
+
+.wpwh .wpwh-trigger-search__item-image { max-width: 20px; max-height: 20px; margin-right: 10px; }
 
 .wpwh .text-primary { color: #264653; }
 
@@ -2578,5 +2588,17 @@ tr.performing-event td:after { width: 100%; height: 100%; background-color: rgba
 .wpwh .wpwh-icon { background: no-repeat center center; display: inline-block; }
 
 .wpwh .wpwh-icon--trash { background-image: url("../../img/trash.svg"); width: 18px; height: 20px; }
+
+.wpwh .wpwh-status-cell { vertical-align: middle; padding: 10px 0 10px 10px !important; padding:  0.625rem 0rem 0.625rem 0.625rem !important; width: 50px; text-align: center; }
+
+.wpwh .wpwh-status-cell span { width: 8px; height: 8px; border-radius: 8px; display: inline-block; }
+
+.wpwh .wpwh-status-cell span[data-tippy] { cursor: pointer; }
+
+.wpwh .wpwh-status-cell--active span { background-color: #2A9D8F; }
+
+.wpwh .wpwh-status-cell--inactive span { background-color: #FF0000; }
+
+.wpwh-copy-wrapper input { cursor: pointer; }
 
 /*# sourceMappingURL=admin-styles.css.map */
