@@ -169,7 +169,7 @@ class WP_Webhooks_Pro_Helpers {
 				<p class="m-0"><?php echo $validated_content; ?></p>
 				<?php if( ! empty( $bs_isit ) ) : ?>
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-						<span class="bs-notice-close" aria-hidden="true">&times;</span>
+						<span aria-hidden="true">&times;</span>
 					</button>
 				<?php endif; ?>
 			</div>
@@ -234,6 +234,33 @@ class WP_Webhooks_Pro_Helpers {
 
 
 		return $val;
+	}
+
+
+	public function get_original_data_format( $value ){
+
+		if( is_string( $value ) ){
+
+			if( $value === 'true' || $value === 'false' ){
+				return (bool) $value;
+			}
+
+			if( is_numeric( $value ) ){
+				$validated_val = $value + 0;
+
+				if( is_int( $validated_val ) ){
+					return intval( $validated_val );
+				}
+
+				if( is_float( $validated_val ) ){
+					return (float) $validated_val;
+				}
+
+			}
+
+		}
+
+		return $value;
 	}
 
 	/**
@@ -311,7 +338,7 @@ class WP_Webhooks_Pro_Helpers {
 
 		}
 
-		//Support custom ports (since 4.2.0)
+		//Support custom ports (since 3.2.0)
 		$port     = intval( $_SERVER['SERVER_PORT'] );
 		if( ! empty( $port ) ){
 			$port = ( $port == 80 || $port == 443 ) ? '' : ':' . $port;
@@ -433,7 +460,7 @@ class WP_Webhooks_Pro_Helpers {
 			if( empty( $multipart ) ){
 				$this->log_issue( $this->translate( "The incoming webhook content was sent as multipart/form-data, but did not contain any values: ", 'admin-debug-feature' ) . $this->display_var( $response ) );
 			}
-			
+
         }
 
 		if( strpos( $current_content_type, 'application/x-www-form-urlencoded' ) !== false && ! $content_evaluated ){
@@ -681,7 +708,7 @@ class WP_Webhooks_Pro_Helpers {
 
         return apply_filters( 'wpwhpro/helpers/request_return_value', $return, $content, $key );
 	}
-	
+
 	/**
 	 * Validate a given server header and return its value
 	 *
@@ -691,7 +718,7 @@ class WP_Webhooks_Pro_Helpers {
 	public function validate_server_header( $key ){
 		$header = null;
 		$uppercase_header = 'HTTP_' . strtoupper( str_replace( '-', '_', $key ) );
-		
+
         if( isset( $_SERVER[ $key ] ) ) {
             $header = trim( $_SERVER[ $key ] );
         } elseif( isset( $_SERVER[ $uppercase_header ] ) ) {
@@ -699,7 +726,7 @@ class WP_Webhooks_Pro_Helpers {
         } elseif( function_exists( 'apache_request_headers' ) ) {
             $request_headers = apache_request_headers();
             $request_headers = array_combine( array_map( 'ucwords', array_keys( $request_headers ) ), array_values( $request_headers ) );
-			
+
 			if( isset( $request_headers[ $key ] ) ) {
                 $header = trim( $request_headers[ $key ] );
             }
@@ -730,6 +757,68 @@ class WP_Webhooks_Pro_Helpers {
         }
 
 		return $ipaddress;
+	}
+
+	/**
+	 * Get all folders within a given path
+	 *
+	 * @since 3.2.0
+	 * @return string The folders
+	 */
+	public function get_folders( $path ){
+
+		$folders = array();
+
+		if( ! empty( $path ) && is_dir( $path ) ){
+			$all_folders = scandir( $path );
+			foreach( $all_folders as $single ){
+				$full_path = $path . DIRECTORY_SEPARATOR . $single;
+
+				if( $single == '..' || $single == '.' || ! is_dir( $full_path ) ){
+					continue;
+				}
+
+				$folders[] = $single;
+
+			}
+		}
+
+
+		return apply_filters( 'wpwhpro/helpers/get_folders', $folders );
+	}
+
+	/**
+	 * Get all files within a given path
+	 *
+	 * @since 3.2.0
+	 * @return string The files
+	 */
+	public function get_files( $path, $ignore = array() ){
+
+		$files = array();
+		$default_ignore = array(
+			'..',
+			'.'
+		);
+
+		$ignore = array_merge( $default_ignore, $ignore );
+
+		if( ! empty( $path ) && is_dir( $path ) ){
+			$all_files = scandir( $path );
+			foreach( $all_files as $single ){
+				$full_path = $path . DIRECTORY_SEPARATOR . $single;
+
+				if( in_array( $single, $ignore ) || ! file_exists( $full_path ) ){
+					continue;
+				}
+
+				$files[] = $single;
+
+			}
+		}
+
+
+		return apply_filters( 'wpwhpro/helpers/get_files', $files );
 	}
 
 	/**
