@@ -7,6 +7,14 @@ $trigger_nonce_data = WPWHPRO()->settings->get_trigger_nonce();
 $clear_form_url = WPWHPRO()->helpers->get_current_url();
 $authentication_templates = WPWHPRO()->auth->get_auth_templates();
 
+if( ! empty( $triggers ) ){
+    usort($triggers, function($a, $b) {
+        $aname = isset( $a['name'] ) ? $a['name'] : '';
+        $bname = isset( $b['name'] ) ? $b['name'] : '';
+        return strcmp($aname, $bname);
+    });
+}
+
 if( isset( $_POST['wpwh-add-webhook-url'] ) ){
     if ( check_admin_referer( $trigger_nonce_data['action'], $trigger_nonce_data['arg'] ) ) {
 
@@ -43,6 +51,31 @@ if( isset( $_POST['wpwh-add-webhook-url'] ) ){
 	}
 }
 
+//Sort webhooks
+$grouped_triggers = array();
+foreach( $triggers as $identkey => $webhook_trigger ){
+    $group = 'ungrouped';
+
+    if( isset( $webhook_trigger['integration'] ) ){
+        $group = $webhook_trigger['integration'];
+    }
+
+    if( ! isset( $grouped_triggers[ $group ] ) ){
+        $grouped_triggers[ $group ] = array(
+            $identkey => $webhook_trigger
+        );
+    } else {
+        $grouped_triggers[ $group ][ $identkey ] = $webhook_trigger;
+    }
+}
+
+//add ungroped elements at the end
+if( isset( $grouped_triggers['ungrouped'] ) ){
+	$ungrouped_triggers = $grouped_triggers['ungrouped'];
+	unset( $grouped_triggers['ungrouped'] );
+	$grouped_triggers['ungrouped'] = $ungrouped_triggers;
+}
+
 $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigger'], FILTER_SANITIZE_STRING ) : 'create_user';
 
 ?>
@@ -52,7 +85,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
   <div class="wpwh-title-area mb-5">
     <h1><?php echo WPWHPRO()->helpers->translate( 'Available Webhook Triggers', 'wpwhpro-page-triggers' ); ?></h1>
     <p class="wpwh-text-small">
-		<?php echo sprintf( WPWHPRO()->helpers->translate( 'Below you will find a list of all available %1$s triggers. To use one, you need to specify a URL that should be triggered to send the available data. For more information on that, you can check out each webhook trigger description or our product documentation by clicking <a class="text-secondary" title="Go to our product documentation" target="_blank" href="%2$s">here</a>.', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/knowledge-base/how-to-use-wp-webhooks/'); ?>
+		<?php echo sprintf( WPWHPRO()->helpers->translate( 'Below you will find a list of all available %1$s triggers. To use one, you need to specify a URL that should be triggered to send the available data. For more information on that, you can check out each webhook trigger description or our product documentation by clicking <a class="text-secondary" title="Go to our product documentation" target="_blank" href="%2$s">here</a>.', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . '</strong>', 'https://wp-webhooks.com/docs/knowledge-base/how-to-use-wp-webhooks/'); ?>
 	</p>
   </div>
 
@@ -66,14 +99,34 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
         </div>
 				<?php if( ! empty( $triggers ) ) : ?>
 					<div class="wpwh-trigger-search__items">
-						<?php foreach( $triggers as $identkey => $trigger ) :
-							$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
-							$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
+						<?php foreach( $grouped_triggers as $group => $single_triggers ) :
 
-							$is_active = $webhook_name === $active_trigger;
+						if( $group === 'ungrouped' ){
+							echo '<a class="wpwh-trigger-search__item wpwh-trigger-search__item--group">' . WPWHPRO()->helpers->translate( 'Others', 'wpwhpro-page-actions' ) . '</a>';
+						} else {
+							$group_details = WPWHPRO()->integrations->get_details( $group );
+							if( is_array( $group_details ) && isset( $group_details['name'] ) && ! empty( $group_details['name'] ) ){
+								echo '<a class="wpwh-trigger-search__item wpwh-trigger-search__item--group wpwh-trigger-search__item--group-icon">';
 
-							?>
-							<a href="#webhook-<?php echo $identkey; ?>" data-wpwh-trigger-id="<?php echo $webhook_name; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $trigger_name; ?></a>
+								if( isset( $group_details['icon'] ) && ! empty( $group_details['icon'] ) ){
+									echo '<img class="wpwh-trigger-search__item-image" src="' . $group_details['icon'] . '" />';
+								}
+
+								echo '<span class="wpwh-trigger-search__item-name">' . $group_details['name'] . '</span>';
+								echo '</a>';
+							}
+						}
+
+						?>
+							<?php foreach( $single_triggers as $identkey => $trigger ) :
+								$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
+								$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
+
+								$is_active = $webhook_name === $active_trigger;
+
+								?>
+								<a href="#webhook-<?php echo $identkey; ?>" data-wpwh-trigger-id="<?php echo $webhook_name; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $trigger_name; ?></a>
+							<?php endforeach; ?>
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
@@ -124,8 +177,8 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 						<div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-<?php echo $identkey; ?>" <?php echo ! $is_active ? 'style="display: none;"' : ''; ?>>
 							<div class="wpwh-table-header">
 								<div class="d-flex align-items-center justify-content-between">
-									<h2 class="mb-2" data-wpwh-trigger-name><?php echo $trigger_name; ?></h2>
-									<div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $webhook_name; ?></div>
+								<h2 class="mb-2" data-wpwh-trigger-name><?php echo $trigger_name; ?></h2>
+								<div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $webhook_name; ?></div>
 								</div>
 								<div class="wpwh-content mb-4">
 									<?php echo $trigger['short_description']; ?>
@@ -137,9 +190,10 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 									</button>
 								</div>
 							</div>
-							<table class="wpwh-table wpwh-text-small">
+							<table class="wpwh-table wpwh-table--sm wpwh-text-small">
 								<thead>
 									<tr>
+										<th></th>
 										<th><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?></th>
 										<th><?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?></th>
 										<th class="text-center"><?php echo WPWHPRO()->helpers->translate( 'Action', 'wpwhpro-page-triggers' ); ?></th>
@@ -160,11 +214,14 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 											}
 										?>
 										<tr id="webhook-trigger-<?php echo $webhook; ?>">
+											<td class="align-middle wpwh-status-cell wpwh-status-cell--<?php echo $status; ?>">
+												<span data-tippy data-tippy-content="<?php echo WPWHPRO()->helpers->translate( $status, 'wpwhpro-page-triggers' ); ?>"></span>
+											</td>
 											<td>
-												<input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_name' value="<?php echo $webhook; ?>" readonly />
+												<div class="wpwh-copy-wrapper" data-wpwh-tippy-content="<?php echo WPWHPRO()->helpers->translate( 'copied!', 'wpwhpro-page-triggers' ); ?>"><input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_name' value="<?php echo $webhook; ?>" readonly /></div>
 											</td>
 											<td class="wpwh-w-50">
-												<input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo $webhook_data['webhook_url']; ?>" readonly />
+												<div class="wpwh-copy-wrapper" data-wpwh-tippy-content="<?php echo WPWHPRO()->helpers->translate( 'copied!', 'wpwhpro-page-triggers' ); ?>"><input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo $webhook_data['webhook_url']; ?>" readonly /></div>
 											</td>
 											<td class="p-0 align-middle text-center wpwh-table__action">
 												<div class="dropdown">
@@ -219,7 +276,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 															data-wpwh-event="demo"
 															data-wpwh-event-type="send"
 
-															data-wpwh-demo-data-callback="<?php echo $trigger['callback']; ?>"
+															data-wpwh-demo-data-callback="<?php echo isset( $trigger['callback'] ) ? $trigger['callback'] : ''; ?>"
 															data-wpwh-webhook="<?php echo $webhook; ?>"
 															data-wpwh-group="<?php echo $trigger['trigger']; ?>"
 														>
@@ -274,11 +331,18 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 											</tbody>
 										</table>
 
-										<?php if( ! empty( $trigger['returns_code'] ) ) : ?>
+										<?php if( ! empty( $trigger['returns_code'] ) ) :
+
+											$display_code = $trigger['returns_code'];
+											if( is_array( $trigger['returns_code'] ) ){
+												$display_code = json_encode( $display_code, JSON_PRETTY_PRINT );
+											}
+
+											?>
 											<p>
 												<?php echo WPWHPRO()->helpers->translate( 'Here is an example of all the available default fields that are sent after the trigger is fired. The fields may vary based on custom extensions or third party plugins.', 'wpwhpro-page-triggers'); ?>
 											</p>
-											<pre><?php echo $trigger['returns_code']; ?></pre>
+											<pre><?php echo $display_code; ?></pre>
 										<?php endif; ?>
 									</div>
 								</div>
@@ -372,12 +436,14 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 					?>
 					<form action="<?php echo $add_trigger_form_url; ?>" method="post">
 						<div class="modal-body">
-							<div class="form-group">
+							<div class="form-group pb-4">
 								<label class="wpwh-form-label" for="wpwh-webhook-slug-<?php echo $trigger['trigger']; ?>"><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?></label>
 								<input class="wpwh-form-input w-100" id="wpwh-webhook-slug-<?php echo $trigger['trigger']; ?>" name="wpwh-add-webhook-name" type="text" aria-label="<?php echo WPWHPRO()->helpers->translate( 'Webhook Name (Optional)', 'wpwhpro-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo WPWHPRO()->helpers->translate( 'my-new-webhook', 'wpwhpro-page-triggers' ); ?>">
 							</div>
 							<div class="form-group mb-0">
-								<label class="wpwh-form-label" for="wpwh-webhook-url-<?php echo $trigger['trigger']; ?>"><?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?></label>
+								<label class="wpwh-form-label" for="wpwh-webhook-url-<?php echo $trigger['trigger']; ?>">
+									<?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?>
+								</label>
 								<input class="wpwh-form-input w-100" id="wpwh-webhook-url-<?php echo $trigger['trigger']; ?>" name="wpwh-add-webhook-url" type="text" class="form-control ironikus-webhook-input-new h30" aria-label="<?php echo WPWHPRO()->helpers->translate( 'Include your webhook url here', 'wpwhpro-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo WPWHPRO()->helpers->translate( 'https://example.com/webbhook/onwzinsze', 'wpwhpro-page-triggers' ); ?>">
 							</div>
 						</div>
