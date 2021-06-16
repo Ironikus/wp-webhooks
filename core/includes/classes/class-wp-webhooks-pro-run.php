@@ -888,7 +888,7 @@ class WP_Webhooks_Pro_Run{
 
 		$tabs['settings']['items']['extensions'] = WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' );
 
-		$tabs['settings']['items']['pro'] = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
+		$tabs['pro'] = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
 		return $tabs;
 
