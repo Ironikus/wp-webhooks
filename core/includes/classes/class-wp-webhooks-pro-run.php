@@ -29,6 +29,14 @@ class WP_Webhooks_Pro_Run{
 	private $page_title;
 
 	/**
+	 * Preserver certain values
+	 *
+	 * @var string
+	 * @since 2.0.5
+	 */
+	private $pre_action_values;
+
+	/**
 	 * Our WP_Webhooks_Pro_Run constructor.
 	 */
 	function __construct(){
@@ -98,7 +106,7 @@ class WP_Webhooks_Pro_Run{
 
 		array_unshift( $links, $settings_link );
 
-		$links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://ironikus.com/products/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', WPWHPRO()->helpers->translate('Our Shop', 'plugin-page') );
+		$links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://wp-webhooks.com/products/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', WPWHPRO()->helpers->translate('Our Shop', 'plugin-page') );
 
 		return $links;
 	}
@@ -370,15 +378,21 @@ class WP_Webhooks_Pro_Run{
         $response           = array( 'success' => false );
 
 		if( isset( $webhooks[ $webhook ] ) ){
+			$data = WPWHPRO()->integrations->get_trigger_demo( $webhook_group, array(
+				'webhook' => $webhook,
+				'webhooks' => $webhooks,
+				'webhook_group' => $webhook_group,
+			) );	
+
 			if( ! empty( $webhook_callback ) ){
-				$data = apply_filters( 'ironikus_demo_' . $webhook_callback, array(), $webhook, $webhook_group, $webhooks[ $webhook ] );
+				$data = apply_filters( 'ironikus_demo_' . $webhook_callback, $data, $webhook, $webhook_group, $webhooks[ $webhook ] );
+			}
 
-				$response_data = WPWHPRO()->webhook->post_to_webhook( $webhooks[ $webhook ], $data, array( 'blocking' => true ), true );
+			$response_data = WPWHPRO()->webhook->post_to_webhook( $webhooks[ $webhook ], $data, array( 'blocking' => true ), true );
 
-				if ( ! empty( $response_data ) ) {
-					$response['data']       = $response_data;
-					$response['success']    = true;
-				}
+			if ( ! empty( $response_data ) ) {
+				$response['data']       = $response_data;
+				$response['success']    = true;
 			}
 		}
 
@@ -799,7 +813,29 @@ class WP_Webhooks_Pro_Run{
 	 * Add our custom admin user page
 	 */
 	public function add_user_submenu(){
-		add_submenu_page( 'options-general.php', WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-title' ), WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-site-title' ), WPWHPRO()->settings->get_admin_cap( 'admin-add-submenu-page-item' ), $this->page_name, array( $this, 'render_admin_submenu_page' ) );
+		$menu_position = get_option( 'wpwhpro_show_main_menu' );
+
+		if( ! empty( $menu_position ) && $menu_position == 'yes' ){
+			add_menu_page(
+				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-menu-page-title' ),
+				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-menu-page-site-title' ),
+				WPWHPRO()->settings->get_admin_cap( 'admin-add-menu-page-item' ),
+				$this->page_name,
+				array( $this, 'render_admin_submenu_page' ) ,
+				WPWH_PLUGIN_URL . 'core/includes/assets/img/logo-menu-wp-webhooks.svg',
+				'81.025'
+			);
+		} else {
+			add_submenu_page( 
+				'options-general.php', 
+				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-title' ), 
+				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-site-title' ), 
+				WPWHPRO()->settings->get_admin_cap( 'admin-add-submenu-page-item' ), 
+				$this->page_name, 
+				array( $this, 'render_admin_submenu_page' ) 
+			);
+		}
+		
 	}
 
 	/**
@@ -842,15 +878,17 @@ class WP_Webhooks_Pro_Run{
 		);
 
 		$tabs['authentication'] = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
+
 		$tabs['settings']   = array(
 			'label' => WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' ),
 			'items' => array(
 				'settings'  		=> WPWHPRO()->helpers->translate( 'All Settings', 'admin-menu' ),
-				'extensions'  		=> WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' ),
 			),
 		);
 
-		$tabs['pro'] = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
+		$tabs['settings']['items']['extensions'] = WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' );
+
+		$tabs['settings']['items']['pro'] = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
 		return $tabs;
 
