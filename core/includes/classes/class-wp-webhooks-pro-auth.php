@@ -23,10 +23,9 @@ class WP_Webhooks_Pro_Authentication {
 	public function __construct() {
         $this->authentication_table_data = WPWHPRO()->settings->get_authentication_table_data();
         $this->auth_methods = WPWHPRO()->settings->get_authentication_methods();
-		$this->cache_table_exists = null;
 		$this->cache_authentication = array();
 		$this->cache_authentication_count = 0;
-        $this->setup_authentication_table();
+		$this->table_exists = false;
 
 	}
 
@@ -47,16 +46,18 @@ class WP_Webhooks_Pro_Authentication {
 	 *
 	 * @return void
 	 */
-	private function setup_authentication_table(){
+	public function maybe_setup_authentication_table(){
 
-		if( $this->cache_table_exists !== null ){
-			return $this->cache_table_exists;
+		//shorten circle if already set up
+		if( $this->table_exists ){
+			return;
 		}
 
 		if( ! WPWHPRO()->sql->table_exists( $this->authentication_table_data['table_name'] ) ){
 			WPWHPRO()->sql->run_dbdelta( $this->authentication_table_data['sql_create_table'] );
-			$this->cache_table_exists = true;
 		}
+
+		$this->table_exists = true;
 
 	}
 
@@ -86,7 +87,7 @@ class WP_Webhooks_Pro_Authentication {
 
 		}
 
-		$this->setup_authentication_table();
+		$this->maybe_setup_authentication_table();
 
 		$sql = 'SELECT * FROM {prefix}' . $this->authentication_table_data['table_name'] . ' ORDER BY name ASC;';
 
@@ -138,6 +139,8 @@ class WP_Webhooks_Pro_Authentication {
 	 */
 	public function delete_authentication_template( $id ){
 
+		$this->maybe_setup_authentication_table();
+
 		$id = intval( $id );
 
 		if( ! $this->get_auth_templates( $id ) ){
@@ -162,7 +165,7 @@ class WP_Webhooks_Pro_Authentication {
 			return intval( $this->cache_authentication_count );
 		}
 
-		$this->setup_authentication_table();
+		$this->maybe_setup_authentication_table();
 
 		$sql = 'SELECT COUNT(*) FROM {prefix}' . $this->authentication_table_data['table_name'] . ';';
 		$data = WPWHPRO()->sql->run($sql);
@@ -183,6 +186,8 @@ class WP_Webhooks_Pro_Authentication {
 	 * @return bool - True if the creation was successful, false if not
 	 */
 	public function add_template( $name, $auth_type ){
+
+		$this->maybe_setup_authentication_table();
 
 		$sql_vals = array(
 			'name' => $name,
@@ -216,6 +221,8 @@ class WP_Webhooks_Pro_Authentication {
 	public function update_template( $id, $data ){
 
 		$id = intval( $id );
+
+		$this->maybe_setup_authentication_table();
 
 		if( ! $this->get_auth_templates( $id ) ){
 			return false;
@@ -258,8 +265,18 @@ class WP_Webhooks_Pro_Authentication {
 	public function delete_table(){
 
 		$check = true;
+
+		//shorten circle
+		if( ! $this->table_exists ){
+			return $check;
+		}
+
 		if( WPWHPRO()->sql->table_exists( $this->authentication_table_data['table_name'] ) ){
 			$check = WPWHPRO()->sql->run( $this->authentication_table_data['sql_drop_table'] );
+		}
+
+		if( $check ){
+			$this->table_exists = false;
 		}
 
 		return $check;
@@ -405,14 +422,13 @@ class WP_Webhooks_Pro_Authentication {
         if( is_array( $http_args ) ){
             if( isset( $http_args['headers'] ) ){
                 if( ! empty( $auth_data['wpwhpro_auth_bearer_token_token'] ) ){
-                    
+
 					$scheme = 'Bearer';
 					if( isset( $auth_data['wpwhpro_auth_bearer_token_scheme'] ) && ! empty( $auth_data['wpwhpro_auth_bearer_token_scheme'] ) ){
 						$scheme = $auth_data['wpwhpro_auth_bearer_token_scheme'];
 					}
 
                     $http_args['headers']['Authorization'] = $scheme . ' ' . $auth_data['wpwhpro_auth_bearer_token_token'];
-
                 }
             }
         }
