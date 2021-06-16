@@ -311,6 +311,13 @@ class WP_Webhooks_Pro_Helpers {
 
 		}
 
+		//Support custom ports (since 4.2.0)
+		$port     = intval( $_SERVER['SERVER_PORT'] );
+		if( ! empty( $port ) ){
+			$port = ( $port == 80 || $port == 443 ) ? '' : ':' . $port;
+			$host_part .= $port;
+		}
+
 		$current_url .= sanitize_text_field( $host_part ) . sanitize_text_field( $_SERVER['REQUEST_URI'] );
 
 	    if($with_args){
