@@ -83,6 +83,11 @@ class WP_Webhooks_Pro_Settings{
 		$this->required_action_settings     = $this->load_required_action_settings();
 		$this->authentication_methods     = $this->load_authentication_methods();
 		$this->authentication_table_data   = $this->setup_authentication_table_data();
+		$this->default_integration_dependencies = array(
+            'helpers',
+            'actions',
+            'triggers',
+        );
 		$this->settings_nonce        = array(
 			'action' => 'ironikus_wpwhpro_settings',
 			'arg'    => 'ironikus_wpwhpro_settings_nonce'
@@ -135,6 +140,19 @@ class WP_Webhooks_Pro_Settings{
 	 */
 	private function load_default_settings(){
 		$fields = array(
+
+			/**
+			 * MAIN MENU ITEM
+			 */
+			'wpwhpro_show_main_menu' => array(
+				'id'          => 'wpwhpro_show_main_menu',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate( 'Show in admin menu', 'wpwhpro-fields-show-main-menu' ),
+				'placeholder' => '',
+				'required'    => false,
+				'dangerzone'  => false,
+				'description' => sprintf( WPWHPRO()->helpers->translate( 'Check this button if you want to show %s within the main admin menu instead of as a sub menu item.', 'wpwhpro-fields-show-main-menu' ), $this->get_page_title() )
+			),
 
 			/**
 			 * ACTIVATE TRANSLATIONS
@@ -619,6 +637,15 @@ class WP_Webhooks_Pro_Settings{
 		 * Filter the page title based on your needs.
 		 */
 		return apply_filters( 'wpwhpro/admin/settings/webhook_ident_param', $this->webhook_ident_param );
+	}
+
+	/**
+	 * Return the default integration depenencies
+	 *
+	 * @return array - the default integration depenencies
+	 */
+	public function get_default_integration_dependencies(){
+		return apply_filters( 'wpwhpro/admin/settings/default_integration_dependencies', $this->default_integration_dependencies );
 	}
 
 	/**
