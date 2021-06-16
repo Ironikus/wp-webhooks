@@ -51,6 +51,14 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		public $api;
 
 		/**
+		 * WPWHPRO Integrations Object.
+		 *
+		 * @var object|WP_Webhooks_Pro_Integrations
+		 * @since 3.2.0
+		 */
+		public $integrations;
+
+		/**
 		 * WPWHPRO Webhook Object.
 		 *
 		 * @var object|WP_Webhooks_Pro_Webhook
@@ -126,32 +134,14 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 				self::$instance->delay			= new WP_Webhooks_Pro_Post_Delay();
 				self::$instance->auth			= new WP_Webhooks_Pro_Authentication();
 				self::$instance->api            = new WP_Webhooks_Pro_API();
+				self::$instance->integrations   = new WP_Webhooks_Pro_Integrations();
 				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
 				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();
 
-				//Load triggers
-				new WP_Webhooks_Trigger_create_user();
-				new WP_Webhooks_Trigger_login_user();
-				new WP_Webhooks_Trigger_update_user();
-				new WP_Webhooks_Trigger_deleted_user();
-				new WP_Webhooks_Trigger_post_create();
-				new WP_Webhooks_Trigger_post_delete();
-				new WP_Webhooks_Trigger_post_trash();
-				new WP_Webhooks_Trigger_post_update();
-				new WP_Webhooks_Trigger_custom_action();
-
-				//Load actions
-
-				new WP_Webhooks_Action_create_update_post();
-				new WP_Webhooks_Action_delete_post();
-				new WP_Webhooks_Action_get_post();
-				new WP_Webhooks_Action_get_posts();
-				new WP_Webhooks_Action_create_update_user();
-				new WP_Webhooks_Action_delete_user();
-				new WP_Webhooks_Action_get_user();
-				new WP_Webhooks_Action_get_users();
-				new WP_Webhooks_Action_custom_action();
-				new WP_Webhooks_Action_ironikus_test();
+				/**
+				 * Used to launch our integrations
+				 */
+				do_action( 'wpwh_plugin_configured' );
 
 				//Run plugin
 				new WP_Webhooks_Pro_Run();
@@ -180,31 +170,9 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-post-delay.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-auth.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-api.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-integrations.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-webhook.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-polling.php';
-
-			//Triggers
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/create_user.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/custom_action.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/deleted_user.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/login_user.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/post_create.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/post_delete.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/post_trash.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/post_update.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/triggers/update_user.php';
-
-			//Actions
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/create_post_update_post.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/create_user_update_user.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/custom_action.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/delete_post.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/delete_user.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/get_post.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/get_posts.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/get_user.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/get_users.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/actions/ironikus_test.php';
 
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-run.php';
 		}
