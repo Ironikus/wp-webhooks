@@ -48,6 +48,8 @@ if( isset( $_POST['ironikus-webhook-action-name'] ) ){
 
 //Sort webhooks
 $grouped_actions = array();
+$grouped_actions_pro = array();
+
 foreach( $actions as $identkey => $webhook_action ){
     $group = 'ungrouped';
 
@@ -55,13 +57,24 @@ foreach( $actions as $identkey => $webhook_action ){
         $group = $webhook_action['integration'];
     }
 
-    if( ! isset( $grouped_actions[ $group ] ) ){
-        $grouped_actions[ $group ] = array(
-            $identkey => $webhook_action
-        );
+    if( isset( $webhook_action['premium'] ) && $webhook_action['premium'] ){
+        if( ! isset( $grouped_actions_pro[ $group ] ) ){
+            $grouped_actions_pro[ $group ] = array(
+                $identkey => $webhook_action
+            );
+        } else {
+            $grouped_actions_pro[ $group ][ $identkey ] = $webhook_action;
+        }
     } else {
-        $grouped_actions[ $group ][ $identkey ] = $webhook_action;
+        if( ! isset( $grouped_actions[ $group ] ) ){
+            $grouped_actions[ $group ] = array(
+                $identkey => $webhook_action
+            );
+        } else {
+            $grouped_actions[ $group ][ $identkey ] = $webhook_action;
+        }
     }
+
 }
 
 //add ungroped elements at the end
@@ -69,6 +82,17 @@ if( isset( $grouped_actions['ungrouped'] ) ){
 	$ungrouped_actions = $grouped_actions['ungrouped'];
 	unset( $grouped_actions['ungrouped'] );
 	$grouped_actions['ungrouped'] = $ungrouped_actions;
+}
+
+//Map premium actions
+if( ! empty( $grouped_actions_pro ) ){
+	foreach( $grouped_actions_pro as $gtpk => $gtpv ){
+		if( isset( $grouped_actions[ $gtpk ] ) ){
+			$grouped_actions[ $gtpk ] = array_merge( $grouped_actions[ $gtpk ], $gtpv );
+		} else {
+			$grouped_actions[ $gtpk ] = $gtpv;
+		}
+	}
 }
 
 $active_trigger = isset( $_GET['wpwh-action'] ) ? filter_var( $_GET['wpwh-action'], FILTER_SANITIZE_STRING ) : 'create_user';
@@ -79,7 +103,24 @@ if ( empty( $active_trigger ) ) {
 
 ?>
 <?php add_ThickBox(); ?>
-
+<style>
+.integration-pro {
+    background-color: #ff8e6b;
+    background: linear-gradient(
+180deg
+,#ff8e6b 0,#f1592a 100%);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 50px;
+	margin-left:10px;
+}
+.wpwh-go-pro{
+	background-color: rgba(42,157,143,0.1);
+    padding: 1.5rem 1.875rem;
+    border-radius: 8px;
+    margin-top:20px;
+}
+</style>
 <div class="wpwh-container">
   <div class="wpwh-title-area mb-5">
     <h2><?php echo sprintf( WPWHPRO()->helpers->translate( 'Receive Data On %s', 'wpwhpro-page-actions' ), WPWH_NAME ); ?></h2>
@@ -248,8 +289,13 @@ if ( empty( $active_trigger ) ) {
                     ?>
                         <?php $i = 0; foreach( $single_actions as $identkey => $action ) :
                             $is_active = $action['action'] === $active_trigger;
+                            $action_name = isset( $action['name'] ) ? $action['name'] : $action['action'];
+
+                            if( isset( $action['premium'] ) && $action['premium'] ){
+                                $action_name .= '<span class="integration-pro">Pro</span>';
+                            }
                         ?>
-                            <a href="#webhook-action-<?php echo $identkey; ?>" data-wpwh-trigger-id="<?php echo $action['action']; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo isset( $action['name'] ) ? $action['name'] : $action['action']; ?></a>
+                            <a href="#webhook-action-<?php echo $action['action']; ?>" data-wpwh-trigger-id="<?php echo $action['action']; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $action_name; ?></a>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -262,8 +308,9 @@ if ( empty( $active_trigger ) ) {
                 <?php if( ! empty( $actions ) ) : ?>
                     <?php foreach( $actions as $identkey => $action ) :
                         $is_active = $action['action'] === $active_trigger;
+                        $is_premium = ( isset( $action['premium'] ) && $action['premium'] ) ? true : false;
                     ?>
-                        <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $identkey; ?>">
+                        <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $action['action']; ?>">
                             <div class="wpwh-table-header">
                                 <div class="d-flex align-items-center justify-content-between">
                                 <h2 class="mb-3" data-wpwh-trigger-name><?php echo isset( $action['name'] ) ? $action['name'] : $action['action']; ?></h2>
@@ -272,6 +319,17 @@ if ( empty( $active_trigger ) ) {
                                 <div class="wpwh-content mb-0">
                                     <?php echo $action['short_description']; ?>
 								</div>
+                                <?php if( $is_premium ) : ?>
+									<div class="wpwh-go-pro">
+										<h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Interested in this action?', 'wpwhpro-page-actions' ); ?></h4>
+										<p>
+											<?php echo sprintf( WPWHPRO()->helpers->translate( 'Get full access to this and all other premium actions with %s', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . ' Pro</strong>' ); ?>
+										</p>
+										<a href="https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wpwh&utm_medium=action-prem-<?php echo urlencode( $action['action'] ); ?>&utm_campaign=Go%20Pro" target="_blank" class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Go Pro', 'wpwhpro-page-actions' ); ?>">
+											<?php echo WPWHPRO()->helpers->translate( 'Go Pro', 'wpwhpro-page-actions' ); ?>
+										</a>
+									</div>
+								<?php endif; ?>
                             </div>
                             <div class="wpwh-accordion" id="wpwh_accordion_1">
                                 <div class="wpwh-accordion__item border-top-0 pt-0">
@@ -315,6 +373,9 @@ if ( empty( $active_trigger ) ) {
                                                         <td class="wpwh-w-25"><strong class="text-lg"><?php echo $param; ?></strong>
                                                             <?php if( ! empty( $param_data['required'] ) ) : ?>
                                                                 <br><span class="text-primary"><?php echo WPWHPRO()->helpers->translate( 'Required', 'wpwhpro-page-actions' ); ?></span>
+                                                            <?php endif; ?>
+                                                            <?php if( isset( $param_data['premium'] ) && $param_data['premium'] ) : ?>
+                                                                <span class="integration-pro">Pro</span>
                                                             <?php endif; ?>
                                                         </td>
                                                         <td><?php echo $param_data['short_description']; ?></td>
@@ -724,6 +785,17 @@ if ( empty( $active_trigger ) ) {
                     <div class="modal-header">
                         <h3 class="modal-title"><?php echo WPWHPRO()->helpers->translate( 'Details for:', 'wpwhpro-page-actions' ); ?> <?php echo $param; ?></h3>
                     </div>
+                    <?php if( isset( $param_data['premium'] ) && $param_data['premium'] ) : ?>
+                        <div class="wpwh-go-pro">
+                            <h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Interested in this action?', 'wpwhpro-page-actions' ); ?></h4>
+                            <p>
+                                <?php echo sprintf( WPWHPRO()->helpers->translate( 'Get full access to this and all other premium arguments with %s', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . ' Pro</strong>' ); ?>
+                            </p>
+                            <a href="https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wpwh&utm_medium=action-prem-<?php echo urlencode( $action['action'] ) . '-arg-' . urlencode( $param ); ?>&utm_campaign=Go%20Pro" target="_blank" class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Go Pro', 'wpwhpro-page-actions' ); ?>">
+                                <?php echo WPWHPRO()->helpers->translate( 'Go Pro', 'wpwhpro-page-actions' ); ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                     <div class="modal-body">
                         <?php echo wpautop( $param_data['description'] ); ?>
                     </div>

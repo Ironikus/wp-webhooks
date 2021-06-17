@@ -1,0 +1,196 @@
+<?php
+if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_renew_license' ) ) :
+
+	/**
+	 * Load the edd_renew_license action
+	 *
+	 * @since 4.2.0
+	 * @author Ironikus <info@ironikus.com>
+	 */
+	class WP_Webhooks_Integrations_edd_Actions_edd_renew_license {
+
+        public function is_active(){
+
+            $is_active = class_exists( 'EDD_Software_Licensing' );
+
+            //Backwards compatibility for the "Easy Digital Downloads" integration
+            if( defined( 'WPWH_EDD_NAME' ) ){
+                $is_active = false;
+            }
+
+            return $is_active;
+        }
+
+        public function get_details(){
+
+            $translation_ident = "action-edd_renew_license-description";
+
+			$parameter = array(
+				'license_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Mixed) The license id or the license key of the license you would like to renew. Please see the description for further details.', $translation_ident ) ),
+				'payment_id'     => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Integer) The payment id of the payment you want to use to process the renewal.', $translation_ident ) ),
+				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More info is within the description.', $translation_ident ) ),
+			);
+
+			//This is a more detailled view of how the data you sent will be returned.
+			$returns = array(
+				'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+				'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
+				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the license id, as well as the associated payment id of the license.', $translation_ident ) ),
+			);
+
+			//This area will be displayed within the "return" area of the webhook action
+			ob_start();
+			?>
+            <pre>{
+    "success": true,
+    "msg": "The license was successfully renewed.",
+    "data": {
+        "license_id": 17,
+        "payment_id": 843
+    }
+}</pre>
+			<?php
+			$returns_code = ob_get_clean();
+
+			ob_start();
+?>
+<?php echo WPWHPRO()->helpers->translate( "This webhook action is used to renew a license for Easy Digital Downloads within your WordPress system via a webhook call.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "The description is uniquely made for the <strong>edd_renew_license</strong> webhook action.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "In case you want to first understand how to setup webhook actions in general, please check out the following manuals:", $translation_ident ); ?>
+<br>
+<a title="Go to wp-webhooks.com/docs" target="_blank" href="https://wp-webhooks.com/docs/article-categories/get-started/">https://wp-webhooks.com/docs/article-categories/get-started/</a>
+<br><br>
+<h4><?php echo WPWHPRO()->helpers->translate( "How to use <strong>edd_renew_license</strong>", $translation_ident ); ?></h4>
+<ol>
+    <li><?php echo WPWHPRO()->helpers->translate( "The first argument you need to set within your webhook action request is the <strong>action</strong> argument. This argument is always required. Please set it to <strong>edd_renew_license</strong>.", $translation_ident ); ?></li>
+    <li><?php echo WPWHPRO()->helpers->translate( "It is also required to set the <strong>license_id</strong> argument. You can set it to either the license id or the license key.", $translation_ident ); ?></li>
+    <li><?php echo WPWHPRO()->helpers->translate( "You also need to define the payment id of the payment you want to use to process the renewal.", $translation_ident ); ?></li>
+    <li><?php echo WPWHPRO()->helpers->translate( "All the other arguments are optional and just extend the creation of the EDD license.", $translation_ident ); ?></li>
+</ol>
+<br><br>
+<h4><?php echo WPWHPRO()->helpers->translate( "Tipps", $translation_ident ); ?></h4>
+<ol>
+    <li><?php echo WPWHPRO()->helpers->translate( "It is required that your payment is existent before you try to process a renewal. Otherwise it fails.", $translation_ident ); ?></li>
+</ol>
+<br><br>
+<h4><?php echo WPWHPRO()->helpers->translate( "Special Arguments", $translation_ident ); ?></h4>
+<br>
+
+<h5><?php echo WPWHPRO()->helpers->translate( "license_id", $translation_ident ); ?></h5>
+<?php echo WPWHPRO()->helpers->translate( "This argument accepts either the numeric license id or the license key that was set for the license. E.g. 4fc336680bf576cc0298777278ceb15a", $translation_ident ); ?>
+<br>
+<hr>
+
+<h5><?php echo WPWHPRO()->helpers->translate( "payment_id", $translation_ident ); ?></h5>
+<?php echo WPWHPRO()->helpers->translate( "The payment id of the payment you want to use for the renewal of the license. We will take, for example, the duration from the product within the payment.", $translation_ident ); ?>
+<br>
+<hr>
+
+<h5><?php echo WPWHPRO()->helpers->translate( "do_action", $translation_ident ); ?></h5>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the edd_renew_license action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 3 );
+function my_custom_callback_function( $license_id, $license, $return_args ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$license_id</strong> (Integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the id of the renewed license.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$license</strong> (integer)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "Contains the EDD_SL_License() object of the license.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
+    </li>
+</ol>
+<?php
+			$description = ob_get_clean();
+
+            return array(
+                'action'            => 'edd_renew_license',
+                'name'              => WPWHPRO()->helpers->translate( 'Renew a license', $translation_ident ),
+                'parameter'         => $parameter,
+                'returns'           => $returns,
+                'returns_code'      => $returns_code,
+                'short_description' => WPWHPRO()->helpers->translate( 'This webhook action allows you to renew a license within Easy Digital Downloads - Software Licensing.', $translation_ident ),
+                'description'       => $description,
+                'integration'       => 'edd',
+                'premium' 			=> false,
+            );
+
+        }
+
+        public function execute( $return_data, $response_body ){
+
+            $license_id = 0;
+			$return_args = array(
+				'success' => false,
+				'msg' => '',
+				'data' => array(
+					'license_id' => 0,
+					'payment_id' => 0,
+				),
+			);
+
+			$license_id   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'license_id' );
+			$payment_id   = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'payment_id' ) );
+			
+			$do_action          = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+
+			if( ! class_exists( 'EDD_SL_License' ) ){
+				$return_args['msg'] = WPWHPRO()->helpers->translate( 'The class EDD_SL_License() does not exist. The license was not renewed.', 'action-edd_renew_license-failure' );
+				return $return_args;
+			}
+
+			if( empty( $license_id ) ){
+				$return_args['msg'] = WPWHPRO()->helpers->translate( 'The license_id argument cannot be empty. The license was not renewed.', 'action-edd_renew_license-failure' );
+				return $return_args;
+			}
+
+			if( empty( $payment_id ) ){
+				$return_args['msg'] = WPWHPRO()->helpers->translate( 'The payment_id argument cannot be empty. The license was not renewed.', 'action-edd_renew_license-failure' );
+				return $return_args;
+			}
+            
+            $license = new EDD_SL_License( $license_id );
+
+			$check = $license->renew( $payment_id );
+
+			if( $check ){
+                $license_id = $license->ID;
+				$return_args['msg'] = WPWHPRO()->helpers->translate( "The license was successfully renewed.", 'action-edd_renew_license-success' );
+				$return_args['success'] = true;
+				$return_args['data']['license_id'] = $license_id;
+				$return_args['data']['payment_id'] = $payment_id;
+			} else {
+				$return_args['msg'] = WPWHPRO()->helpers->translate( "Error renewing the license.", 'action-edd_renew_license-success' );
+			}
+		
+			
+
+			if( ! empty( $do_action ) ){
+				do_action( $do_action, $license_id, $license, $return_args );
+			}
+
+			return $return_args;
+    
+        }
+
+    }
+
+endif; // End if class_exists check.

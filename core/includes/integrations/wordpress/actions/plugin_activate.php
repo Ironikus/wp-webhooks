@@ -1,0 +1,121 @@
+<?php
+if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_plugin_activate' ) ) :
+
+	/**
+	 * Load the plugin_activate action
+	 *
+	 * @since 4.1.0
+	 * @author Ironikus <info@ironikus.com>
+	 */
+	class WP_Webhooks_Integrations_wordpress_Actions_plugin_activate {
+
+        public function is_active(){
+
+            //Backwards compatibility for the "Manage Plugins" integration
+            if( defined( 'WPWHPRO_MNGPL_PLUGIN_NAME' ) ){
+                return false;
+            }
+
+            return true;
+        }
+
+        public function get_details(){
+
+            $translation_ident = "action-plugin_activate-description";
+
+			//These are the main arguments the user can use to input. You should always grab them within your action function.
+			$parameter = array(
+				'plugin_slug'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(string) The plugin slug of the plugin you want to activate. Please check the description for further details.', 'action-plugin_activate-content' ) ),
+				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks Pro fires this webhook. Please check the description for further details.', 'action-plugin_activate-content' ) )
+			);
+
+            ob_start();
+?>
+<?php echo WPWHPRO()->helpers->translate( "This argument contains the slug of a plugin. This isually is the folder name of the plugin, followed by a slash and the plugin file name + file extension. Down below is an example.", $translation_ident ); ?>
+<pre>wpwh-comments/wpwh-plugin-file.php</pre>
+<?php echo WPWHPRO()->helpers->translate( "The above slug is defined based on the plugin setup. <strong>wpwh-comments</strong> is the name of the plugin folder. <strong>wpwh-plugin-file.php</strong> is the file name of the plugin file within the folder (The file where you defined your plugin details within the comment).", $translation_ident ); ?>
+<?php
+		    $parameter['plugin_slug']['description'] = ob_get_clean();
+
+            ob_start();
+?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>plugin_activate</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 3 );
+function my_custom_callback_function( $plugin_slug, $check, $return_args ){
+    //run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+    <li>
+        <strong>$plugin_slug</strong> (string)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "The currently given slug (+ filename) of the plugin. (The given data from the plugin_slug argument)", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$check</strong> (bool)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "True if the plugin was successfully activated, false if not.", $translation_ident ); ?>
+    </li>
+    <li>
+        <strong>$return_args</strong> (array)
+        <br>
+        <?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
+    </li>
+</ol>
+<?php
+		    $parameter['do_action']['description'] = ob_get_clean();
+
+			//This is a more detailled view of how the data you sent will be returned.
+			$returns = array(
+				'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-plugin_activate-content' ) ),
+				'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-create-post-content' ) ),
+			);
+
+			$returns_code = array (
+                'success' => true,
+                'msg' => 'Plugin successfully activated.',
+            );
+
+			ob_start();
+			?>
+
+<?php echo WPWHPRO()->helpers->translate( "This webhook action is used to activate a plugin on your WordPress system via a webhook call.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "This description is uniquely made for the <strong>plugin_activate</strong> webhook action.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "In case you want to first understand on how to setup webhook actions in general, please check out the following manuals:", $translation_ident ); ?>
+<br>
+<a title="Go to wp-webhooks.com/docs" target="_blank" href="https://wp-webhooks.com/docs/article-categories/get-started/">https://wp-webhooks.com/docs/article-categories/get-started/</a>
+<br><br>
+<h4><?php echo WPWHPRO()->helpers->translate( "How to use <strong>plugin_activate</strong>", $translation_ident ); ?></h4>
+<ol>
+    <li><?php echo WPWHPRO()->helpers->translate( "The first argument you need to set within your webhook action request is the <strong>action</strong> argument. This argument is always required. Please set it to <strong>plugin_activate</strong>.", $translation_ident ); ?></li>
+    <li><?php echo WPWHPRO()->helpers->translate( "The second argument is plugin_slug, which contains the slug of the given plugin. Please check the <strong>Special Arguments</strong> down below for further details.", $translation_ident ); ?></li>
+    <li><?php echo WPWHPRO()->helpers->translate( "All the other arguments are optional and just extend the fetching of the posts.", $translation_ident ); ?></li>
+</ol>
+			<?php
+			$description = ob_get_clean();
+
+            return array(
+                'action'            => 'plugin_activate',
+                'name'              => WPWHPRO()->helpers->translate( 'Activate a plugin', $translation_ident ),
+                'parameter'         => $parameter,
+                'returns'           => $returns,
+                'returns_code'      => $returns_code,
+                'short_description' => WPWHPRO()->helpers->translate( 'This webhook action allows you to activate a plugin within your WordPress website.', $translation_ident ),
+                'description'       => $description,
+                'integration'       => 'wordpress',
+                'premium' 			=> true,
+            );
+
+        }
+
+    }
+
+endif; // End if class_exists check.

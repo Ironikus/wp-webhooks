@@ -13,7 +13,7 @@
 				<li>Bulk webhook action: Fire multiple webhook actions within a single call</li>
 				<li>Whitelabel feature (For unlimited license holders)</li>
 			</ul>
-			<a href="https://wp-webhooks.com/compare-wp-webhooks-pro/" target="_blank" class="wpwh-btn wpwh-btn--secondary" rel="noopener noreferrer">Go Pro</a>
+			<a href="https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wpwh&utm_medium=tab-pro&utm_campaign=Go%20Pro" target="_blank" class="wpwh-btn wpwh-btn--secondary" rel="noopener noreferrer">Go Pro</a>
 		</div>
 	</div>
 </div>

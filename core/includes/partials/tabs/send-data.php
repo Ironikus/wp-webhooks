@@ -53,6 +53,8 @@ if( isset( $_POST['wpwh-add-webhook-url'] ) ){
 
 //Sort webhooks
 $grouped_triggers = array();
+$grouped_triggers_pro = array();
+
 foreach( $triggers as $identkey => $webhook_trigger ){
     $group = 'ungrouped';
 
@@ -60,13 +62,23 @@ foreach( $triggers as $identkey => $webhook_trigger ){
         $group = $webhook_trigger['integration'];
     }
 
-    if( ! isset( $grouped_triggers[ $group ] ) ){
-        $grouped_triggers[ $group ] = array(
-            $identkey => $webhook_trigger
-        );
-    } else {
-        $grouped_triggers[ $group ][ $identkey ] = $webhook_trigger;
-    }
+	if( isset( $webhook_trigger['premium'] ) && $webhook_trigger['premium'] ){
+		if( ! isset( $grouped_triggers_pro[ $group ] ) ){
+			$grouped_triggers_pro[ $group ] = array(
+				$identkey => $webhook_trigger
+			);
+		} else {
+			$grouped_triggers_pro[ $group ][ $identkey ] = $webhook_trigger;
+		}
+	} else {
+		if( ! isset( $grouped_triggers[ $group ] ) ){
+			$grouped_triggers[ $group ] = array(
+				$identkey => $webhook_trigger
+			);
+		} else {
+			$grouped_triggers[ $group ][ $identkey ] = $webhook_trigger;
+		}
+	}
 }
 
 //add ungroped elements at the end
@@ -76,11 +88,38 @@ if( isset( $grouped_triggers['ungrouped'] ) ){
 	$grouped_triggers['ungrouped'] = $ungrouped_triggers;
 }
 
+//Map premium triggers
+if( ! empty( $grouped_triggers_pro ) ){
+	foreach( $grouped_triggers_pro as $gtpk => $gtpv ){
+		if( isset( $grouped_triggers[ $gtpk ] ) ){
+			$grouped_triggers[ $gtpk ] = array_merge( $grouped_triggers[ $gtpk ], $gtpv );
+		} else {
+			$grouped_triggers[ $gtpk ] = $gtpv;
+		}
+	}
+}
+
 $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigger'], FILTER_SANITIZE_STRING ) : 'create_user';
 
 ?>
 <?php add_ThickBox(); ?>
-
+<style>
+.integration-pro {
+    background-color: #ff8e6b;
+    background: linear-gradient(
+180deg
+,#ff8e6b 0,#f1592a 100%);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 50px;
+	margin-left:10px;
+}
+.wpwh-go-pro{
+	background-color: rgba(42,157,143,0.1);
+    padding: 1.5rem 1.875rem;
+    border-radius: 8px;
+}
+</style>
 <div class="wpwh-container">
   <div class="wpwh-title-area mb-5">
     <h1><?php echo WPWHPRO()->helpers->translate( 'Available Webhook Triggers', 'wpwhpro-page-triggers' ); ?></h1>
@@ -122,10 +161,14 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 								$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
 								$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 
+								if( isset( $trigger['premium'] ) && $trigger['premium'] ){
+									$trigger_name .= '<span class="integration-pro">Pro</span>';
+								}
+
 								$is_active = $webhook_name === $active_trigger;
 
 								?>
-								<a href="#webhook-<?php echo $identkey; ?>" data-wpwh-trigger-id="<?php echo $webhook_name; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $trigger_name; ?></a>
+								<a href="#webhook-<?php echo $webhook_name; ?>" data-wpwh-trigger-id="<?php echo $webhook_name; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $trigger_name; ?></a>
 							<?php endforeach; ?>
 						<?php endforeach; ?>
 					</div>
@@ -143,6 +186,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 						$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 
 						$is_active = $webhook_name === $active_trigger;
+						$is_premium = ( isset( $trigger['premium'] ) && $trigger['premium'] ) ? true : false;
 
 						//Map default trigger_attributes if available
 						$settings = array();
@@ -174,7 +218,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 						$settings = array_merge( $required_settings, $settings );
 
 						?>
-						<div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-<?php echo $identkey; ?>" <?php echo ! $is_active ? 'style="display: none;"' : ''; ?>>
+						<div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-<?php echo $webhook_name; ?>" <?php echo ! $is_active ? 'style="display: none;"' : ''; ?>>
 							<div class="wpwh-table-header">
 								<div class="d-flex align-items-center justify-content-between">
 								<h2 class="mb-2" data-wpwh-trigger-name><?php echo $trigger_name; ?></h2>
@@ -183,115 +227,130 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 								<div class="wpwh-content mb-4">
 									<?php echo $trigger['short_description']; ?>
 								</div>
-								<div class="d-flex align-items-center justify-content-between">
-									<h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Templates', 'wpwhpro-page-triggers' ); ?></h4>
-									<button class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>" data-toggle="modal" data-target="#wpwhAddWebhookModal-<?php echo $identkey; ?>">
-										<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>
-									</button>
-								</div>
+
+								<?php if( ! $is_premium ) : ?>
+									<div class="d-flex align-items-center justify-content-between">
+										<h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Templates', 'wpwhpro-page-triggers' ); ?></h4>
+										<button class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>" data-toggle="modal" data-target="#wpwhAddWebhookModal-<?php echo $identkey; ?>">
+											<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>
+										</button>
+									</div>
+								<?php else : ?>
+									<div class="wpwh-go-pro">
+										<h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Interested in this trigger?', 'wpwhpro-page-triggers' ); ?></h4>
+										<p>
+											<?php echo sprintf( WPWHPRO()->helpers->translate( 'Get full access to this and all other premium triggers with %s', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . ' Pro</strong>' ); ?>
+										</p>
+										<a href="https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wpwh&utm_medium=trigger-prem-<?php echo urlencode( $webhook_name ); ?>&utm_campaign=Go%20Pro" target="_blank" class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Go Pro', 'wpwhpro-page-triggers' ); ?>">
+											<?php echo WPWHPRO()->helpers->translate( 'Go Pro', 'wpwhpro-page-triggers' ); ?>
+										</a>
+									</div>
+								<?php endif; ?>
 							</div>
-							<table class="wpwh-table wpwh-table--sm wpwh-text-small">
-								<thead>
-									<tr>
-										<th></th>
-										<th><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?></th>
-										<th><?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?></th>
-										<th class="text-center"><?php echo WPWHPRO()->helpers->translate( 'Action', 'wpwhpro-page-triggers' ); ?></th>
-									</tr>
-								</thead>
-								<tbody>
-
-									<?php $all_triggers = WPWHPRO()->webhook->get_hooks( 'trigger', $trigger['trigger'] ); ?>
-									<?php foreach( $all_triggers as $webhook => $webhook_data ) : ?>
-										<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
-										<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook, $trigger['trigger'] ) ) ) { continue; } ?>
-										<?php
-											$status = 'active';
-											$status_name = 'Deactivate';
-											if( isset( $webhook_data['status'] ) && $webhook_data['status'] == 'inactive' ){
-												$status = 'inactive';
-												$status_name = 'Activate';
-											}
-										?>
-										<tr id="webhook-trigger-<?php echo $webhook; ?>">
-											<td class="align-middle wpwh-status-cell wpwh-status-cell--<?php echo $status; ?>">
-												<span data-tippy data-tippy-content="<?php echo WPWHPRO()->helpers->translate( $status, 'wpwhpro-page-triggers' ); ?>"></span>
-											</td>
-											<td>
-												<div class="wpwh-copy-wrapper" data-wpwh-tippy-content="<?php echo WPWHPRO()->helpers->translate( 'copied!', 'wpwhpro-page-triggers' ); ?>"><input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_name' value="<?php echo $webhook; ?>" readonly /></div>
-											</td>
-											<td class="wpwh-w-50">
-												<div class="wpwh-copy-wrapper" data-wpwh-tippy-content="<?php echo WPWHPRO()->helpers->translate( 'copied!', 'wpwhpro-page-triggers' ); ?>"><input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo $webhook_data['webhook_url']; ?>" readonly /></div>
-											</td>
-											<td class="p-0 align-middle text-center wpwh-table__action">
-												<div class="dropdown">
-													<button type="button" class="wpwh-btn wpwh-btn--link px-2 py-3 wpwh-dropdown-trigger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-														<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/settings.svg'; ?>" alt="Settings Icon">
-														<span class="sr-only">Options</span>
-													</button>
-													<div class="dropdown-menu">
-														<a
-															class="dropdown-item"
-															href="#"
-
-															data-wpwh-event="delete"
-															data-wpwh-event-type="send"
-															data-wpwh-event-element="#webhook-trigger-<?php echo $webhook; ?>"
-
-															data-wpwh-delete="<?php echo $webhook; ?>"
-															data-wpwh-group="<?php echo $trigger['trigger']; ?>"
-														>
-															<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/delete.svg'; ?>" alt="Delete">
-															<span><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-triggers' ); ?></span>
-														</a>
-														<a
-															class="dropdown-item"
-															href="#"
-
-															data-wpwh-event="deactivate"
-															data-wpwh-event-type="send"
-															data-wpwh-event-target="#webhook-action-<?php echo $webhook; ?>"
-
-															data-wpwh-webhook-status="<?php echo $status; ?>"
-															data-wpwh-webhook-group="<?php echo $trigger['trigger']; ?>"
-															data-wpwh-webhook-slug="<?php echo $webhook; ?>"
-														>
-															<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/deactivate.svg'; ?>" alt="Deactivate" class="img-deactivate" <?php if ( $status === 'inactive' ): ?> style="display:none;" <?php endif; ?>>
-															<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/activate.svg'; ?>" alt="Activate" class="img-activate" <?php if ( $status === 'active' ): ?> style="display:none;" <?php endif; ?>>
-															<span><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-triggers' ); ?></span>
-														</a>
-														<a
-															class="dropdown-item"
-															href="#"
-															data-toggle="modal"
-															data-target="#wpwhTriggerSettingsModal-<?php echo $identkey; ?>-<?php echo $webhook; ?>"
-														>
-															<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/cog.svg'; ?>" alt="Settings">
-															<span><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-triggers' ); ?></span>
-														</a>
-														<a
-															class="dropdown-item"
-															href="#"
-
-															data-wpwh-event="demo"
-															data-wpwh-event-type="send"
-
-															data-wpwh-demo-data-callback="<?php echo isset( $trigger['callback'] ) ? $trigger['callback'] : ''; ?>"
-															data-wpwh-webhook="<?php echo $webhook; ?>"
-															data-wpwh-group="<?php echo $trigger['trigger']; ?>"
-														>
-															<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/send.svg'; ?>" alt="Settings">
-															<span><?php echo WPWHPRO()->helpers->translate( 'Send Demo', 'wpwhpro-page-triggers' ); ?></span>
-														</a>
-													</div>
-												</div>
-											</td>
+							<?php if( ! $is_premium ) : ?>
+								<table class="wpwh-table wpwh-table--sm wpwh-text-small">
+									<thead>
+										<tr>
+											<th></th>
+											<th><?php echo WPWHPRO()->helpers->translate( 'Webhook Name', 'wpwhpro-page-triggers' ); ?></th>
+											<th><?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?></th>
+											<th class="text-center"><?php echo WPWHPRO()->helpers->translate( 'Action', 'wpwhpro-page-triggers' ); ?></th>
 										</tr>
+									</thead>
+									<tbody>
 
-									<?php endforeach; ?>
+										<?php $all_triggers = WPWHPRO()->webhook->get_hooks( 'trigger', $trigger['trigger'] ); ?>
+										<?php foreach( $all_triggers as $webhook => $webhook_data ) : ?>
+											<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
+											<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook, $trigger['trigger'] ) ) ) { continue; } ?>
+											<?php
+												$status = 'active';
+												$status_name = 'Deactivate';
+												if( isset( $webhook_data['status'] ) && $webhook_data['status'] == 'inactive' ){
+													$status = 'inactive';
+													$status_name = 'Activate';
+												}
+											?>
+											<tr id="webhook-trigger-<?php echo $webhook; ?>">
+												<td class="align-middle wpwh-status-cell wpwh-status-cell--<?php echo $status; ?>">
+													<span data-tippy data-tippy-content="<?php echo WPWHPRO()->helpers->translate( $status, 'wpwhpro-page-triggers' ); ?>"></span>
+												</td>
+												<td>
+													<div class="wpwh-copy-wrapper" data-wpwh-tippy-content="<?php echo WPWHPRO()->helpers->translate( 'copied!', 'wpwhpro-page-triggers' ); ?>"><input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_name' value="<?php echo $webhook; ?>" readonly /></div>
+												</td>
+												<td class="wpwh-w-50">
+													<div class="wpwh-copy-wrapper" data-wpwh-tippy-content="<?php echo WPWHPRO()->helpers->translate( 'copied!', 'wpwhpro-page-triggers' ); ?>"><input class="wpwh-form-input w-100" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo $webhook_data['webhook_url']; ?>" readonly /></div>
+												</td>
+												<td class="p-0 align-middle text-center wpwh-table__action">
+													<div class="dropdown">
+														<button type="button" class="wpwh-btn wpwh-btn--link px-2 py-3 wpwh-dropdown-trigger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+															<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/settings.svg'; ?>" alt="Settings Icon">
+															<span class="sr-only">Options</span>
+														</button>
+														<div class="dropdown-menu">
+															<a
+																class="dropdown-item"
+																href="#"
 
-								</tbody>
-							</table>
+																data-wpwh-event="delete"
+																data-wpwh-event-type="send"
+																data-wpwh-event-element="#webhook-trigger-<?php echo $webhook; ?>"
+
+																data-wpwh-delete="<?php echo $webhook; ?>"
+																data-wpwh-group="<?php echo $trigger['trigger']; ?>"
+															>
+																<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/delete.svg'; ?>" alt="Delete">
+																<span><?php echo WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-triggers' ); ?></span>
+															</a>
+															<a
+																class="dropdown-item"
+																href="#"
+
+																data-wpwh-event="deactivate"
+																data-wpwh-event-type="send"
+																data-wpwh-event-target="#webhook-action-<?php echo $webhook; ?>"
+
+																data-wpwh-webhook-status="<?php echo $status; ?>"
+																data-wpwh-webhook-group="<?php echo $trigger['trigger']; ?>"
+																data-wpwh-webhook-slug="<?php echo $webhook; ?>"
+															>
+																<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/deactivate.svg'; ?>" alt="Deactivate" class="img-deactivate" <?php if ( $status === 'inactive' ): ?> style="display:none;" <?php endif; ?>>
+																<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/activate.svg'; ?>" alt="Activate" class="img-activate" <?php if ( $status === 'active' ): ?> style="display:none;" <?php endif; ?>>
+																<span><?php echo WPWHPRO()->helpers->translate( $status_name, 'wpwhpro-page-triggers' ); ?></span>
+															</a>
+															<a
+																class="dropdown-item"
+																href="#"
+																data-toggle="modal"
+																data-target="#wpwhTriggerSettingsModal-<?php echo $identkey; ?>-<?php echo $webhook; ?>"
+															>
+																<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/cog.svg'; ?>" alt="Settings">
+																<span><?php echo WPWHPRO()->helpers->translate( 'Settings', 'wpwhpro-page-triggers' ); ?></span>
+															</a>
+															<a
+																class="dropdown-item"
+																href="#"
+
+																data-wpwh-event="demo"
+																data-wpwh-event-type="send"
+
+																data-wpwh-demo-data-callback="<?php echo isset( $trigger['callback'] ) ? $trigger['callback'] : ''; ?>"
+																data-wpwh-webhook="<?php echo $webhook; ?>"
+																data-wpwh-group="<?php echo $trigger['trigger']; ?>"
+															>
+																<img src="<?php echo WPWH_PLUGIN_URL . 'core/includes/assets/img/send.svg'; ?>" alt="Settings">
+																<span><?php echo WPWHPRO()->helpers->translate( 'Send Demo', 'wpwhpro-page-triggers' ); ?></span>
+															</a>
+														</div>
+													</div>
+												</td>
+											</tr>
+
+										<?php endforeach; ?>
+
+									</tbody>
+								</table>
+							<?php endif; ?>
 
 							<div class="wpwh-accordion" id="wpwh_accordion_<?php echo $identkey; ?>">
 
