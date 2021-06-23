@@ -51,20 +51,20 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 		public $api;
 
 		/**
-		 * WPWHPRO Integrations Object.
-		 *
-		 * @var object|WP_Webhooks_Pro_Integrations
-		 * @since 3.2.0
-		 */
-		public $integrations;
-
-		/**
 		 * WPWHPRO Webhook Object.
 		 *
 		 * @var object|WP_Webhooks_Pro_Webhook
 		 * @since 1.0.0
 		 */
 		public $webhook;
+
+		/**
+		 * WPWHPRO Integrations Object.
+		 *
+		 * @var object|WP_Webhooks_Pro_Integrations
+		 * @since 3.2.0
+		 */
+		public $integrations;
 
 		/**
 		 * WPWHPRO Polling Object.
@@ -142,8 +142,8 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 				self::$instance->delay			= new WP_Webhooks_Pro_Post_Delay();
 				self::$instance->auth			= new WP_Webhooks_Pro_Authentication();
 				self::$instance->api            = new WP_Webhooks_Pro_API();
-				self::$instance->integrations   = new WP_Webhooks_Pro_Integrations();
 				self::$instance->webhook        = new WP_Webhooks_Pro_Webhook();
+				self::$instance->integrations   = new WP_Webhooks_Pro_Integrations();
 				self::$instance->polling      	= new WP_Webhooks_Pro_Polling();
 				self::$instance->acf      		= new WP_Webhooks_Pro_ACF();
 
@@ -179,8 +179,8 @@ if ( ! class_exists( 'WP_Webhooks_Pro' ) ) :
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-post-delay.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-auth.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-api.php';
-			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-integrations.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-webhook.php';
+			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-integrations.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-polling.php';
 			require_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-acf.php';
 
