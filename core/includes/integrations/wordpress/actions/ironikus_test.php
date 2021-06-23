@@ -55,9 +55,6 @@ $return_args = array(
 </ol>
 <h4><?php echo WPWHPRO()->helpers->translate( "Tipp", $translation_ident ); ?></h4>
 <?php echo sprintf( WPWHPRO()->helpers->translate( "This webhook makes sense if you want to test if %s works properly on your WordPress website. You can try to setup different values to see how the webhook interacts with your site.", $translation_ident ), WPWH_NAME ); ?>
-<br>
-<?php echo WPWHPRO()->helpers->translate( "You can also use it to test the functionality using our Ironikus assistant:", $translation_ident ); ?>
-<a title="ironikus.com" target="_blank" href="https://wp-webhooks.com/assistant/">https://wp-webhooks.com/assistant/</a>
 <?php
             $description = ob_get_clean();
 
