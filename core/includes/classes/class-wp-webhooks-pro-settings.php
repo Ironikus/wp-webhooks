@@ -142,6 +142,20 @@ class WP_Webhooks_Pro_Settings{
 		$fields = array(
 
 			/**
+			 * ACTIVATE WHITELIST
+			 */
+			'wpwhpro_activate_whitelist' => array(
+				'id'          => 'wpwhpro_activate_whitelist',
+				'type'        => 'checkbox',
+				'label'       => WPWHPRO()->helpers->translate('Activate Whitelist', 'wpwhpro-fields-activate-whitelist'),
+				'placeholder' => '',
+				'required'    => false,
+				'dangerzone'  => false,
+				'premium'	  => true,
+				'description' => WPWHPRO()->helpers->translate('Enhance your website security by activating the global whitelist. This will restrict all incoming webhook connections by default and only allows them when you want to. This feature will be effective within <a class="text-secondary" href="https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wpwh&utm_medium=settings-whitelist&utm_campaign=Go%20Pro" title="Check out pro" target="_blank">the Pro version</a>.', 'wpwhpro-fields-whitelist-tip')
+			),
+
+			/**
 			 * MAIN MENU ITEM
 			 */
 			'wpwhpro_show_main_menu' => array(

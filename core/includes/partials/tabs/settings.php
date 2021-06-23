@@ -12,6 +12,23 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 }
 
 ?>
+<style>
+.integration-pro {
+    background-color: #ff8e6b;
+    background: linear-gradient(
+180deg
+,#ff8e6b 0,#f1592a 100%);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 50px;
+	margin-left:10px;
+}
+.wpwh-go-pro{
+	background-color: rgba(42,157,143,0.1);
+    padding: 1.5rem 1.875rem;
+    border-radius: 8px;
+}
+</style>
 <div class="wpwh-container">
 
     <form id="wpwh-main-settings-form" method="post" action="">
@@ -28,6 +45,7 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 				continue;
 			}
 
+			$is_premium = isset( $setting['premium'] ) && $setting['premium'] ? true : false;
 			$is_checked = ( $setting['type'] == 'checkbox' && $setting['value'] == 'yes' ) ? 'checked' : '';
 			$value = ( $setting['type'] != 'checkbox' ) ? $setting['value'] : '1';
 			$is_checkbox = ( $setting['type'] == 'checkbox' ) ? true : false;
@@ -35,7 +53,7 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 			?>
 			<div class="wpwh-setting">
 				<div class="wpwh-setting__title">
-				<label for="<?php echo $setting['id']; ?>"><?php echo $setting['label']; ?></label>
+				<label for="<?php echo $setting['id']; ?>"><?php echo $setting['label']; ?><?php echo ($is_premium) ? '<span class="integration-pro">Pro</span>' : ''; ?></label>
 				</div>
 				<div class="wpwh-setting__desc">
 				<?php echo wpautop( $setting['description'] ); ?>

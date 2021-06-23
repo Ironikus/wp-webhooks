@@ -615,19 +615,6 @@ if ( empty( $active_trigger ) ) {
             }
         }
 
-        if( $settings_ident == 'wpwhpro_action_action_whitelist' ){
-            $flattened_webhook_data = array();
-            foreach( $actions as $fwd_identkey => $fwd_action ){
-                $flattened_webhook_data[ $fwd_action['action'] ] = $fwd_action['action'];
-            }
-
-            if( ! empty( $flattened_webhook_data ) ){
-                $required_settings[ $settings_ident ]['choices'] = $flattened_webhook_data;
-            } else {
-                unset( $required_settings[ $settings_ident ] ); //if empty
-            }
-        }
-
     }
 
     $settings = array_merge( $required_settings, $settings );
@@ -787,7 +774,7 @@ if ( empty( $active_trigger ) ) {
                     </div>
                     <?php if( isset( $param_data['premium'] ) && $param_data['premium'] ) : ?>
                         <div class="wpwh-go-pro">
-                            <h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Interested in this action?', 'wpwhpro-page-actions' ); ?></h4>
+                            <h4 class="mb-0"><?php echo WPWHPRO()->helpers->translate( 'Interested in this argument?', 'wpwhpro-page-actions' ); ?></h4>
                             <p>
                                 <?php echo sprintf( WPWHPRO()->helpers->translate( 'Get full access to this and all other premium arguments with %s', 'wpwhpro-page-triggers' ), '<strong>' . $this->page_title . ' Pro</strong>' ); ?>
                             </p>

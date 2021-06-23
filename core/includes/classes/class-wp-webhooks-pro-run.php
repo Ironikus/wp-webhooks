@@ -878,6 +878,8 @@ class WP_Webhooks_Pro_Run{
 		);
 
 		$tabs['authentication'] = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
+		$tabs['data-mapping'] = WPWHPRO()->helpers->translate( 'Data Mapping', 'admin-menu' );
+		$tabs['logs']  = WPWHPRO()->helpers->translate( 'Logs', 'admin-menu' );
 
 		$tabs['settings']   = array(
 			'label' => WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' ),
@@ -917,6 +919,12 @@ class WP_Webhooks_Pro_Run{
 				break;
 			case 'authentication':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/authentication.php' );
+				break;
+			case 'data-mapping':
+				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
+				break;
+			case 'logs':
+				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
 				break;
 			case 'extensions':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/extensions.php' );

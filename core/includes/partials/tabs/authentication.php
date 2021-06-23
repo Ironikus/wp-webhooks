@@ -200,6 +200,7 @@ foreach( $webhook_actions as $action_name => $wa ){
             <?php foreach( $auth_methods as $auth_type => $auth_data ) : ?>
               <option value="<?php echo $auth_type; ?>"><?php echo $auth_data['name']; ?></option>
             <?php endforeach; ?>
+            <option value="digest_auth" disabled><?php echo WPWHPRO()->helpers->translate( 'Digest Auth (Pro)', 'wpwhpro-page-authentication' ); ?></option>
           </select>
         </div>
         <div class="modal-footer">
