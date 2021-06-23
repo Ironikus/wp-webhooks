@@ -66,7 +66,7 @@ foreach( $webhook_actions as $action_name => $wa ){
   <div class="wpwh-title-area mb-4">
     <h1><?php echo WPWHPRO()->helpers->translate( 'Authentication', 'wpwhpro-page-authentication' ); ?></h1>
     <p class="wpwh-text-small">
-        <?php echo sprintf(WPWHPRO()->helpers->translate( 'Create your own authentication template down below. This allows you to authenticate your outgoing "Send Data" webhook triggers to a given endpoint, as well as your incoming "Receive Data" actions. For more information, please check out the authentication documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-authentication' ), 'https://ironikus.com/docs/knowledge-base/how-to-use-authentication/'); ?>
+        <?php echo sprintf(WPWHPRO()->helpers->translate( 'Create your own authentication template down below. This allows you to authenticate your outgoing "Send Data" webhook triggers to a given endpoint, as well as your incoming "Receive Data" actions. For more information, please check out the authentication documentation by clicking <a href="%s" target="_blank" >here</a>.', 'wpwhpro-page-authentication' ), 'https://wp-webhooks.com/docs/knowledge-base/how-to-use-authentication/'); ?>
     </p>
   </div>
 

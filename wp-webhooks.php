@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WP Webhooks
- * Plugin URI: https://ironikus.com/downloads/wp-webhooks/
+ * Plugin URI: https://wp-webhooks.com/
  * Description: Automate your WordPress system using webhook triggers and actions
  * Version: 3.1.0
  * Author: Ironikus
- * Author URI: https://ironikus.com/
+ * Author URI: https://wp-webhooks.com/about/
  * License: GPL2
  *
  * You should have received a copy of the GNU General Public License

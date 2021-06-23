@@ -183,12 +183,12 @@
     <div class="wpwh-box__body">
         <h2>Get started the right way!</h2>
         <ul class="wpwh-checklist wpwh-checklist--two-col">
-            <li>We offer a full documentation for %product_name%. To learn more about it, please <a href="https://ironikus.com/docs/knowledge-base/how-to-use-wp-webhooks/" target="_blank" rel="noopener noreferrer" class="text-secondary"><strong>click here</strong></a>.</li>
+            <li>We offer a full documentation for %product_name%. To learn more about it, please <a href="https://wp-webhooks.com/docs/knowledge-base/how-to-use-wp-webhooks/" target="_blank" rel="noopener noreferrer" class="text-secondary"><strong>click here</strong></a>.</li>
             <li>Our plugin also offers a <a href="https://wp-webhooks.com/free/" target="_blank" rel="noopener noreferrer" class="text-secondary"><strong>web view</strong></a> which allows you to share sections of the plugin across the web.</li>
             <li>You will find further explains, best practices and explanations on our <a href="https://youtube.com/channel/UC1AuoCWVCzv-GWShlTWLIfQ" target="_blank" rel="noopener noreferrer" class="text-secondary"><strong>YouTube channel</strong></a>.</li>
             <li>Don't forget to join our <a href="https://www.facebook.com/groups/wordpress.automation/" target="_blank" rel="noopener noreferrer" class="text-secondary"><strong>Facebook Group</strong></a> for further insights, tipps and tricks, early announcements and more.</li>
         </ul>
-        <a href="https://ironikus.com/compare-wp-webhooks-pro/" target="_blank" class="wpwh-btn wpwh-btn--secondary" rel="noopener noreferrer">Go Pro</a>
+        <a href="https://wp-webhooks.com/compare-wp-webhooks-pro/" target="_blank" class="wpwh-btn wpwh-btn--secondary" rel="noopener noreferrer">Go Pro</a>
     </div>
 </div>
 
@@ -199,8 +199,8 @@
                 <h2>Suggestions and bugs</h2>
                 <p class="mb-4">Our plugin is made for you. That's why we value your feedback more than everything else. In case you ever find a bug or crave for a feature, we are more than happy to help.</p>
                 <p>
-                    <a href="https://ironikus.com/contact/?custom-subject=I%20would%20like%20to%20suggest%20a%20feature" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>SUGGEST FEATURE</strong></a>
-                    <a href="https://ironikus.com/contact/?custom-subject=I%20would%20like%20to%20report%20a%20bug" target="_blank" rel="noopener noreferrer" class="text-success"><strong>REPORT BUG</strong></a>
+                    <a href="https://wp-webhooks.com/contact/?custom-subject=I%20would%20like%20to%20suggest%20a%20feature" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>SUGGEST FEATURE</strong></a>
+                    <a href="https://wp-webhooks.com/contact/?custom-subject=I%20would%20like%20to%20report%20a%20bug" target="_blank" rel="noopener noreferrer" class="text-success"><strong>REPORT BUG</strong></a>
                 </p>
             </div>
         </div>
@@ -211,7 +211,7 @@
                 <h2>Need customizations?</h2>
                 <p class="mb-4">In case you need further help with automating your setup, we are more than happy to consult you accordingly. We also offer custom development for our plugin - simply write us a message and we will get in touch with you.</p>
                 <p>
-                    <a href="https://ironikus.com/contact/?custom-subject=Consultation%20request%20for%20WP%20Webhooks%20Pro" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>CONTACT US</strong></a>
+                    <a href="https://wp-webhooks.com/contact/?custom-subject=Consultation%20request%20for%20WP%20Webhooks%20Pro" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>CONTACT US</strong></a>
                 </p>
             </div>
         </div>
@@ -222,8 +222,8 @@
                 <h2>%product_name% extensions</h2>
                 <p class="mb-4">Please use the links down below to check out all of our %product_name% extensions.</p>
                 <p>
-                    <a href="https://ironikus.com/products/?fwp_download_categories=wp-webhooks-extension" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>FREE EXTENSIONS</strong></a>
-                    <a href="https://ironikus.com/products/?fwp_download_categories=wpwh-pro-extension" target="_blank" rel="noopener noreferrer" class="text-success mr-2"><strong>PRO EXTENSIONS</strong></a>
+                    <a href="https://wp-webhooks.com/products/?fwp_download_categories=wp-webhooks-extension" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>FREE EXTENSIONS</strong></a>
+                    <a href="https://wp-webhooks.com/products/?fwp_download_categories=wpwh-pro-extension" target="_blank" rel="noopener noreferrer" class="text-success mr-2"><strong>PRO EXTENSIONS</strong></a>
                 </p>
             </div>
         </div>
@@ -234,7 +234,7 @@
                 <h2>More interesting links</h2>
                 <p class="mb-4">Down below you will find further links that help you get started.</p>
                 <p>
-                    <a href="https://ironikus.com/docs/" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>DOCS</strong></a>
+                    <a href="https://wp-webhooks.com/docs/" target="_blank" rel="noopener noreferrer" class="text-secondary mr-2"><strong>DOCS</strong></a>
                     <a href="https://www.facebook.com/ironikusagency/" target="_blank" rel="noopener noreferrer" class="text-facebook mr-2"><strong>FACEBOOK</strong></a>
                     <a href="https://www.instagram.com/ironikusagency/" target="_blank" rel="noopener noreferrer" class="text-instagram mr-2"><strong>INSTAGRAM</strong></a>
                 </p>
