@@ -165,7 +165,7 @@ class WP_Webhooks_Pro_Settings{
 				'placeholder' => '',
 				'required'    => false,
 				'dangerzone'  => false,
-				'description' => sprintf( WPWHPRO()->helpers->translate( 'Check this button if you want to show %s within the main admin menu instead of as a sub menu item.', 'wpwhpro-fields-show-main-menu' ), $this->get_page_title() )
+				'description' => sprintf( WPWHPRO()->helpers->translate( 'Check this button if you want to show %s within the main admin menu instead of a sub menu item.', 'wpwhpro-fields-show-main-menu' ), $this->get_page_title() )
 			),
 
 			/**
