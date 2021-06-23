@@ -1,85 +1,135 @@
 === WP Webhooks ===
-Author URI: https://ironikus.com/
-Plugin URI: https://ironikus.com/downloads/wp-webhooks/
+Author URI: https://wp-webhooks.com/about/
+Plugin URI: https://wp-webhooks.com/
 Contributors: ironikus
 Donate link: https://paypal.me/ironikus
-Tags: webhooks, automation, ironikus, webhook, api, web hooks, hooks, automating, automate, connect, third-party
+Tags: api, webhooks, zapier, automation, connector, integrations, automator, create user, ironikus
 Requires at least: 4.7
 Tested up to: 5.7
-Stable Tag: 3.1.0
+Stable Tag: 3.2.0
 License: GNU Version 3 or Any Later Version
 
-Extend your website with the most powerful webhook system.
+Put your website on autopilot by using webhooks to get rid of manual tasks and focus on what's really important for your business.
 
 == Description ==
 
-If you want to do certain actions on your WordPress site from somewhere else, this is your plugin! It will turn your website into an optimized webhook system so that you can connect your third party apps manually, via Zapier, automate.io or other third-party services to your WordPress website.
-It also allows you to receive data from other services to, for example, create a user or a post on your WordPress website, as well as it can send data for you on certain actions. For a full list of features, please check out the details down below. 
-It's time to automate your WordPress website on a whole new level!
+Put your website on autopilot by automating manual tasks to leverage your time and ressources for what's really important to your project.
+WP Webhooks can be used on two different ways: 
+
+**Trigger (Send Data):**
+A trigger sends information from your WordPress website on a specific event (e.g. when a user logs in), to any API or external service of your choice (e.g. Zapier, Integromat, Pabbly, ...).
+
+**Action (Receive Data):**
+An action is the reversed way of the trigger. It allows you to receive data on your website from any API or external service (e.g. Zapier, Integromat, Pabbly) which then executes a specific functionality on your WordPress website (e.g. creating a user or post).
+
+
+To give you some practical examples, here's what you can do via our plugin: 
 
 = Usage examples =
 * Create a WordPress user as soon as a new signup happens on Teachable
 * Create a WordPress post using Alexa (Voice Control)
 * Create WordPress users from an Excel list
-* Create a user via some Airtable data
+* Create a Woocommerce order from some Airtable data
+* Send data once a Gravity Form submission was received
+* Send data after a user filled out a WPForms form
 * Send data to intercom when a user logs into your WordPress website
 * Fire your own PHP code based on incoming data
 
+https://www.youtube.com/watch?v=EfagA_9Uy7o
+
 = Features =
 
-* Create, Delete, Search and Retrieve users via external webhooks on your website
-* Create, Delete, Search and Retrieve posts via external webhooks on your website (Custom post types supported)
-* Receive data to a custom webhook action (Do whatever you want with the incoming data)
-* Send data on login, register, update and deletion
-* Send data on new post, update post and delete post
-* Send data on custom WordPress hook calls
-* Authenticate every "Send data" trigger. Supported are: API Key, Bearer Token and Basic Auth
+**Plugin related**
+
+* All of our integrations are available within a single plugin file. No need for any extra plugins.
+* Authenticate every trigger and action. Supported are: API Key, Bearer Token and Basic Auth
 * Add multiple Webhooks for each trigger and also for the actions
 * Test all of the available triggers with a single click
 * Test all of the available actions within the plugin
 * Advanced settings for each webhook trigger url
-* Manage all of our extensions within the plugin
+* Manage all of our extensions within one plugin
 * Fully translatable and ready for multilingual sites
-* Full WPML Support
+* Fully WPML compatible
 * Advanced Developer Hooks
 * Optimized settings page for more control
 * Supports XML, JSON, plain text/HTML and form urlencode
 * Supports the following request methods: POST (Default), GET, HEAD, PUT, DELETE, TRACE, OPTIONS, PATCH
 * Supports Pabbly, Integromat, automate.io, Zapier and much more
 
-= Free Extensions =
-On wordpress.org you will also find more free extensions to equip your favorite plugins via webhooks.
+**[WordPress](https://wp-webhooks.com/integrations/wordpress/) related integrations**
 
-* [WP Webhooks – Easy Digital Downloads](https://wordpress.org/plugins/wp-webhooks-easy-digital-downloads/)
-* [Contact Form 7 Integration](https://wordpress.org/plugins/wpwh-contact-form-7/)
-* [Manage Taxonomy Terms](https://wordpress.org/plugins/wp-webhooks-manage-taxonomy-terms/)
-* [WP Reset Integration](https://wordpress.org/plugins/wpwh-wp-reset-webhook-integration/)
-* [WP Webhook Comments](https://wordpress.org/plugins/wp-webhooks-comments/)
-* [WP Webhooks – Email integration](https://wordpress.org/plugins/wp-webhooks-email-integration/)
+* **Action**: Create, Delete, Search and Retrieve users via webhooks on your website
+* **Action**: Create, Delete, Search and Retrieve posts via webhooks on your website (Custom post types supported)
+* **Action**: Create, Update and Delete WordPress comments
+* **Action**: Send an email via a webhook call
+* **Action**: Find and get one or multiple users/posts via a webhook call
+* **Action**: Receive data from a custom API or webhooks URL (Do whatever you want with the incoming data)
+* **Action**: Create taxonomy terms and term meta (custom taxonomies supported)
+
+* **Trigger**: Send data on login, register, update and deletion of a user
+* **Trigger**: Send data on new post, update post and delete post
+* **Trigger**: Send data on a new, updated, trashed, or deleted comment
+* **Trigger**: Send data once an email was sent from your WordPress system
+* **Trigger**: Send data on custom WordPress hook calls
+
+**[Contact Form 7](https://wp-webhooks.com/integrations/contact-form-7/) related integrations**
+
+* **Trigger**: Send data once a **Contact Form 7** form was submitted
+
+**[Easy Digital Downloads](https://wp-webhooks.com/integrations/easy-digital-downloads/) related integrations**
+
+* **Action**: Create, update and delete an EDD customer
+* **Action**: Create, update and delete an EDD discount
+* **Action**: Create, update and delete an EDD download
+* **Action**: Create, update and delete an EDD payment
+* **Action**: Create, update, delete, and renew an "EDD Software licensing" license
+* **Action**: Create, update, and delete an "EDD Recurring" subscription
+
+* **Trigger**: Send data once a customer was updated or created
+* **Trigger**: Send data once a file was downloaded
+* **Trigger**: Send data once a payment was created or a specific status reached
+* **Trigger**: Send data once an "EDD Software licensing" license was activated, deactivated, or the status updated
+* **Trigger**: Send data once an "EDD Software licensing" license was created, activated, deactivated, or the status changed
+* **Trigger**: Send data once an "EDD Recurring" subscription was created or a specific status changed
+
+**[Gravity Forms](https://wp-webhooks.com/integrations/gravity-forms/) related integrations**
+
+* **Trigger**: Send data once a "Gravity Form" form was submitted
+
+**[WP Reset](https://wp-webhooks.com/integrations/wp-reset/) related integrations**
+
+* **Action**: Clean the WordPress uploads folder
+* **Action**: Delete the .htaccess file
+* **Action**: Delete all custom tables
+* **Action**: Delete plugins
+* **Action**: Delete themes
+* **Action**: Delete WordPress transients
+* **Action**: Reset WordPress
+* **Action**: Truncate Custom Tables
 
 = The best Pro version you have ever seen! =
 
 Sounds like a catchy title, right? Actually, it really is the truth. Why? We will show you!
 
 * A lot of awesome plugin features (Details down below)
-* Live-test the plugin on your website through our chatbot assistant on ironikus.com
-* In-plugin support
+* All of our [pro integrations](https://wp-webhooks.com/integrations/)
+* All of our [pro features](https://wp-webhooks.com/features/)
+* All of our [pro extensions](https://wp-webhooks.com/downloads/)
 * Advanced security features
 * Completely free premium extensions
 
-[Compare WP Webhooks and WP Webhooks Pro now!](https://ironikus.com/compare-wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro%20Compare)
+[Compare WP Webhooks and WP Webhooks Pro now!](https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro%20Compare)
 
-Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
+Our premium features for [WP Webhooks Pro](https://wp-webhooks.com/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * Create users with user meta (ACF supported)
 * Update users and user meta (ACF supported)
-* Delete users
 * Add and/or remove multiple user roles
 * Create posts with post meta (ACF supported)
 * Update posts with post meta (ACF supported)
-* Delete posts
 * Bulk webhook action to trigger multiple actions at the same time
 * Shortcode webhook action that fires once the shortcode is called
+* WordPress hook webhook action that fires once a specific filter of the WordPress API was called
 * Data Mapping engine to manipulate your incoming/outgoing data
 * Whitelabel feature (see comparison table)
 * Log feature for easier debugging
@@ -88,15 +138,11 @@ Our premium features for [WP Webhooks Pro](https://ironikus.com/downloads/wp-web
 * Webhook URL action whitelist
 * In-plugin assistant
 
-Our free premium extensions for [WP Webhooks Pro](https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
+Our free premium extensions for [WP Webhooks Pro](https://wp-webhooks.com/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
-* [Woocommerce integration](https://ironikus.com/downloads/woocommerce-integration/): This extension allows you to do certain Woocommerce action on your website
-* [Email Integration](https://ironikus.com/downloads/wp-webhooks-emails/): Send emails from your WordPress website using webhook actions
-* [Create Blog Post Via Email](https://ironikus.com/downloads/wpwh-pro-send-blog-post-by-email/): Yes, it will allow you to create WordPress posts via Email
-* [Execute PHP Code](https://ironikus.com/downloads/execute-php-code/): It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
-* [Remote File Control](https://ironikus.com/downloads/remote-file-control/): Manage your local files on the server via webhooks. You can also create new local files from a given URL
-* [Manage Media Files](https://ironikus.com/downloads/manage-media-files/): Create WordPress attachments from local or remote files, delete them and much more
-* [Code Trigger](https://ironikus.com/downloads/code-trigger/): This is a next-level extension. You can run code through a webhook everytime WordPress get's called.
+* [Create Blog Post Via Email](https://wp-webhooks.com/downloads/wpwh-pro-send-blog-post-by-email/): Yes, it will allow you to create WordPress posts via Email
+* [Execute PHP Code](https://wp-webhooks.com/downloads/execute-php-code/): It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
+* [Code Trigger](https://wp-webhooks.com/downloads/code-trigger/): This is a next-level extension. You can run code through a webhook everytime WordPress get's called.
 
 = Questions? =
 
@@ -113,6 +159,39 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 
 == Changelog ==
+
+= 3.2.0: June 23, 2020 =
+* Feature: New webhook action create_term to create taxonomy terms
+* Feature: Add "Gravity Form" integration
+* Feature: Add "WP Reset" integration to core
+* Feature: Add "Manage Plugins" integration to core
+* Feature: Add "Email integration" integration to core
+* Feature: Add "Woocommerce" integration to core
+* Feature: Add "Comments" integration to core
+* Feature: Add "Manage Taxonomy Terms" integration to core
+* Feature: Add "Remote File Control" integration to core
+* Feature: Add "Manage Media Files" integration to core
+* Feature: Add "Easy Ditigal Downloads" integration to core
+* Feature: Switch triggers and actions to an integration-based setup
+* Feature: Allow integration-based grouping for actions and triggers
+* Feature: Add beautified namings to webhook actions
+* Feature: Setting to toggle WP Webhooks between a sub menu item or a menu item in the main admin menu
+* Tweak: Show the status of a webhook trigger or action next to the table item (green/red dot)
+* Tweak: Display JSON constructs for webhook triggers instead of array notations
+* Tweak: Add support for post trigger delay to wpwhh_shortcode trigger
+* Tweak: Allow pretty-printing for Receive Data responses
+* Tweak: Sort triggers and actions by name
+* Tweak: Optimize performance for authentication feature (duplicated "if exists" statement)
+* Tweak: Optimize performance of settings tab
+* Tweak: Optimize performance of authentication feature
+* Fix: If a custom URL port is used, the get_current_url() helper function returned the URL without the port
+* Dev: Support centralized support for post-delayed triggers
+* Dev: Make callback argument for triggers optional to support the integration based notation
+* Dev: Make post delay filter wpwhpro/post_delay/post_delay_triggers more accessible - we added the webhook_group name and the webhook object
+* Dev: New, public function WPWHPRO()->auth->maybe_setup_authentication_table()
+* Dev: New helper function WPWHPRO()->helpers->get_folders( $path ) to retrieve a list of folders from a given path
+* Dev: New helper function WPWHPRO()->helpers->get_files( $path, $ignore = array() ) to retrieve a list of files from a given path
+* Dev: New action wpwhpro/integrations/callbacks_registered which fires after all integration callbacks have been registered
 
 = 3.1.0: May 01, 2020 =
 * Feature: Allow the "Send Data on Post Update" to only trigger on specific post statuses
@@ -194,7 +273,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Tweak: Optimize the functionality on the create_post action setting for firing on the initial post status change
 * Fix: The create_post webhook action in combination with firing on the post status change, caused the post not to be triggered on a post update
 * Dev: Introduced new handler function echo_action_data() to centralize the output of a webhook action
-* Dev: Extend the wpwhpro/webhooks/response_response_type filter by a new argument: $args (https://ironikus.com/docs/knowledge-base/filter-response-type/)
+* Dev: Extend the wpwhpro/webhooks/response_response_type filter by a new argument: $args (https://wp-webhooks.com/docs/knowledge-base/filter-response-type/)
 * Dev: The echo_response_data() function now returns the validated data as well
 
 = 2.0.6: August 12, 2020 =
@@ -220,7 +299,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Fix: Prevalidate json within the is_json() helper function to prevent notices within the debug.log file
 * Dev: Added the trigger group slug to the wpwhpro/admin/settings/webhook/page_capability filter (currently the trigger was only sent by its name which is not unique without the trigger group)
 * Dev: Added new handler function for generating the API keys
-* Dev: New filter to manipulate the API key: wpwhpro/admin/webhooks/generate_api_key (https://ironikus.com/docs/knowledge-base/filter-generated-api-key-for-action-urls/)
+* Dev: New filter to manipulate the API key: wpwhpro/admin/webhooks/generate_api_key (https://wp-webhooks.com/docs/knowledge-base/filter-generated-api-key-for-action-urls/)
 
 
 = 2.0.4: May 11, 2020 =
@@ -329,7 +408,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 = 1.1.1: October 21, 2019 =
 * Feature: Introduce exclusive Zapier extension (Early access)
 * Feature: Introduce new polling feature for next-level Zapier triggers
-* EARLY ACCESS FOR OUR ZAPIER APP: https://ironikus.com/docs/knowledge-base/integrate-zapier-extension-with-wp-webhooks/
+* EARLY ACCESS FOR OUR ZAPIER APP: https://wp-webhooks.com/docs/knowledge-base/integrate-zapier-extension-with-wp-webhooks/
 
 = 1.1.0: October 12, 2019 =
 * Feature: Deactivate and Activate webhook action URL's

@@ -106,7 +106,7 @@ class WP_Webhooks_Pro_Run{
 
 		array_unshift( $links, $settings_link );
 
-		$links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://wp-webhooks.com/products/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', WPWHPRO()->helpers->translate('Our Shop', 'plugin-page') );
+		$links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://wp-webhooks.com/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', WPWHPRO()->helpers->translate('Our Shop', 'plugin-page') );
 
 		return $links;
 	}
@@ -878,8 +878,6 @@ class WP_Webhooks_Pro_Run{
 		);
 
 		$tabs['authentication'] = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
-		$tabs['data-mapping'] = WPWHPRO()->helpers->translate( 'Data Mapping', 'admin-menu' );
-		$tabs['logs']  = WPWHPRO()->helpers->translate( 'Logs', 'admin-menu' );
 
 		$tabs['settings']   = array(
 			'label' => WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' ),

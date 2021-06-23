@@ -26,7 +26,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_plugin_install'
 			$parameter = array(
 				'plugin_slug'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(string) The plugin slug of the plugin you want to install. Please check the description for further details.', $translation_ident ) ),
 				'plugin_download'     => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(String) The download URL of the plugin version you want to install. Please check the description for further details.', $translation_ident ) ),
-				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks Pro fires this webhook. Please check the description for further details.', $translation_ident ) ),
+				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. Please check the description for further details.', $translation_ident ) ),
 			);
 
             ob_start();

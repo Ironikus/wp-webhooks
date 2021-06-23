@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP Webhooks
  * Plugin URI: https://wp-webhooks.com/
- * Description: Automate your WordPress system using webhook triggers and actions
- * Version: 3.1.0
+ * Description: Put your website on autopilot by using webhooks to get rid of manual tasks and focus on what's really important for your business.
+ * Version: 3.2.0
  * Author: Ironikus
  * Author URI: https://wp-webhooks.com/about/
  * License: GPL2
@@ -19,7 +19,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 define( 'WPWH_NAME',           'WP Webhooks' );
 
 // Plugin version.
-define( 'WPWH_VERSION',        '3.1.0' );
+define( 'WPWH_VERSION',        '3.2.0' );
 
 // Determines if the plugin is loaded
 define( 'WPWH_SETUP',          true );

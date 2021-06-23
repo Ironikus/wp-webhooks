@@ -26,7 +26,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_plugin_activate
 			//These are the main arguments the user can use to input. You should always grab them within your action function.
 			$parameter = array(
 				'plugin_slug'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(string) The plugin slug of the plugin you want to activate. Please check the description for further details.', 'action-plugin_activate-content' ) ),
-				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks Pro fires this webhook. Please check the description for further details.', 'action-plugin_activate-content' ) )
+				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. Please check the description for further details.', 'action-plugin_activate-content' ) )
 			);
 
             ob_start();

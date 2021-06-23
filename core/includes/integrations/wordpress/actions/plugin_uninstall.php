@@ -26,7 +26,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_plugin_uninstal
 			$parameter = array(
 				'plugin_slug'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(string) The plugin slug of the plugin you want to uninstall. Please check the description for further details.', $translation_ident ) ),
 				'force_delete'     => array( 'short_description' => WPWHPRO()->helpers->translate( '(String) Once you set this argument to "yes", it will delete the plugin as well in case it is active. Default "no".', $translation_ident ) ),
-				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks Pro fires this webhook. Please check the description for further details.', $translation_ident ) ),
+				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. Please check the description for further details.', $translation_ident ) ),
 			);
 
             ob_start();

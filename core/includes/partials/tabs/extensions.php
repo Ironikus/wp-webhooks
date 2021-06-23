@@ -16,7 +16,7 @@ if( ! is_array( $plugin_update_list ) ){
 ?>
 <div class="wpwh-container">
     <div class="wpwh-title-area mb-4">
-        <h2><?php echo WPWHPRO()->helpers->translate( 'Extensions for WP Webhooks Pro', 'wpwhpro-page-extensions' ); ?></h2>
+        <h2><?php echo WPWHPRO()->helpers->translate( 'Extensions for WP Webhooks', 'wpwhpro-page-extensions' ); ?></h2>
         <p class="wpwh-text-small"><?php echo sprintf( WPWHPRO()->helpers->translate( 'This page contains all approved extensions for %s. You will be able to fully manage each of the extensions right within this plugin. In case you want to list your very own plugin here, feel free to reach out to us.', 'wpwhpro-page-extensions' ), WPWH_NAME ); ?></p>
     </div>
 
