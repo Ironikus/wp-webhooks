@@ -50,7 +50,8 @@ class WP_Webhooks_Pro_Run{
 	 */
 	private function add_hooks(){
 
-		add_action( 'plugin_action_links_' . WPWH_PLUGIN_BASE, array($this, 'plugin_action_links') );
+		add_action( 'plugin_action_links_' . WPWH_PLUGIN_BASE, array( $this, 'plugin_action_links' ) );
+		add_filter( 'admin_footer_text', array( $this, 'display_footer_information' ), 1, 2 );
 
 		add_action( 'admin_enqueue_scripts',    array( $this, 'enqueue_scripts_and_styles' ) );
 		add_action( 'admin_menu', array( $this, 'add_user_submenu' ), 150 );
@@ -109,6 +110,29 @@ class WP_Webhooks_Pro_Run{
 		$links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://wp-webhooks.com/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', WPWHPRO()->helpers->translate('Our Shop', 'plugin-page') );
 
 		return $links;
+	}
+
+	/**
+	 * Add footer information about our plugin
+	 *
+	 * @since 3.2.1
+	 * @access public
+	 *
+	 * @param string The current footer text
+	 *
+	 * @return string Our footer text
+	 */
+	public function display_footer_information( $text ) {
+		
+		if( WPWHPRO()->helpers->is_page( $this->page_name ) ){
+			$text = sprintf(
+				WPWHPRO()->helpers->translate( '%1$s version %2$s', 'admin-footer-text' ),
+				'<strong>' . $this->page_title . '</strong>',
+				'<strong>' . WPWH_VERSION . '</strong>'
+			);
+		}
+
+		return $text;
 	}
 
 	/**

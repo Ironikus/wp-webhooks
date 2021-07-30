@@ -146,12 +146,6 @@ if( is_array( $menu_endpoints ) ){
 
 ?>
 
-<style>
-    #wpfooter{
-        display:none;
-    }
-</style>
-
 <div class="wpwh">
     <div class="wpwh-header">
         <div class="wpwh-container">
