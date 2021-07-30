@@ -354,6 +354,21 @@ class WP_Webhooks_Pro_Helpers {
         }
 	}
 
+	public function get_nonce_field( $nonce_data ){
+
+		if( ! is_array( $nonce_data ) || ! isset( $nonce_data['action'] ) || ! isset( $nonce_data['arg'] ) ){
+			return '';
+		}
+
+		ob_start();
+		wp_nonce_field( $nonce_data['action'], $nonce_data['arg'] );
+		$nonce = ob_get_clean();
+
+		$nonce = str_replace( 'id="', 'id="' . mt_rand( 1, 999999 ) . '-', $nonce );
+
+		return apply_filters( 'wpwhpro/helpers/get_nonce_field', $nonce, $nonce_data );
+	}
+
 	/**
      * Get value in between two of our custom tags
      *

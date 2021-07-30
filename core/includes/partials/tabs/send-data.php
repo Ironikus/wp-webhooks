@@ -506,9 +506,9 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 							</div>
 						</div>
 						<div class="modal-footer">
-							<?php wp_nonce_field( $trigger_nonce_data['action'], $trigger_nonce_data['arg'] ); ?>
+							<?php echo WPWHPRO()->helpers->get_nonce_field( $trigger_nonce_data ); ?>
 							<input type="hidden" name="wpwh-add-webhook-group" value="<?php echo $trigger['trigger']; ?>">
-							<input type="submit" name="submit" id="submit" class="wpwh-btn wpwh-btn--secondary w-100" value="<?php echo sprintf( WPWHPRO()->helpers->translate( 'Add for %s', 'wpwhpro-page-triggers' ), $webhook_name ); ?>">
+							<input type="submit" name="submit" id="submit-<?php echo $trigger['trigger']; ?>" class="wpwh-btn wpwh-btn--secondary w-100" value="<?php echo sprintf( WPWHPRO()->helpers->translate( 'Add for %s', 'wpwhpro-page-triggers' ), $webhook_name ); ?>">
 						</div>
 					</form>
 				</div>

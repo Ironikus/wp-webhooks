@@ -204,7 +204,7 @@ foreach( $webhook_actions as $action_name => $wa ){
           </select>
         </div>
         <div class="modal-footer">
-					<?php wp_nonce_field( $authentication_nonce['action'], $authentication_nonce['arg'] ); ?>
+          <?php echo WPWHPRO()->helpers->get_nonce_field( $authentication_nonce ); ?>
 					<input type="submit" name="submit" id="submit" class="wpwh-btn wpwh-btn--secondary w-100" value="<?php echo WPWHPRO()->helpers->translate( 'Create', 'wpwhpro-page-authentication' ); ?>">
         </div>
       </form>
@@ -227,7 +227,7 @@ foreach( $webhook_actions as $action_name => $wa ){
       <div class="modal-body" id="wpwh-authentication-content-wrapper">
       </div>
       <div class="modal-footer text-center">
-        <?php wp_nonce_field( $authentication_nonce['action'], $authentication_nonce['arg'] ); ?>
+        <?php echo WPWHPRO()->helpers->get_nonce_field( $authentication_nonce ); ?>
         <button type="button" id="wpwh-save-auth-template-button" class="wpwh-btn wpwh-btn--secondary" data-wpwh-auth-id="1">
           <span><?php echo WPWHPRO()->helpers->translate( 'Save Template', 'wpwhpro-page-authentication' ); ?></span>
         </button>

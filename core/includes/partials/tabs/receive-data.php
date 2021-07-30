@@ -578,7 +578,7 @@ if ( empty( $active_trigger ) ) {
           <input class="wpwh-form-input w-100" type="text" id="wpwh_webhook_action_name" name="ironikus-webhook-action-name" placeholder="<?php echo WPWHPRO()->helpers->translate( 'Enter webhook name', 'wpwhpro-page-actions' ); ?>" />
         </div>
         <div class="modal-footer">
-          <?php wp_nonce_field( $action_nonce_data['action'], $action_nonce_data['arg'] ); ?>
+          <?php echo WPWHPRO()->helpers->get_nonce_field( $action_nonce_data ); ?>
           <input type="submit" name="submit" id="submit" class="wpwh-btn wpwh-btn--secondary w-100" value="<?php echo WPWHPRO()->helpers->translate( 'Create', 'wpwhpro-page-actions' ); ?>">
         </div>
       </form>

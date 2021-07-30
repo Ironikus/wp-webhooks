@@ -120,6 +120,6 @@ if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
 			</button>
 		</div>
 
-		<?php wp_nonce_field( $settings_nonce_data['action'], $settings_nonce_data['arg'] ); ?>
+		<?php echo WPWHPRO()->helpers->get_nonce_field( $settings_nonce_data ); ?>
     </form>
 </div>
