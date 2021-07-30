@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: api, webhooks, zapier, automation, connector, integrations, automator, create user, ironikus
 Requires at least: 4.7
-Tested up to: 5.7
-Stable Tag: 3.2.0
+Tested up to: 5.8
+Stable Tag: 3.2.1
 License: GNU Version 3 or Any Later Version
 
 Put your website on autopilot by using webhooks to get rid of manual tasks and focus on what's really important for your business.
@@ -92,9 +92,42 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 * **Trigger**: Send data once an "EDD Software licensing" license was created, activated, deactivated, or the status changed
 * **Trigger**: Send data once an "EDD Recurring" subscription was created or a specific status changed
 
+**[Fluent Forms](https://wp-webhooks.com/integrations/fluent-forms/) related integrations**
+
+* **Trigger**: Send data once a "Fluent Forms" form was submitted
+
+**[Formidable Forms](https://wp-webhooks.com/integrations/formidable-forms/) related integrations**
+
+* **Trigger**: Send data once a "Formidable Forms" form was submitted
+
+**[Forminator](https://wp-webhooks.com/integrations/forminator/) related integrations**
+
+* **Trigger**: Send data once a "Forminator" form was submitted
+
 **[Gravity Forms](https://wp-webhooks.com/integrations/gravity-forms/) related integrations**
 
 * **Trigger**: Send data once a "Gravity Form" form was submitted
+
+**[HappyForms](https://wp-webhooks.com/integrations/happyforms/) related integrations**
+
+* **Trigger**: Send data once a "HappyForms" form was submitted
+
+**[Newsletter](https://wp-webhooks.com/integrations/newsletter/) related integrations**
+
+* **Trigger**: Send data once a "Newsletter" form was submitted
+
+**[Ninja Forms](https://wp-webhooks.com/integrations/ninja-forms/) related integrations**
+
+* **Trigger**: Send data once a "Ninja Forms" form was submitted
+
+**[Paid Memberships Pro](https://wp-webhooks.com/integrations/paid-memberships-pro/) related integrations**
+
+* **Action**: Add a user to a membership
+* **Action**: Remove a user from a membership
+
+* **Trigger**: Send data once a membership was cancelled
+* **Trigger**: Send data once a membership expired
+* **Trigger**: Send data once an order was created
 
 **[WP Reset](https://wp-webhooks.com/integrations/wp-reset/) related integrations**
 
@@ -106,6 +139,10 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 * **Action**: Delete WordPress transients
 * **Action**: Reset WordPress
 * **Action**: Truncate Custom Tables
+
+**[WP Simple Pay](https://wp-webhooks.com/integrations/wp-simple-pay/) related integrations**
+
+* **Trigger**: Send data once a "WP Simple Pay" purchase was completed
 
 = The best Pro version you have ever seen! =
 
@@ -120,7 +157,7 @@ Sounds like a catchy title, right? Actually, it really is the truth. Why? We wil
 
 [Compare WP Webhooks and WP Webhooks Pro now!](https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro%20Compare)
 
-Our premium features for [WP Webhooks Pro](https://wp-webhooks.com/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
+Here are some of our premium features for [WP Webhooks Pro](https://wp-webhooks.com/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * Create users with user meta (ACF supported)
 * Update users and user meta (ACF supported)
@@ -160,7 +197,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 == Changelog ==
 
-= 4.2.1: July 30, 2021 =
+= 3.2.1: July 30, 2021 =
 * Feature: Add "Advanced Custom Fields" integration (https://wp-webhooks.com/integrations/advanced-custom-fields/)
 * Feature: Add "Paid Memberships Pro" integration (https://wp-webhooks.com/integrations/paid-memberships-pro/)
 * Feature: Add "Elementor" integration (https://wp-webhooks.com/integrations/elementor/)
@@ -169,8 +206,22 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Feature: Add "Forminator" integration (https://wp-webhooks.com/integrations/forminator/)
 * Feature: Add "HappyForms" integration (https://wp-webhooks.com/integrations/happyforms/)
 * Feature: Add "Newsletter" integration (https://wp-webhooks.com/integrations/newsletter/)
-* Feature: Add "Ninja Form" integration (https://wp-webhooks.com/integrations/ninja-forms/)
+* Feature: Add "Ninja Forms" integration (https://wp-webhooks.com/integrations/ninja-forms/)
 * Feature: Add "WP Simple Pay" integration (https://wp-webhooks.com/integrations/wp-simple-pay/)
+* Feature: New trigger "Form submitted" for "Fluent Forms"
+* Feature: New trigger "Form submitted" for "Formidable Forms"
+* Feature: New trigger "Form submitted" for "Forminator"
+* Feature: New trigger "Form submitted" for "HappyForms"
+* Feature: New trigger "Form submitted" for "Newsletter"
+* Feature: New trigger "Form submitted" for "Ninja Forms"
+* Feature: New trigger "Membership canceled" for "Paid Memberships Pro"
+* Feature: New trigger "Membership expired" for "Paid Memberships Pro"
+* Feature: New trigger "Order created" for "Paid Memberships Pro"
+* Feature: New trigger "Purchase completed" for "WP Simple Pay"
+* Feature: New action "Add user to membership" for "Paid Memberships Pro"
+* Feature: New action "Remove user from membership" for "Paid Memberships Pro"
+* Feature: New action "" for ""
+* Feature: New action "" for ""
 * Feature: New optimized and reworked webhook descriptions
 * Tweak: Display integration icon next to trigger and action title
 * Tweak: Add the plugin version within the footer of WP Webhooks
