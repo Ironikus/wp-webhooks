@@ -704,7 +704,7 @@ class WP_Webhooks_Pro_Helpers {
 
         if( is_array( $return ) ){
 			//Make sure we don't pass single arrays as well
-			if( isset( $return[0] ) && count( $return ) <= 1 ){
+			if( isset( $return[0] ) && is_string( $return[0] ) && count( $return ) <= 1 ){
 				$return = $return[0];
 			} else {
 				//other arrays will be again encoded to a json
