@@ -164,6 +164,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Feature: Add "Advanced Custom Fields" integration (https://wp-webhooks.com/integrations/advanced-custom-fields/)
 * Feature: Add "Paid Memberships Pro" integration (https://wp-webhooks.com/integrations/paid-memberships-pro/)
 * Feature: Add "Elementor" integration (https://wp-webhooks.com/integrations/elementor/)
+* Feature: Add "Fluent Forms" integration (https://wp-webhooks.com/integrations/fluent-forms/)
 * Feature: Add "HappyForms" integration (https://wp-webhooks.com/integrations/happyforms/)
 * Feature: Add "Newsletter" integration (https://wp-webhooks.com/integrations/newsletter/)
 * Feature: Add "Ninja Form" integration (https://wp-webhooks.com/integrations/ninja-forms/)
