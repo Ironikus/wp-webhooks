@@ -75,15 +75,21 @@ class WP_Webhooks_Pro_SQL{
 
 		$charset_collate = $wpdb->get_charset_collate();
 		$prefix = $wpdb->base_prefix;
+		$posts = $wpdb->posts;
+		$postmeta = $wpdb->postmeta;
 
 		$in = array(
 			'{charset_collate}',
-			'{prefix}'
+			'{prefix}',
+			'{posts}',
+			'{postmeta}',
 		);
 
 		$out = array(
 			$charset_collate,
-			$prefix
+			$prefix,
+			$posts,
+			$postmeta,
 		);
 
 		return str_replace($in, $out, $string);
