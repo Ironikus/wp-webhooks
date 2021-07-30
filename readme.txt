@@ -168,6 +168,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Tweak: Remove unnecessary headlines within the "Send Data" tab
 * Tweak: Apply single array filter for incoming values only to strings
 * Fix: Remove duplicated ids notices
+* Fix: Prevent EDD Purchase Receipt email from being sent even though "send_receipt" was set to "no"
 * Dev: New helper function WPWHPRO()->helpers->get_nonce_field( $nonce ) to fetch a nonce with a random id
 * Dev: Add two new sql query tags: {posts} and {postmeta}
 

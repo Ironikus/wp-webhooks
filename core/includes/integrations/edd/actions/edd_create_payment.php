@@ -434,11 +434,11 @@ function my_custom_callback_function( $payment_id, $purchase_data, $send_receipt
 			}
 
 			if( ! $send_receipt ){
-				remove_action( 'edd_complete_purchase', 'edd_trigger_purchase_receipt', 1000 );
+				remove_action( 'edd_complete_purchase', 'edd_trigger_purchase_receipt', 999 );
 
 				// if we're using EDD Per Product Emails, prevent the custom email from being sent
 				if ( class_exists( 'EDD_Per_Product_Emails' ) ) {
-					remove_action( 'edd_complete_purchase', 'edd_ppe_trigger_purchase_receipt', 1000, 1 );
+					remove_action( 'edd_complete_purchase', 'edd_ppe_trigger_purchase_receipt', 999, 1 );
 				}
 			}
 
