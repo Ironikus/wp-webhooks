@@ -305,22 +305,22 @@ function my_custom_callback_function( $term_id, $return_args ){
 				return $return_args;
 			}
 
-			if( ! is_numeric( $term_value ) ){
-				$term_obj = get_term_by( $get_term_by, $term_value, $taxonomy );
-				if( empty( $term_obj ) ){
-					$return_args['msg'] = WPWHPRO()->helpers->translate( "We could not find any term for your given data.", 'action-manage_term_meta' );
-					return $return_args;
-				}
-
-				if( is_array( $term_obj ) ){
-					$return_args['msg'] = WPWHPRO()->helpers->translate( "We found multiple entries for your given taxonomy term. Please specify the taxonomy argument.", 'action-manage_term_meta' );
-					return $return_args;
-				}
-
-				$term_id = $term_obj->term_id;
-			} else {
-				$term_id = $term_value;
-			}
+      if( empty( $get_term_by ) ){
+        $get_term_by = 'id';
+      }
+    
+      $term_obj = get_term_by( $get_term_by, $term_value, $taxonomy );
+      if( empty( $term_obj ) ){
+      $return_args['msg'] = WPWHPRO()->helpers->translate( "We could not find any term for your given data.", 'action-manage_term_meta' );
+      return $return_args;
+      }
+    
+      if( is_array( $term_obj ) ){
+        $return_args['msg'] = WPWHPRO()->helpers->translate( "We found multiple entries for your given taxonomy term. Please specify the taxonomy argument.", 'action-manage_term_meta' );
+        return $return_args;
+      }
+    
+      $term_id = $term_obj->term_id;
 
 			$meta_response = $this->manage_term_meta_data( $term_id, $manage_meta_data );
  

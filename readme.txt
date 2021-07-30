@@ -178,6 +178,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Fix: Remove duplicated ids notices
 * Fix: Prevent EDD Purchase Receipt email from being sent even though "send_receipt" was set to "no"
 * Fix: The triggers edd_new_customer and edd_update_customer did not work properly due to a wrong check for a non-existent function
+* Fix: Using the manage_term_meta action in combination with a numeric slug caused the slug to be the id instead
 * Dev: New helper function WPWHPRO()->helpers->get_nonce_field( $nonce ) to fetch a nonce with a random id
 * Dev: Add two new sql query tags: {posts} and {postmeta}
 
