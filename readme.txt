@@ -161,6 +161,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 == Changelog ==
 
 = 4.2.1: July 30, 2021 =
+* Feature: Add "Paid Memberships Pro" integration (https://wp-webhooks.com/integrations/paid-memberships-pro/)
 * Feature: Add "Elementor" integration (https://wp-webhooks.com/integrations/elementor/)
 * Feature: Add "Ninja Form" integration (https://wp-webhooks.com/integrations/ninja-forms/)
 * Feature: Add "WP Simple Pay" integration (https://wp-webhooks.com/integrations/wp-simple-pay/)
