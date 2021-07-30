@@ -161,6 +161,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 == Changelog ==
 
 = 4.2.1: July 30, 2021 =
+* Feature: Add Ninja Form integration (https://wp-webhooks.com/integrations/ninja-forms/)
 * Tweak: Display integration icon next to trigger and action title
 * Tweak: Add the plugin version within the footer of WP Webhooks
 * Tweak: Remove unnecessary headlines within the "Send Data" tab
