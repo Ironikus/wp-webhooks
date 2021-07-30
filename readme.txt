@@ -162,6 +162,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 = 4.2.1: July 30, 2021 =
 * Tweak: Add the plugin version within the footer of WP Webhooks
+* Tweak: Remove unnecessary headlines within the "Send Data" tab
 
 = 3.2.0: June 23, 2020 =
 * Feature: New webhook action create_term to create taxonomy terms
