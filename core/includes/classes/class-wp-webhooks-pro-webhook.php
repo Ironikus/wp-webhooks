@@ -560,6 +560,30 @@ class WP_Webhooks_Pro_Webhook {
 	}
 
 	/**
+	 * Get a properly formatted description of a webhook endpoint
+	 *
+	 * @since 3.2.1
+	 * @return string the HTML formatted webhook description
+	 */
+	public function get_endpoint_description( $type = 'trigger', $data = array() ){
+
+		$description = '';
+
+		switch( $type ){
+			case 'trigger':
+				ob_start();
+				include( WPWH_PLUGIN_DIR . 'core/includes/partials/descriptions/trigger.php' );
+				$description = ob_get_clean();
+				break;
+			case 'action':
+
+				break;
+		}
+
+		return apply_filters( 'wpwhpro/webhooks/get_endpoint_description', $description, $type, $data );
+	}
+
+	/**
 	 * Validate an incoming webhook action
 	 */
 	public function validate_incoming_data(){

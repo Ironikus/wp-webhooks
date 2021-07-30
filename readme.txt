@@ -171,6 +171,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Feature: Add "Newsletter" integration (https://wp-webhooks.com/integrations/newsletter/)
 * Feature: Add "Ninja Form" integration (https://wp-webhooks.com/integrations/ninja-forms/)
 * Feature: Add "WP Simple Pay" integration (https://wp-webhooks.com/integrations/wp-simple-pay/)
+* Feature: New optimized and reworked webhook descriptions
 * Tweak: Display integration icon next to trigger and action title
 * Tweak: Add the plugin version within the footer of WP Webhooks
 * Tweak: Remove unnecessary headlines within the "Send Data" tab
@@ -181,6 +182,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Fix: Using the manage_term_meta action in combination with a numeric slug caused the slug to be the id instead
 * Dev: New helper function WPWHPRO()->helpers->get_nonce_field( $nonce ) to fetch a nonce with a random id
 * Dev: Add two new sql query tags: {posts} and {postmeta}
+* Dev: New function WPWHPRO()->webhook->get_endpoint_description( $type = 'trigger', $data = array() ) to dynamically load descriptions
 
 = 3.2.0: June 23, 2020 =
 * Feature: New webhook action create_term to create taxonomy terms
