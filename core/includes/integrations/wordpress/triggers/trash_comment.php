@@ -61,15 +61,20 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_trash_comment'
 				'user_data'   => array( 'short_description' => WPWHPRO()->helpers->translate( 'The full data of the user of the comment (In case a user is given).', $translation_ident ) ),
 			);
 
-			ob_start();
-			?>
-			<p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-trash-comment" ); ?></p>
-			<p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user post id, the full post object, as well as the post meta, so everything you need will be there.', $translation_ident ); ?></p>
-			<p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', $translation_ident ); ?></p>
-			<p><?php echo WPWHPRO()->helpers->translate( 'To check the Webhooks Pro response on a demo request, just open your browser console and you will see the object.', $translation_ident ); ?></p>
-			<p><?php echo sprintf( WPWHPRO()->helpers->translate( 'By default, we don\'t send the user password within the request. To active it, please use the following WordPress filter: wpwhpro/webhooks/trigger_trash_comment_restrict_user_values (More details within our docs at <a title="Go to our plugin documentation" target="_blank" href="%s">wp-webhooks.com/docs</a>', $translation_ident ), 'https://wp-webhooks.com/docs/?utm_source=wp-webhooks-comments&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'); ?></p>
-			<?php
-			$description = ob_get_clean();
+			$description = WPWHPRO()->webhook->get_endpoint_description( 'trigger', array(
+				'webhook_name' => 'Comment trashed',
+				'webhook_slug' => 'trash_comment',
+				'post_delay' => true,
+				'tipps' => array(
+					sprintf( WPWHPRO()->helpers->translate( 'By default, we don\'t send the user password within the request. To active it, please use the following WordPress filter: wpwhpro/webhooks/trigger_trash_comment_restrict_user_values (More details within our docs at <a title="Go to our plugin documentation" target="_blank" href="%s">wp-webhooks.com/docs</a>', $translation_ident ), 'https://wp-webhooks.com/docs/?utm_source=wp-webhooks-comments&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'),
+				),
+				'trigger_hooks' => array(
+					array( 
+                        'hook' => 'trashed_comment',
+                        'url' => 'https://developer.wordpress.org/reference/hooks/trashed_comment/',
+                    ),
+				)
+			) );
 
 			$settings = array(
 				'load_default_settings' => true,

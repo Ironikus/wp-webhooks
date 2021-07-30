@@ -46,48 +46,17 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_send_email' ) 
 				'attachments' => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) An array of given email attachments.', 'trigger-send_email-content' ) ),
 			);
 
-			ob_start();
-			?>
-<?php echo WPWHPRO()->helpers->translate( "This webhook trigger is used to send data once an email is sent from your WordPress website via the <code>wp_mail()</code> function.", $translation_ident ); ?>
-<br>
-<?php echo WPWHPRO()->helpers->translate( "This description is uniquely made for the <strong>Send Data On Outgoing Email</strong> (send_email) webhook trigger.", $translation_ident ); ?>
-<br><br>
-<h4><?php echo WPWHPRO()->helpers->translate( "How to use <strong>Send Data On Outgoing Email</strong> (send_email)", $translation_ident ); ?></h4>
-<ol>
-    <li><?php echo WPWHPRO()->helpers->translate( "To get started, you need to add your receiving URL endpoint, that accepts webhook requests, from the third-party provider or service you want to use.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "Once you have this URL, please place it into the <strong>Webhook URL</strong> field above.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "For better identification of the webhook URL, we recommend to also fill the <strong>Webhook Name</strong> field. This field will be used as the slug for your webhook URL. In case you leave it empty, we will automatically generate a random number as an identifier.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "After you added your <strong>Webhook URL</strong>, press the <strong>Add</strong> button to finish adding the entry.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "That's it! Now you can receive data on the URL once the trigger fires.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "Next to the <strong>Webhook URL</strong>, you will find a settings item, which you can use to customize the payload/request.", $translation_ident ); ?></li>
-</ol>
-<br><br>
-
-<h4><?php echo WPWHPRO()->helpers->translate( "When does this trigger fire?", $translation_ident ); ?></h4>
-<br>
-<?php echo WPWHPRO()->helpers->translate( "This trigger is registered on the <strong>wp_mail</strong> hook:", $translation_ident ); ?> 
-<a title="wordpress.org" target="_blank" href="https://developer.wordpress.org/reference/hooks/wp_mail/">https://developer.wordpress.org/reference/hooks/wp_mail/</a>
-<br>
-<br>
-<?php echo WPWHPRO()->helpers->translate( "Here is the call within our code we use to fire this trigger:", $translation_ident ); ?>
-<pre>add_filter( 'wp_mail', array( $this, 'ironikus_trigger_send_email' ), 10, 1 );</pre>
-<?php echo WPWHPRO()->helpers->translate( "<strong>IMPORTANT</strong>: Please note that this webhook fires before the email itself is sent. This is due to the fact that the <strong>wp_mail</strong> filter is fired before the actual email is send out.", $translation_ident ); ?>
-<br><br><br>
-
-<h4><?php echo WPWHPRO()->helpers->translate( "Tipps", $translation_ident ); ?></h4>
-<ol>
-    <li><?php echo WPWHPRO()->helpers->translate( "In case you don't need a specified webhook URL at the moment, you can simply deactivate it by clicking the <strong>Deactivate</strong> link next to the <strong>Webhook URL</strong>. This results in the specified URL not being fired once the trigger fires.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "You can use the <strong>Send demo</strong> button to send a static request to your specified <strong>Webhook URL</strong>. Please note that the data sent within the request might differ from your live data.", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "Within the <strong>Settings</strong> link next to your <strong>Webhook URL</strong>, you can use customize the functionality of the request. It contains certain default settings like changing the request type the data is sent in, or custom settings, depending on your trigger. An explanation for each setting is right next to it. (Please don't forget to save the settings once you changed them - the button is at the end of the popup.)", $translation_ident ); ?></li>
-    <li><?php echo WPWHPRO()->helpers->translate( "You can also check the response you get from the demo webhook call. To check it, simply open the console of your browser and you will find an entry there, which gives you all the details about the response.", $translation_ident ); ?></li>
-</ol>
-<br><br>
-
-<?php echo WPWHPRO()->helpers->translate( "In case you would like to learn more about our plugin, please check out our documentation at:", $translation_ident ); ?>
-<br>
-<a title="Go to wp-webhooks.com/docs" target="_blank" href="https://wp-webhooks.com/docs/article-categories/get-started/">https://wp-webhooks.com/docs/article-categories/get-started/</a>
-			<?php
-			$description = ob_get_clean();
+            $description = WPWHPRO()->webhook->get_endpoint_description( 'trigger', array(
+				'webhook_name' => 'Email sent',
+				'webhook_slug' => 'send_email',
+				'post_delay' => false,
+				'trigger_hooks' => array(
+					array( 
+                        'hook' => 'wp_mail',
+                        'url' => 'https://developer.wordpress.org/reference/hooks/wp_mail/',
+                    ),
+				)
+			) );
 
 			$settings = array();
 

@@ -9,67 +9,103 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_trash_comment' 
 	 */
 	class WP_Webhooks_Integrations_wordpress_Actions_trash_comment {
 
-        public function is_active(){
+		public function is_active(){
 
-            //Backwards compatibility for the "Comments" integration
-            if( class_exists( 'WP_Webhooks_Comments' ) ){
-                return false;
-            }
+			//Backwards compatibility for the "Comments" integration
+			if( class_exists( 'WP_Webhooks_Comments' ) ){
+				return false;
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        public function get_details(){
+		public function get_details(){
 
-            $translation_ident = "action-trash_comment-description";
+			$translation_ident = "action-trash_comment-description";
 
 			$parameter = array(
 				'comment_id' => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(int) The comment id of the comment you want to trash.', $translation_ident ) ),
+				'do_action' => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after the action was fired.', $translation_ident ) ),
 			);
 
+			ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "The <strong>do_action</strong> argument is an advanced webhook for developers. It allows you to fire a custom WordPress hook after the <strong>trash_comment</strong> action was fired.", $translation_ident ); ?>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "You can use it to trigger further logic after the webhook action. Here's an example:", $translation_ident ); ?>
+<br>
+<br>
+<?php echo WPWHPRO()->helpers->translate( "Let's assume you set for the <strong>do_action</strong> parameter <strong>fire_this_function</strong>. In this case, we will trigger an action with the hook name <strong>fire_this_function</strong>. Here's how the code would look in this case:", $translation_ident ); ?>
+<pre>add_action( 'fire_this_function', 'my_custom_callback_function', 20, 3 );
+function my_custom_callback_function( $comment_id, $trashed, $return_args ){
+	//run your custom logic in here
+}
+</pre>
+<?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
+<ol>
+	<li>
+		<strong>$comment_id</strong> (integer)
+		<br>
+		<?php echo WPWHPRO()->helpers->translate( "The ID of the comment you trashed.", $translation_ident ); ?>
+	</li>
+	<li>
+		<strong>$trashed</strong> (bool)
+		<br>
+		<?php echo WPWHPRO()->helpers->translate( "The respone of the wp_trash_comment() function.", $translation_ident ); ?>
+	</li>
+	<li>
+		<strong>$return_args</strong> (array)
+		<br>
+		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller. The data includes the following key: msg, success, data", $translation_ident ); ?>
+	</li>
+</ol>
+		<?php
+		$parameter['do_action']['description'] = ob_get_clean();
+
 			$returns = array(
-				'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
-				'data'           => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) The comment id as comment_id.', $translation_ident ) ),
-				'msg'            => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
+				'success'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+				'data'		   => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) The comment id as comment_id.', $translation_ident ) ),
+				'msg'			=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 			);
 
 			$returns_code = array (
-                'success' => true,
-                'msg' => 'The comment was successfully trashed.',
-                'data' => 
-                array (
-                  'comment_id' => 4,
-                ),
-            );
+				'success' => true,
+				'msg' => 'The comment was successfully trashed.',
+				'data' => 
+				array (
+				  'comment_id' => 4,
+				),
+			);
 
-			ob_start();
-			?>
-                <p><?php echo WPWHPRO()->helpers->translate( "This hook enables you to trash a comment with all of its settings.", "action-trash_comment-content" ); ?></p>
-				<p><?php echo WPWHPRO()->helpers->translate( 'We only support the comment id. Json objects are not allowed.', $translation_ident ); ?></p>
-            <?php
-			$description = ob_get_clean();
+			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
+				'webhook_name' => 'Trash a comment',
+				'webhook_slug' => 'trash_comment',
+				'steps' => array(
+					WPWHPRO()->helpers->translate( 'It is also required to set the comment ID of the comment you want to trash. You can do that by using the <strong>comment_id</strong> argument.', $translation_ident ),
+				),
+			) );
 
-            return array(
-                'action'            => 'trash_comment',
-                'name'              => WPWHPRO()->helpers->translate( 'Trash a comment', $translation_ident ),
-                'parameter'         => $parameter,
-                'returns'           => $returns,
-                'returns_code'      => $returns_code,
-                'short_description' => WPWHPRO()->helpers->translate( 'Trash a comment using webhooks.', $translation_ident ),
-                'description'       => $description,
-                'integration'       => 'wordpress',
-                'premium' 			=> false,
-            );
+			return array(
+				'action'			=> 'trash_comment',
+				'name'			  => WPWHPRO()->helpers->translate( 'Trash a comment', $translation_ident ),
+				'parameter'		 => $parameter,
+				'returns'		   => $returns,
+				'returns_code'	  => $returns_code,
+				'short_description' => WPWHPRO()->helpers->translate( 'Trash a comment using webhooks.', $translation_ident ),
+				'description'	   => $description,
+				'integration'	   => 'wordpress',
+				'premium' 			=> false,
+			);
 
-        }
+		}
 
-        public function execute( $return_data, $response_body ){
+		public function execute( $return_data, $response_body ){
 
 			$textdomain_context = 'trash_comment';
 			$return_args = array(
 				'success' => false,
-                'msg' => '',
-                'data' => array(
+				'msg' => '',
+				'data' => array(
 					'comment_id'   => 0,
 				),
 			);
@@ -101,9 +137,9 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_trash_comment' 
 			}
 
 			return $return_args;
-    
-        }
+	
+		}
 
-    }
+	}
 
 endif; // End if class_exists check.
