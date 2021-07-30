@@ -184,6 +184,13 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 					<?php foreach( $triggers as $identkey => $trigger ) :
 						$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
 						$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
+						$trigger_integration = isset( $trigger['integration'] ) ? $trigger['integration'] : '';
+						$trigger_details = WPWHPRO()->integrations->get_details( $trigger_integration );
+
+						$trigger_integration_icon = '';
+						if( isset( $trigger_details['icon'] ) && ! empty( $trigger_details['icon'] ) ){
+							$trigger_integration_icon = $trigger_details['icon'];
+						}
 
 						$is_active = $webhook_name === $active_trigger;
 						$is_premium = ( isset( $trigger['premium'] ) && $trigger['premium'] ) ? true : false;
@@ -221,8 +228,13 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 						<div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-<?php echo $webhook_name; ?>" <?php echo ! $is_active ? 'style="display: none;"' : ''; ?>>
 							<div class="wpwh-table-header">
 								<div class="d-flex align-items-center justify-content-between">
-								<h2 class="mb-2" data-wpwh-trigger-name><?php echo $trigger_name; ?></h2>
-								<div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $webhook_name; ?></div>
+									<h2 class="mb-2 d-flex align-items-center" data-wpwh-trigger-name>
+										<?php if( ! empty( $trigger_integration_icon ) ) : ?>
+											<img class="wpwh-trigger-search__item-image" src="<?php echo $trigger_integration_icon; ?>" />
+										<?php endif; ?>
+										<?php echo $trigger_name; ?>
+									</h2>
+									<div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $webhook_name; ?></div>
 								</div>
 								<div class="wpwh-content mb-4">
 									<?php echo $trigger['short_description']; ?>

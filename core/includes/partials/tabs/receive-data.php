@@ -309,11 +309,23 @@ if ( empty( $active_trigger ) ) {
                     <?php foreach( $actions as $identkey => $action ) :
                         $is_active = $action['action'] === $active_trigger;
                         $is_premium = ( isset( $action['premium'] ) && $action['premium'] ) ? true : false;
+                        $action_integration = isset( $action['integration'] ) ? $action['integration'] : '';
+						$action_details = WPWHPRO()->integrations->get_details( $action_integration );
+
+						$action_integration_icon = '';
+						if( isset( $action_details['icon'] ) && ! empty( $action_details['icon'] ) ){
+							$action_integration_icon = $action_details['icon'];
+						}
                     ?>
                         <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $action['action']; ?>">
                             <div class="wpwh-table-header">
                                 <div class="d-flex align-items-center justify-content-between">
-                                <h2 class="mb-3" data-wpwh-trigger-name><?php echo isset( $action['name'] ) ? $action['name'] : $action['action']; ?></h2>
+                                    <h2 class="mb-3 d-flex align-items-center" data-wpwh-trigger-name>
+                                        <?php if( ! empty( $action_integration_icon ) ) : ?>
+											<img class="wpwh-trigger-search__item-image" src="<?php echo $action_integration_icon; ?>" />
+										<?php endif; ?>
+                                        <?php echo isset( $action['name'] ) ? $action['name'] : $action['action']; ?>
+                                    </h2>
                                     <div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $action['action']; ?></div>
 								</div>
                                 <div class="wpwh-content mb-0">
