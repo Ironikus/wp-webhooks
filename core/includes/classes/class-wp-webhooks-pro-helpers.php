@@ -324,34 +324,30 @@ class WP_Webhooks_Pro_Helpers {
 	 * @param $args - the available args
 	 * @return string - the url
 	 */
-	public function get_current_url($with_args = true){
+	public function get_current_url( $with_args = true ){
 
 		$current_url = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ? 'https://' : 'http://';
 
-		$host_part = $_SERVER['SERVER_NAME'];
-		if( strpos( $host_part, $_SERVER['HTTP_HOST'] ) === false ){
+		$host_part = $_SERVER['HTTP_HOST'];
 
-		    //Validate against HTTP_HOST in case SERVER_NAME has no "www" set
-			if( strpos( $_SERVER['HTTP_HOST'], '://www.' ) !== false && strpos( $host_part, '://www.' ) === false ){
-				$host_part = str_replace( '://', '://www.', $host_part );
-			}
-
-		}
-
-		//Support custom ports (since 3.2.0)
+		//Support custom ports (since 4.2.0)
 		$port     = intval( $_SERVER['SERVER_PORT'] );
 		if( ! empty( $port ) ){
+
+			//strip port
+			$host_part = strtok( $host_part, ':' );
+
 			$port = ( $port == 80 || $port == 443 ) ? '' : ':' . $port;
 			$host_part .= $port;
 		}
 
 		$current_url .= sanitize_text_field( $host_part ) . sanitize_text_field( $_SERVER['REQUEST_URI'] );
 
-	    if($with_args){
-	        return $current_url;
-        } else {
-	        return strtok( $current_url, '?' );
+	    if( ! $with_args ){
+	        $current_url = strtok( $current_url, '?' );
         }
+
+		return apply_filters( 'wpwhpro/helpers/get_current_url', $current_url, $with_args );
 	}
 
 	public function get_nonce_field( $nonce_data ){
@@ -413,7 +409,7 @@ class WP_Webhooks_Pro_Helpers {
             'content' => ''
         );
 
-        if( ! isset( $_SERVER["CONTENT_TYPE"] ) ){
+        if( ! isset( $_SERVER["CONTENT_TYPE"] ) && ! isset( $custom_data['content_type'] ) ){
             return $return;
         }
 
@@ -885,6 +881,25 @@ class WP_Webhooks_Pro_Helpers {
 		}
 
 		return apply_filters( 'wpwhpro/helpers/is_plugin_active', $is_active, $plugin );
+	}
+
+	/**
+	 * Create signature from a given string
+	 *
+	 * @since 3.3.0
+	 * @param mixed $data
+	 * @return string
+	 */
+	public function generate_signature( $data, $secret ) {
+
+		if( is_array( $data ) || is_string( $data ) ){
+			$data = json_encode( $data );
+		}
+
+		$data = base64_encode( $data );
+		$hash_signature = apply_filters( 'wpwhpro/helpers/generate_signature', 'sha256', $data );
+
+		return base64_encode( hash_hmac( $hash_signature, $data, $secret, true ) );
 	}
 
 

@@ -205,10 +205,12 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 **Fixed issues:**
 
+* The get_curret_url() helper returned a wrong host part in some cases, causing creating triggers and actions to not work properly
+* A custom content type check prevented actions from shortening the logic
+
 **For developers:**
 
 * Added new function WPWHPRO()->auth->execute(); to execute the authentication hooks
-
 * New scheduled event "wpwh_maintenance" that runs once daily for various checks
 
 = 3.2.1: July 30, 2021 =
