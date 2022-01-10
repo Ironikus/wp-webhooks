@@ -272,11 +272,6 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 										</a>
 									</div>
 								<?php endif; ?>
-								<div class="d-flex align-items-center justify-content-end">
-									<button class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>" data-toggle="modal" data-target="#wpwhAddWebhookModal-<?php echo $identkey; ?>">
-										<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>
-									</button>
-								</div>
 							</div>
 							<?php if( ! $is_premium ) : ?>
 								<table class="wpwh-table wpwh-table--sm wpwh-text-small">
