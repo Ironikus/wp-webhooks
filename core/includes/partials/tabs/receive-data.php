@@ -31,18 +31,23 @@ if( isset( $_POST['ironikus-webhook-action-name'] ) ){
 		$webhook_slug = str_replace( '§', '', $_POST['ironikus-webhook-action-name'] );
 		$webhook_slug = sanitize_title( $webhook_slug );
 
-		if( ! isset( $webhooks[ $webhook_slug ] ) ){
-            $check = WPWHPRO()->webhook->create( $webhook_slug, 'action' );
-
-            if( $check ){
-				echo WPWHPRO()->helpers->create_admin_notice( 'The webhook URL has been added.', 'success', true );
-			} else {
-				echo WPWHPRO()->helpers->create_admin_notice( 'Error while adding the webhook URL.', 'warning', true );
-			}
-
-            //Reload webhooks
-			$webhooks = WPWHPRO()->webhook->get_hooks( 'action' );
-		}
+        if( strpos( $webhook_slug, 'wpwh-flow-' ) !== FALSE && substr( $webhook_slug, 0, 10 ) === 'wpwh-flow-' ){
+            echo WPWHPRO()->helpers->create_admin_notice( 'Please adjust your webhook name as this notation is reserved for internal use only.', 'warning', true );
+        } else {
+            if( ! isset( $webhooks[ $webhook_slug ] ) ){
+                $check = WPWHPRO()->webhook->create( $webhook_slug, 'action' );
+    
+                if( $check ){
+                    echo WPWHPRO()->helpers->create_admin_notice( 'The webhook URL has been added.', 'success', true );
+                } else {
+                    echo WPWHPRO()->helpers->create_admin_notice( 'Error while adding the webhook URL.', 'warning', true );
+                }
+    
+                //Reload webhooks
+                $webhooks = WPWHPRO()->webhook->get_hooks( 'action' );
+            }
+        }
+		
 	}
 }
 
@@ -103,6 +108,7 @@ if ( empty( $active_trigger ) ) {
 
 ?>
 <?php add_ThickBox(); ?>
+
 <style>
 .integration-pro {
     background-color: #ff8e6b;
@@ -121,6 +127,7 @@ if ( empty( $active_trigger ) ) {
     margin-top:20px;
 }
 </style>
+
 <div class="wpwh-container">
   <div class="wpwh-title-area mb-5">
     <h2><?php echo sprintf( WPWHPRO()->helpers->translate( 'Receive Data On %s', 'wpwhpro-page-actions' ), WPWH_NAME ); ?></h2>
@@ -164,6 +171,10 @@ if ( empty( $active_trigger ) ) {
                 <?php foreach( $webhooks as $webhook => $webhook_data ) :
                     $uid = $webhook;
 
+                    if( strpos( $uid, 'wpwh-flow-' ) !== FALSE && substr( $uid, 0, 10 ) === 'wpwh-flow-' ){
+                        continue;
+                    }
+
                     //Map default action_attributes if available
                     $settings = array();
                     if( ! empty( $webhook_data['settings'] ) ){
@@ -173,7 +184,7 @@ if ( empty( $active_trigger ) ) {
                         }
 
                         if( isset( $webhook_data['settings']['load_default_settings'] ) && $webhook_data['settings']['load_default_settings'] === true ){
-                            $settings = array_merge( WPWHPRO()->settings->get_default_action_settings(), $settings );
+                            // $settings = array_merge( WPWHPRO()->settings->get_default_action_settings(), $settings );
                         }
 
                     }
@@ -295,7 +306,7 @@ if ( empty( $active_trigger ) ) {
                                 $action_name .= '<span class="integration-pro">Pro</span>';
                             }
                         ?>
-                            <a href="#webhook-action-<?php echo $action['action']; ?>" data-wpwh-trigger-id="<?php echo $action['action']; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $action_name; ?></a>
+                            <a href="#webhook-action-<?php echo $identkey; ?>" data-wpwh-trigger-id="<?php echo $action['action']; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $action_name; ?></a>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -314,19 +325,27 @@ if ( empty( $active_trigger ) ) {
 
 						$action_integration_icon = '';
 						if( isset( $action_details['icon'] ) && ! empty( $action_details['icon'] ) ){
-							$action_integration_icon = $action_details['icon'];
+							$action_integration_icon = esc_html( $action_details['icon'] );
+						}
+
+						$trigger_integration_name = '';
+						if( isset( $action_details['name'] ) && ! empty( $action_details['name'] ) ){
+							$trigger_integration_name = esc_html( $action_details['name'] );
 						}
                     ?>
-                        <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $action['action']; ?>">
+                        <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $identkey; ?>">
                             <div class="wpwh-table-header">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <h2 class="mb-3 d-flex align-items-center" data-wpwh-trigger-name>
-                                        <?php if( ! empty( $action_integration_icon ) ) : ?>
-											<img class="wpwh-trigger-search__item-image" src="<?php echo $action_integration_icon; ?>" />
+                                <div class="mb-2 d-flex align-items-center justify-content-between">
+									<h2 class="d-flex align-items-end" data-wpwh-trigger-name>
+										<?php if( ! empty( $action_integration_icon ) ) : ?>
+											<img class="wpwh-trigger-search__item-image mb-1" src="<?php echo $action_integration_icon; ?>" />
 										<?php endif; ?>
-                                        <?php echo isset( $action['name'] ) ? $action['name'] : $action['action']; ?>
-                                    </h2>
-                                    <div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $action['action']; ?></div>
+										<div class="d-flex flex-column">
+											<span class="wpwh-trigger-integration-name wpwh-text-small"><?php echo $trigger_integration_name; ?></span>
+											<?php echo isset( $action['name'] ) ? $action['name'] : $action['action']; ?>
+										</div>
+									</h2>
+									<div class="wpwh-trigger-webhook-name wpwh-text-small"><?php echo $action['action']; ?></div>
 								</div>
                                 <div class="wpwh-content mb-0">
                                     <?php echo $action['short_description']; ?>
@@ -444,7 +463,7 @@ if ( empty( $active_trigger ) ) {
 
                                                 $display_code = $action['returns_code'];
                                                 if( is_array( $action['returns_code'] ) ){
-                                                    $display_code = '<pre>' . json_encode( $display_code, JSON_PRETTY_PRINT ) . '</pre>';
+                                                    $display_code = '<pre>' . htmlspecialchars( json_encode( $display_code, JSON_PRETTY_PRINT ) ) . '</pre>';
                                                 }
 
                                             ?>
@@ -501,9 +520,15 @@ if ( empty( $active_trigger ) ) {
                                                 data-wpwh-identkey="<?php echo $identkey; ?>"
                                                 data-wpwh-target="#wpwh-action-testing-form-<?php echo $identkey; ?>"
                                             >
-                                                <option value="empty"><?php echo WPWHPRO()->helpers->translate( 'Choose action...', 'wpwhpro-page-receive-data' ); ?></option>
+                                                <option value="empty"><?php echo WPWHPRO()->helpers->translate( 'Choose action...', 'wpwhpro-page-data-mapping' ); ?></option>
                                                 <?php if( ! empty( $webhooks ) ) : ?>
-                                                    <?php foreach( $webhooks as $subwebhook => $subwebhook_data ) : ?>
+                                                    <?php foreach( $webhooks as $subwebhook => $subwebhook_data ) : 
+                                                    
+                                                    if( strpos( $subwebhook, 'wpwh-flow-' ) !== FALSE && substr( $subwebhook, 0, 10 ) === 'wpwh-flow-' ){
+                                                        continue;
+                                                    }  
+
+                                                    ?>
                                                         <option class="<?php echo $subwebhook; ?>" value="<?php echo WPWHPRO()->webhook->built_url( $subwebhook, $subwebhook_data['api_key'] ) . '&wpwhpro_direct_test=1'; ?>"><?php echo $subwebhook; ?></option>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
@@ -610,7 +635,7 @@ if ( empty( $active_trigger ) ) {
         }
 
         if( isset( $webhook_data['settings']['load_default_settings'] ) && $webhook_data['settings']['load_default_settings'] === true ){
-            $settings = array_merge( WPWHPRO()->settings->get_default_action_settings(), $settings );
+            // $settings = array_merge( WPWHPRO()->settings->get_default_action_settings(), $settings );
         }
 
     }
@@ -693,8 +718,17 @@ if ( empty( $active_trigger ) ) {
                                                                     $settings_data[ $setting_name ] = ( is_array( $settings_data[ $setting_name ] ) ) ? array_flip( $settings_data[ $setting_name ] ) : $settings_data[ $setting_name ];
                                                                 }
                                                             ?>
-                                                            <?php foreach( $setting['choices'] as $choice_name => $choice_label ) : ?>
-                                                                <?php
+                                                            <?php foreach( $setting['choices'] as $choice_name => $choice_label ) : 
+
+                                                                    //Compatibility with 4.3.0
+                                                                    if( is_array( $choice_label ) ){
+                                                                        if( isset( $choice_label['label'] ) ){
+                                                                            $choice_label = $choice_label['label'];
+                                                                        } else {
+                                                                            $choice_label = $choice_name;
+                                                                        }
+                                                                    }
+
                                                                     $selected = '';
                                                                     if( isset( $settings_data[ $setting_name ] ) ){
 
@@ -708,6 +742,11 @@ if ( empty( $active_trigger ) ) {
                                                                             }
                                                                         }
 
+                                                                    } else {
+                                                                        //Make sure we also cover webhooks that settings haven't been saved yet
+                                                                        if( $choice_name === $value ){
+                                                                            $selected = 'selected="selected"';
+                                                                        }
                                                                     }
                                                                 ?>
                                                                 <option value="<?php echo $choice_name; ?>" <?php echo $selected; ?>><?php echo WPWHPRO()->helpers->translate( $choice_label, 'wpwhpro-page-actions' ); ?></option>

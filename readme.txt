@@ -216,6 +216,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Make sure we also correctly enqueue triggers 
 * The trigger callbacks did not return a value in case a filter or shortcode callback was given
 * The Shop URL on the plugin overview page was broken
+* Prevent undefined variable notice on the "Send Data" tab
 
 **For developers:**
 
