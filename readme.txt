@@ -207,11 +207,19 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 * The get_curret_url() helper returned a wrong host part in some cases, causing creating triggers and actions to not work properly
 * A custom content type check prevented actions from shortening the logic
+* Make sure we also correctly enqueue triggers 
+* The trigger callbacks did not return a value in case a filter or shortcode callback was given
 
 **For developers:**
 
 * Added new function WPWHPRO()->auth->execute(); to execute the authentication hooks
+* Added new function WPWHPRO()->integrations->get_integrations(); to to get a list of all available integrations
+* Return single triggers using the WPWHPRO()->integrations->get_triggers( $slug ); function
 * New scheduled event "wpwh_maintenance" that runs once daily for various checks
+* Introduce new filter wpwhpro/integrations/integration/is_active
+* Introduce new filter wpwhpro/integrations/dependency/is_active
+* Introduce new filter wpwhpro/integrations/get_integrations
+* Prefilled action arguments with default values on return of get_actions
 
 = 3.2.1: July 30, 2021 =
 * Feature: Add "Advanced Custom Fields" integration (https://wp-webhooks.com/integrations/advanced-custom-fields/)

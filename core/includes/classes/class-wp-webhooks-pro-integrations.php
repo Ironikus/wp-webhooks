@@ -119,7 +119,10 @@ class WP_Webhooks_Pro_Integrations {
                 if( ! empty( $class ) && class_exists( $class ) && ! isset( $this->integrations[ $slug ] ) ){
                     $integration_class = new $class();
         
-                    if ( ! method_exists( $integration_class, 'is_active' ) || method_exists( $integration_class, 'is_active' ) && $integration_class->is_active() ) {
+                    $is_active = ( ! method_exists( $integration_class, 'is_active' ) || method_exists( $integration_class, 'is_active' ) && $integration_class->is_active() ) ? true : false;
+                    $is_active = apply_filters( 'wpwhpro/integrations/integration/is_active', $is_active, $slug, $class, $integration_class );
+
+                    if( $is_active ) {
                         $this->integrations[ $slug ] = $integration_class;
         
                         //Register Depenencies
@@ -164,8 +167,10 @@ class WP_Webhooks_Pro_Integrations {
                                         if( class_exists( $dependency_class ) ){
                                             $dependency_class_object = new $dependency_class();
     
-                                            //Allow an is_active() action within dependency classes
-                                            if ( ! method_exists( $dependency_class_object, 'is_active' ) || method_exists( $dependency_class_object, 'is_active' ) && $dependency_class_object->is_active() ){
+                                            $is_active = ( ! method_exists( $dependency_class_object, 'is_active' ) || method_exists( $dependency_class_object, 'is_active' ) && $dependency_class_object->is_active() ) ? true : false;
+                                            $is_active = apply_filters( 'wpwhpro/integrations/dependency/is_active', $is_active, $slug, $basename_clean, $dependency_class, $dependency_class_object );
+
+                                            if( $is_active ){
                                                 $this->integrations[ $slug ]->{$default_dependency}->{$basename_clean} = $dependency_class_object;
                                             }
     
@@ -247,6 +252,26 @@ class WP_Webhooks_Pro_Integrations {
     }
 
     /**
+     * Get all available integrations
+     *
+     * @param string $slug
+     * @return array The integration details
+     */
+    public function get_integrations( $slug = false ){
+        $return = $this->integrations;
+
+        if( $slug !== false ){
+            if( isset( $this->integrations[ $slug ] ) ){
+                $return = $this->integrations[ $slug ];
+            } else {
+                $return = false;
+            }
+        }
+
+        return apply_filters( 'wpwhpro/integrations/get_integrations', $return );
+    }
+
+    /**
      * Grab a specific helper from the given integration
      *
      * @param string $integration The integration slug (folder name)
@@ -274,22 +299,105 @@ class WP_Webhooks_Pro_Integrations {
      *
      * @return array The actions
      */
-    public function get_actions(){
+    public function get_actions( $slug = false ){
         $actions = array();
 
         if( ! empty( $this->integrations ) ){
-            foreach( $this->integrations as $si ){
-                if( property_exists( $si, 'actions' ) ){
-                    foreach( $si->actions as $action ){
-                        if( method_exists( $action, 'get_details' ) ){
-                            $details = $action->get_details();
-                            if( is_array( $details ) && isset( $details['action'] ) && ! empty( $details['action'] ) ){
-                                $actions[ $details['action'] ] = $details;
+
+            if( $slug !== false ){
+                if( isset( $this->integrations[ $slug ] ) ){
+                    if(  property_exists( $this->integrations[ $slug ], 'actions' ) ){
+                        foreach( $this->integrations[ $slug ]->actions as $action ){
+                            if( method_exists( $action, 'get_details' ) ){
+                                $details = $action->get_details();
+                                if( is_array( $details ) && isset( $details['action'] ) && ! empty( $details['action'] ) ){
+
+                                    //Validate parameter globally
+                                    if( isset( $details['parameter'] ) && is_array( $details['parameter'] ) ){
+                                        foreach( $details['parameter'] as $arg => $arg_data ){
+
+                                            //Add name
+                                            if( ! isset( $details['parameter'][ $arg ]['id'] ) ){
+                                                $details['parameter'][ $arg ]['id'] = $arg;
+                                            }
+
+                                            //Add label
+                                            if( ! isset( $details['parameter'][ $arg ]['label'] ) ){
+                                                $details['parameter'][ $arg ]['label'] = $arg;
+                                            }
+
+                                            //Add type
+                                            if( ! isset( $details['parameter'][ $arg ]['type'] ) ){
+                                                $details['parameter'][ $arg ]['type'] = 'text';
+                                            }
+
+                                            //Add required
+                                            if( ! isset( $details['parameter'][ $arg ]['required'] ) ){
+                                                $details['parameter'][ $arg ]['required'] = false;
+                                            }
+
+                                            //Add variable
+                                            if( ! isset( $details['parameter'][ $arg ]['variable'] ) ){
+                                                $details['parameter'][ $arg ]['variable'] = true;
+                                            }
+                                            
+                                        }
+                                    }
+
+                                    $actions[ $details['action'] ] = $details;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                foreach( $this->integrations as $si ){
+                    if( property_exists( $si, 'actions' ) ){
+                        foreach( $si->actions as $action ){
+                            if( method_exists( $action, 'get_details' ) ){
+                                $details = $action->get_details();
+                                if( is_array( $details ) && isset( $details['action'] ) && ! empty( $details['action'] ) ){
+
+                                    //Validate parameter globally
+                                    if( isset( $details['parameter'] ) && is_array( $details['parameter'] ) ){
+                                        foreach( $details['parameter'] as $arg => $arg_data ){
+
+                                            //Add name
+                                            if( ! isset( $details['parameter'][ $arg ]['id'] ) ){
+                                                $details['parameter'][ $arg ]['id'] = $arg;
+                                            }
+
+                                            //Add label
+                                            if( ! isset( $details['parameter'][ $arg ]['label'] ) ){
+                                                $details['parameter'][ $arg ]['label'] = $arg;
+                                            }
+
+                                            //Add type
+                                            if( ! isset( $details['parameter'][ $arg ]['type'] ) ){
+                                                $details['parameter'][ $arg ]['type'] = 'text';
+                                            }
+
+                                            //Add required
+                                            if( ! isset( $details['parameter'][ $arg ]['required'] ) ){
+                                                $details['parameter'][ $arg ]['required'] = false;
+                                            }
+
+                                            //Add variable
+                                            if( ! isset( $details['parameter'][ $arg ]['variable'] ) ){
+                                                $details['parameter'][ $arg ]['variable'] = true;
+                                            }
+                                            
+                                        }
+                                    }
+
+                                    $actions[ $details['action'] ] = $details;
+                                }
                             }
                         }
                     }
                 }
             }
+            
         }
 
         return apply_filters( 'wpwhpro/integrations/get_actions', $actions );
@@ -327,22 +435,39 @@ class WP_Webhooks_Pro_Integrations {
      *
      * @return array Te triggers
      */
-    public function get_triggers(){
+    public function get_triggers( $slug = false ){
         $triggers = array();
 
         if( ! empty( $this->integrations ) ){
-            foreach( $this->integrations as $si ){
-                if( property_exists( $si, 'triggers' ) ){
-                    foreach( $si->triggers as $trigger ){
-                        if( method_exists( $trigger, 'get_details' ) ){
-                            $details = $trigger->get_details();
-                            if( is_array( $details ) && isset( $details['trigger'] ) && ! empty( $details['trigger'] ) ){
-                                $triggers[ $details['trigger'] ] = $details;
+
+            if( $slug !== false ){
+                if( isset( $this->integrations[ $slug ] ) ){
+                    if( property_exists( $this->integrations[ $slug ], 'triggers' ) ){
+                        foreach( $this->integrations[ $slug ]->triggers as $trigger ){
+                            if( method_exists( $trigger, 'get_details' ) ){
+                                $details = $trigger->get_details();
+                                if( is_array( $details ) && isset( $details['trigger'] ) && ! empty( $details['trigger'] ) ){
+                                    $triggers[ $details['trigger'] ] = $details;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                foreach( $this->integrations as $si ){
+                    if( property_exists( $si, 'triggers' ) ){
+                        foreach( $si->triggers as $trigger ){
+                            if( method_exists( $trigger, 'get_details' ) ){
+                                $details = $trigger->get_details();
+                                if( is_array( $details ) && isset( $details['trigger'] ) && ! empty( $details['trigger'] ) ){
+                                    $triggers[ $details['trigger'] ] = $details;
+                                }
                             }
                         }
                     }
                 }
             }
+            
         }
 
         return apply_filters( 'wpwhpro/integrations/get_triggers', $triggers );
@@ -413,11 +538,22 @@ class WP_Webhooks_Pro_Integrations {
                                             $callback_func = $hook_callback;
 
                                             if( $delayed ){
-                                                $callback_func = function() use ( $hook_callback, $trigger_name, $trigger ) {
-                                                    WPWHPRO()->delay->add_post_delayed_trigger( $hook_callback, func_get_args(), array(
+                                                $callback_func = function() use ( $type, $hook_callback, $trigger_name, $trigger ) {
+                                                    $func_args = func_get_args();
+                                                    WPWHPRO()->delay->add_post_delayed_trigger( $hook_callback, $func_args, array(
                                                         'trigger_name' => $trigger_name,
                                                         'trigger' => $trigger,
                                                     ) );
+
+                                                    if( $type === 'filter' || $type === 'shortcode' ){
+                                                        $return ='';
+
+                                                        if( is_array( $func_args ) && isset( $func_args[0] ) ){
+                                                            $return = $func_args[0];
+                                                        }
+
+                                                        return $return;
+                                                    }
                                                 };
                                             }
 
