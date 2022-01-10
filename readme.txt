@@ -204,6 +204,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * New trigger setting to prevent a trigger firing multiple times within the same WordPress instance
 
 **Little tweaks:**
+* Optimized the overall layout and usability
 * Optimized feature awareness
 * Make sure we initialize the settings key for action webhook endpoints by default
 * Added new dynamic action description

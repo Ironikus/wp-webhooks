@@ -1197,22 +1197,23 @@ exports.default = function () {
           settingsValues[settingName] = $.isArray(settingsValues[settingName]) ? settingsValues[settingName].reverse() : settingsValues[settingName];
         }
 
-        $.each(setting.choices, function ($choice_name, $choice_label) {
+        $.each(setting.choices, function (choiceName, choice) {
           $selected = '';
+
           if (typeof settingsValues[settingName] !== 'undefined') {
 
             if ($.isArray(settingsValues[settingName])) {
-              if (typeof settingsValues[settingName][$choice_name] !== 'undefined') {
+              if (typeof settingsValues[settingName][choiceName] !== 'undefined') {
                 $selected = 'selected="selected"';
               }
             } else {
-              if (settingsValues[settingName] == $choice_name) {
+              if (settingsValues[settingName] == choiceName) {
                 $selected = 'selected="selected"';
               }
             }
           }
 
-          html += '<option value="' + $choice_name + '" ' + $selected + '>' + $choice_label + '</option>';
+          html += '<option value="' + choiceName + '" ' + $selected + '>' + (choice.label ? choice.label : choice) + '</option>';
         });
 
         html += '</select>';
@@ -1534,22 +1535,22 @@ exports.default = function () {
           settingsValues[settingName] = $.isArray(settingsValues[settingName]) ? settingsValues[settingName].reverse() : settingsValues[settingName];
         }
 
-        $.each(setting.choices, function ($choice_name, $choice_label) {
+        $.each(setting.choices, function (choiceName, $choice_label) {
           selected = '';
           if (typeof settingsValues[settingName] !== 'undefined') {
 
             if ($.isArray(settingsValues[settingName])) {
-              if (typeof settingsValues[settingName][$choice_name] !== 'undefined') {
+              if (typeof settingsValues[settingName][choiceName] !== 'undefined') {
                 selected = 'selected="selected"';
               }
             } else {
-              if (settingsValues[settingName] == $choice_name) {
+              if (settingsValues[settingName] == choiceName) {
                 selected = 'selected="selected"';
               }
             }
           }
 
-          html += '<option value="' + $choice_name + '" ' + selected + '>' + $choice_label + '</option>';
+          html += '<option value="' + choiceName + '" ' + selected + '>' + $choice_label + '</option>';
         });
 
         html += '</select>';
@@ -1703,7 +1704,30 @@ var Triggers = function Triggers() {
       // Filter the items that need to be hidden and hide them
       var $toHide = $triggerIds.show().filter(function (i, el) {
 
-        if ($(this).text().toLowerCase().includes(thisVal)) {
+        var triggerId = $(this).data('wpwh-trigger-id');
+        var triggerText = $(this).text().toLowerCase();
+
+        /**
+         * Trigger text conditionals.
+         */
+        // Check if the text includes searched string.
+        var hasText = triggerText.includes(thisVal);
+        // Check if the text (after removing spaces) includes searched string
+        var hasTextIgnoreSpace = triggerText.replace(/\s+/g, '').includes(thisVal);
+        // Check if the text includes searched string (after replacing _ with spaces)
+        var hasTextNoSpace = triggerText.includes(thisVal.replace('_', ' '));
+
+        /**
+        * Trigger id conditionals.
+        */
+        // Check if the trigger id includes searched string.
+        var hasTrigger = triggerId && triggerId.includes(thisVal);
+        // Check if the trigger id includes searched string (after replacing spaces with _).
+        var hasTriggerIgnoreSpace = triggerId && triggerId.includes(thisVal.replace(/\s+/g, '_'));
+        // Check if the trigger id (after replacing _ with spaces) includes searched string.
+        var hasTriggerNoSpace = triggerId && triggerId.replace('_', '').includes(thisVal);
+
+        if (hasText || hasTextIgnoreSpace || hasTextNoSpace || hasTrigger || hasTriggerIgnoreSpace || hasTriggerNoSpace) {
           return false;
         }
 
@@ -1756,7 +1780,10 @@ var Triggers = function Triggers() {
       }
     });
 
-    if (!$triggerIds.find('.wpwh-trigger-search__item--active')) {
+    // Select the trigger if URL has a #hash that matches the trigger ID
+    if (window.location.hash) {
+      $('[data-wpwh-trigger-id][href="' + window.location.hash + '"]').trigger('click');
+    } else if (!$triggerIds.find('.wpwh-trigger-search__item--active')) {
       $triggerIds.first().trigger('click');
     } else {
       $triggerIds.find('.wpwh-trigger-search__item--active').first().trigger('click');
@@ -2246,6 +2273,8 @@ var _webhookSearch = __webpack_require__(/*! ./custom/webhook-search */ "./core/
 
 var _webhookSearch2 = _interopRequireDefault(_webhookSearch);
 
+var _aos = __webpack_require__(/*! aos */ "./node_modules/aos/dist/aos.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -2262,6 +2291,10 @@ window.getUrlParam = _getUrlParam2.default;
 // Custom Imports
 
 
+// Flows
+// import Flows from './custom/flows'
+
+
 /**
  * Custom jQuery Code
  */
@@ -2273,6 +2306,9 @@ jQuery(document).ready(function ($) {
   (0, _wpwhEvents2.default)();
   (0, _dataMapping2.default)();
   (0, _webhookSearch2.default)();
+
+  // const flows = new Flows();
+  // Flows.init();
 
   // Tippy
   (0, _tippy2.default)('[data-tippy-content]', {
