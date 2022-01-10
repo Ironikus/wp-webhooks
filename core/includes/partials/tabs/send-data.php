@@ -24,29 +24,35 @@ if( isset( $_POST['wpwh-add-webhook-url'] ) ){
 		$webhook_url 			= sanitize_text_field( $webhook_url );
 		$webhook_url 			= str_replace( $percentage_escape, '%', $webhook_url );
 
-        $webhook_slug            = isset( $_POST['wpwh-add-webhook-name'] ) ? sanitize_title( $_POST['wpwh-add-webhook-name'] ) : '';
-        $webhook_group          = isset( $_POST['wpwh-add-webhook-group'] ) ? sanitize_text_field( $_POST['wpwh-add-webhook-group'] ) : '';
-		$webhooks               = WPWHPRO()->webhook->get_hooks( 'trigger', $webhook_group );
-
-		if( ! empty( $webhook_slug ) ){
-			$new_webhook = $webhook_slug;
+		if( $webhook_url !== 'wpwhflow' ){
+			$webhook_slug            = isset( $_POST['wpwh-add-webhook-name'] ) ? sanitize_title( $_POST['wpwh-add-webhook-name'] ) : '';
+			$webhook_group          = isset( $_POST['wpwh-add-webhook-group'] ) ? sanitize_text_field( $_POST['wpwh-add-webhook-group'] ) : '';
+			$webhooks               = WPWHPRO()->webhook->get_hooks( 'trigger', $webhook_group );
+	
+			if( ! empty( $webhook_slug ) ){
+				$new_webhook = $webhook_slug;
+			} else {
+				$new_webhook = strtotime( date( 'Y-n-d H:i:s' ) ) . 999 . rand( 10, 9999 );
+			}
+	
+			if( ! isset( $webhooks[ $new_webhook ] ) ){
+				$check = WPWHPRO()->webhook->create( $new_webhook, 'trigger', array( 'group' => $webhook_group, 'webhook_url' => $webhook_url ) );
+	
+				if( $check ){
+					echo WPWHPRO()->helpers->create_admin_notice( 'The webhook URL has been added.', 'success', true );
+				} else {
+					echo WPWHPRO()->helpers->create_admin_notice( 'Error while adding the webhook URL.', 'warning', true );
+				}
+	
+				//reload data
+				$triggers = WPWHPRO()->webhook->get_triggers();
+				$triggers_data = WPWHPRO()->webhook->get_hooks( 'trigger' );
+			}
 		} else {
-			$new_webhook = strtotime( date( 'Y-n-d H:i:s' ) ) . 999 . rand( 10, 9999 );
+			echo WPWHPRO()->helpers->create_admin_notice( 'This webhook URL is reserved for internal use only.', 'warning', true );
 		}
 
-        if( ! isset( $webhooks[ $new_webhook ] ) ){
-            $check = WPWHPRO()->webhook->create( $new_webhook, 'trigger', array( 'group' => $webhook_group, 'webhook_url' => $webhook_url ) );
-
-			if( $check ){
-				echo WPWHPRO()->helpers->create_admin_notice( 'The webhook URL has been added.', 'success', true );
-			} else {
-				echo WPWHPRO()->helpers->create_admin_notice( 'Error while adding the webhook URL.', 'warning', true );
-			}
-
-			//reload data
-			$triggers = WPWHPRO()->webhook->get_triggers();
-			$triggers_data = WPWHPRO()->webhook->get_hooks( 'trigger' );
-        }
+        
 
 	}
 }
@@ -54,7 +60,6 @@ if( isset( $_POST['wpwh-add-webhook-url'] ) ){
 //Sort webhooks
 $grouped_triggers = array();
 $grouped_triggers_pro = array();
-
 foreach( $triggers as $identkey => $webhook_trigger ){
     $group = 'ungrouped';
 
@@ -62,7 +67,7 @@ foreach( $triggers as $identkey => $webhook_trigger ){
         $group = $webhook_trigger['integration'];
     }
 
-	if( isset( $webhook_trigger['premium'] ) && $webhook_trigger['premium'] ){
+    if( isset( $webhook_trigger['premium'] ) && $webhook_trigger['premium'] ){
 		if( ! isset( $grouped_triggers_pro[ $group ] ) ){
 			$grouped_triggers_pro[ $group ] = array(
 				$identkey => $webhook_trigger
@@ -103,6 +108,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 ?>
 <?php add_ThickBox(); ?>
+
 <style>
 .integration-pro {
     background-color: #ff8e6b;
@@ -120,6 +126,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
     border-radius: 8px;
 }
 </style>
+
 <div class="wpwh-container">
   <div class="wpwh-title-area mb-5">
     <h1><?php echo WPWHPRO()->helpers->translate( 'Available Webhook Triggers', 'wpwhpro-page-triggers' ); ?></h1>
@@ -182,6 +189,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 		<?php if( ! empty( $triggers ) ) : ?>
 				<div class="wpwh-trigger-items">
 					<?php foreach( $triggers as $identkey => $trigger ) :
+
 						$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
 						$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 						$trigger_integration = isset( $trigger['integration'] ) ? $trigger['integration'] : '';
@@ -189,7 +197,12 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 						$trigger_integration_icon = '';
 						if( isset( $trigger_details['icon'] ) && ! empty( $trigger_details['icon'] ) ){
-							$trigger_integration_icon = $trigger_details['icon'];
+							$trigger_integration_icon = esc_html( $trigger_details['icon'] );
+						}
+
+						$trigger_integration_name = '';
+						if( isset( $trigger_details['name'] ) && ! empty( $trigger_details['name'] ) ){
+							$trigger_integration_name = esc_html( $trigger_details['name'] );
 						}
 
 						$is_active = $webhook_name === $active_trigger;
@@ -204,7 +217,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 							}
 
 							if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
-									$settings = array_merge( WPWHPRO()->settings->get_default_trigger_settings(), $settings );
+									$settings = array_merge( $settings, WPWHPRO()->settings->get_default_trigger_settings() );
 							}
 						}
 
@@ -222,24 +235,26 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 						}
 
-						$settings = array_merge( $required_settings, $settings );
+						$settings = array_merge( $settings, $required_settings );
 
 						?>
 						<div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-<?php echo $webhook_name; ?>" <?php echo ! $is_active ? 'style="display: none;"' : ''; ?>>
 							<div class="wpwh-table-header">
-								<div class="d-flex align-items-center justify-content-between">
-									<h2 class="mb-2 d-flex align-items-center" data-wpwh-trigger-name>
+								<div class="mb-2 d-flex align-items-center justify-content-between">
+									<h2 class="d-flex align-items-end" data-wpwh-trigger-name>
 										<?php if( ! empty( $trigger_integration_icon ) ) : ?>
-											<img class="wpwh-trigger-search__item-image" src="<?php echo $trigger_integration_icon; ?>" />
+											<img class="wpwh-trigger-search__item-image mb-1" src="<?php echo $trigger_integration_icon; ?>" />
 										<?php endif; ?>
-										<?php echo $trigger_name; ?>
+										<div class="d-flex flex-column">
+											<span class="wpwh-trigger-integration-name wpwh-text-small"><?php echo $trigger_integration_name; ?></span>
+											<?php echo $trigger_name; ?>
+										</div>
 									</h2>
-									<div class="wpwh-trigger-webhook-name mb-2 wpwh-text-small"><?php echo $webhook_name; ?></div>
+									<div class="wpwh-trigger-webhook-name wpwh-text-small"><?php echo $webhook_name; ?></div>
 								</div>
 								<div class="wpwh-content mb-4">
 									<?php echo $trigger['short_description']; ?>
 								</div>
-
 								<?php if( ! $is_premium ) : ?>
 									<div class="d-flex align-items-center justify-content-end">
 										<button class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>" data-toggle="modal" data-target="#wpwhAddWebhookModal-<?php echo $identkey; ?>">
@@ -257,6 +272,11 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 										</a>
 									</div>
 								<?php endif; ?>
+								<div class="d-flex align-items-center justify-content-end">
+									<button class="wpwh-btn wpwh-btn--sm wpwh-btn--secondary" title="<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>" data-toggle="modal" data-target="#wpwhAddWebhookModal-<?php echo $identkey; ?>">
+										<?php echo WPWHPRO()->helpers->translate( 'Add Webhook URL', 'wpwhpro-page-triggers' ); ?>
+									</button>
+								</div>
 							</div>
 							<?php if( ! $is_premium ) : ?>
 								<table class="wpwh-table wpwh-table--sm wpwh-text-small">
@@ -275,6 +295,11 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 											<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
 											<?php if( ! current_user_can( apply_filters( 'wpwhpro/admin/settings/webhook/page_capability', WPWHPRO()->settings->get_admin_cap( 'wpwhpro-page-triggers' ), $webhook, $trigger['trigger'] ) ) ) { continue; } ?>
 											<?php
+												$is_flow = ( $webhook_data['webhook_url'] === 'wpwhflow' ) ? true : false;
+												if( $is_flow ){
+													continue;
+												}
+
 												$status = 'active';
 												$status_name = 'Deactivate';
 												if( isset( $webhook_data['status'] ) && $webhook_data['status'] == 'inactive' ){
@@ -361,6 +386,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 									</tbody>
 								</table>
+
 							<?php endif; ?>
 
 							<div class="wpwh-accordion" id="wpwh_accordion_<?php echo $identkey; ?>">
@@ -405,7 +431,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 											$display_code = $trigger['returns_code'];
 											if( is_array( $trigger['returns_code'] ) ){
-												$display_code = json_encode( $display_code, JSON_PRETTY_PRINT );
+												$display_code = htmlspecialchars( json_encode( $display_code, JSON_PRETTY_PRINT ) );
 											}
 
 											?>
@@ -463,7 +489,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 			}
 
 			if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
-					$settings = array_merge( WPWHPRO()->settings->get_default_trigger_settings(), $settings );
+					$settings = array_merge( $settings, WPWHPRO()->settings->get_default_trigger_settings() );
 			}
 		}
 
@@ -481,7 +507,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 		}
 
-		$settings = array_merge( $required_settings, $settings );
+		$settings = array_merge( $settings, $required_settings );
 
 		?>
 		<div class="modal fade" id="wpwhAddWebhookModal-<?php echo $identkey; ?>" tabindex="-1" role="dialog">
@@ -514,6 +540,9 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 								<label class="wpwh-form-label" for="wpwh-webhook-url-<?php echo $trigger['trigger']; ?>">
 									<?php echo WPWHPRO()->helpers->translate( 'Webhook URL', 'wpwhpro-page-triggers' ); ?>
 								</label>
+								<div class="wpwh-content wpwh-text-small mb-3">
+										<?php echo WPWHPRO()->helpers->translate( 'Using our Pro version, you can also add dynamic parameters to the URL that are later on mapped using the data mapping feature. E.g. ', 'wpwhpro-page-triggers' ); ?><strong>https://yourdomain.test/endpoint/{:user_id:}</strong>
+								</div>
 								<input class="wpwh-form-input w-100" id="wpwh-webhook-url-<?php echo $trigger['trigger']; ?>" name="wpwh-add-webhook-url" type="text" class="form-control ironikus-webhook-input-new h30" aria-label="<?php echo WPWHPRO()->helpers->translate( 'Include your webhook url here', 'wpwhpro-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo WPWHPRO()->helpers->translate( 'https://example.com/webbhook/onwzinsze', 'wpwhpro-page-triggers' ); ?>">
 							</div>
 						</div>
@@ -582,7 +611,7 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 
 												foreach( $settings as $setting_name => $setting ) :
 
-													$is_checked = ( $setting['type'] == 'checkbox' && $setting['default_value'] == 'yes' ) ? 'checked' : '';
+													$is_checked = ( $setting['type'] == 'checkbox' && isset( $setting['default_value'] ) && $setting['default_value'] == 'yes' ) ? 'checked' : '';
 													$value = isset( $setting['default_value'] ) ? $setting['default_value'] : '';
 													$placeholder = ( $setting['type'] != 'checkbox' && isset( $setting['placeholder'] ) ) ? $setting['placeholder'] : '';
 
@@ -615,8 +644,17 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 																			$settings_data[ $setting_name ] = ( is_array( $settings_data[ $setting_name ] ) ) ? array_flip( $settings_data[ $setting_name ] ) : $settings_data[ $setting_name ];
 																		}
 																	?>
-																	<?php foreach( $setting['choices'] as $choice_name => $choice_label ) : ?>
-																	<?php
+																	<?php foreach( $setting['choices'] as $choice_name => $choice_label ) : 
+																		
+																		//Compatibility with 4.3.0
+																		if( is_array( $choice_label ) ){
+																			if( isset( $choice_label['label'] ) ){
+																				$choice_label = $choice_label['label'];
+																			} else {
+																				$choice_label = $choice_name;
+																			}
+																		}
+
 																		$selected = '';
 																		if( isset( $settings_data[ $setting_name ] ) ){
 
@@ -630,6 +668,11 @@ $active_trigger = isset( $_GET['wpwh-trigger'] ) ? filter_var( $_GET['wpwh-trigg
 																				}
 																			}
 
+																		} else {
+																			//Make sure we also cover webhooks that settings haven't been saved yet
+																			if( $choice_name === $value ){
+																				$selected = 'selected="selected"';
+																			}
 																		}
 																	?>
 																	<option value="<?php echo $choice_name; ?>" <?php echo $selected; ?>><?php echo WPWHPRO()->helpers->translate( $choice_label, 'wpwhpro-page-triggers' ); ?></option>
