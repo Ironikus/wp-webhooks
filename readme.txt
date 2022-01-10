@@ -205,6 +205,8 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 **Little tweaks:**
 * Optimized feature awareness
+* Make sure we initialize the settings key for action webhook endpoints by default
+* Added new dynamic action description
 
 **Fixed issues:**
 
@@ -221,12 +223,19 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Added new function WPWHPRO()->integrations->get_integrations(); to to get a list of all available integrations
 * Added new function WPWHPRO()->sql->column_exists(); to check if a table column exists
 * Added new function WPWHPRO()->sql->prepare(); as an equivalent to WPDB's prepare
+* Added new function WPWHPRO()->webhooks->reload_webhooks(); to reload all webhooks
+* Added new function WPWHPRO()->webhooks->get_processed_triggers(); to get an array of all processed triggers within this instance
+* Added new function WPWHPRO()->webhooks->get_processed_triggers(); to get an array of all processed triggers within this instance
+* Added new function WPWHPRO()->webhooks->set_processed_trigger(); to register a processed trigger for this instance
+* Added new argument for function WPWHPRO()->webhooks->built_url( $webhook, $api_key, $additional_args = array() ); to register custom query parameter
 * The function WPWHPRO()->sql->run( $sql, $type = OBJECT, $args = array()  ); accepts the $args for extra values (e.g. return_id) 
 * Return single triggers using the WPWHPRO()->integrations->get_triggers( $slug ); function
 * New scheduled event "wpwh_maintenance" that runs once daily for various checks
 * Introduce new filter wpwhpro/integrations/integration/is_active
 * Introduce new filter wpwhpro/integrations/dependency/is_active
 * Introduce new filter wpwhpro/integrations/get_integrations
+* Introduce new filter wpwhpro/admin/webhooks/get_processed_triggers
+* Introduce new filter wpwhpro/admin/webhooks/set_processed_trigger
 * Prefilled action arguments with default values on return of get_actions
 
 = 3.2.1: July 30, 2021 =
