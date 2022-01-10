@@ -207,6 +207,8 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 **For developers:**
 
+* Added new function WPWHPRO()->auth->execute(); to execute the authentication hooks
+
 * New scheduled event "wpwh_maintenance" that runs once daily for various checks
 
 = 3.2.1: July 30, 2021 =
