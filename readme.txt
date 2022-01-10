@@ -202,6 +202,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 **New Features:**
 
 **Little tweaks:**
+* Optimized feature awareness
 
 **Fixed issues:**
 
@@ -209,10 +210,12 @@ We offer you a very awesome hook system to customize everything based on your ne
 * A custom content type check prevented actions from shortening the logic
 * Make sure we also correctly enqueue triggers 
 * The trigger callbacks did not return a value in case a filter or shortcode callback was given
+* The Shop URL on the plugin overview page was broken
 
 **For developers:**
 
 * Added new function WPWHPRO()->auth->execute(); to execute the authentication hooks
+* Added new function WPWHPRO()->extensions->execute(); to execute the extension hooks
 * Added new function WPWHPRO()->integrations->get_integrations(); to to get a list of all available integrations
 * Return single triggers using the WPWHPRO()->integrations->get_triggers( $slug ); function
 * New scheduled event "wpwh_maintenance" that runs once daily for various checks

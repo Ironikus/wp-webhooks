@@ -29,28 +29,21 @@ class WP_Webhooks_Pro_Run{
 	private $page_title;
 
 	/**
-	 * Preserver certain values
-	 *
-	 * @var string
-	 * @since 2.0.5
-	 */
-	private $pre_action_values;
-
-	/**
 	 * Our WP_Webhooks_Pro_Run constructor.
 	 */
 	function __construct(){
 		$this->page_name    = WPWHPRO()->settings->get_page_name();
 		$this->page_title   = WPWHPRO()->settings->get_page_title();
 		$this->add_hooks();
+		$this->execute_features();
 	}
 
 	/**
-	 * Define all of our necessary hooks
+	 * Define all of our general hooks
 	 */
 	private function add_hooks(){
 
-		add_action( 'plugin_action_links_' . WPWH_PLUGIN_BASE, array( $this, 'plugin_action_links' ) );
+		add_action( 'plugin_action_links_' . WPWH_PLUGIN_BASE, array( $this, 'plugin_action_links') );
 		add_filter( 'admin_footer_text', array( $this, 'display_footer_information' ), 1, 2 );
 
 		add_action( 'admin_enqueue_scripts',    array( $this, 'enqueue_scripts_and_styles' ) );
@@ -66,11 +59,6 @@ class WP_Webhooks_Pro_Run{
 		add_action( 'wp_ajax_ironikus_test_webhook_trigger',  array( $this, 'ironikus_test_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_trigger_settings',  array( $this, 'ironikus_save_webhook_trigger_settings' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_action_settings',  array( $this, 'ironikus_save_webhook_action_settings' ) );
-		add_action( 'wp_ajax_ironikus_add_authentication_template',  array( $this, 'ironikus_add_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_load_authentication_template_data',  array( $this, 'ironikus_load_authentication_template_data' ) );
-		add_action( 'wp_ajax_ironikus_save_authentication_template',  array( $this, 'ironikus_save_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_delete_authentication_template',  array( $this, 'ironikus_delete_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_manage_extensions',  array( $this, 'ironikus_manage_extensions' ) );
 
 		// Load admin page tabs
 		add_filter( 'wpwhpro/admin/settings/menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
@@ -82,9 +70,20 @@ class WP_Webhooks_Pro_Run{
 		//Reset wp webhooks
 		add_action( 'admin_init', array( $this, 'reset_wpwhpro_data' ), 10 );
 
-		//Template validations
-		add_filter( 'wpwhpro/admin/webhooks/webhook_data', array( $this, 'apply_authentication_template_data' ), 100, 5 );
-		add_filter( 'wpwhpro/admin/webhooks/webhook_http_args', array( $this, 'apply_authentication_template_header' ), 100, 5 );
+
+
+	}
+
+	/**
+	 * Execute the plugin related features
+	 *
+	 * @since 4.2.3
+	 * @return void
+	 */
+	private function execute_features(){
+
+		WPWHPRO()->auth->execute();
+		WPWHPRO()->extensions->execute();
 
 	}
 
@@ -123,7 +122,7 @@ class WP_Webhooks_Pro_Run{
 	 * @return string Our footer text
 	 */
 	public function display_footer_information( $text ) {
-		
+
 		if( WPWHPRO()->helpers->is_page( $this->page_name ) ){
 			$text = sprintf(
 				WPWHPRO()->helpers->translate( '%1$s version %2$s', 'admin-footer-text' ),
@@ -154,17 +153,23 @@ class WP_Webhooks_Pro_Run{
 			wp_enqueue_style( 'wpwhpro-google-fonts', 'https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&family=Poppins:wght@500&display=swap', array(), null );
 
 			// wp_enqueue_style( 'wpwhpro-admin-styles-old', WPWH_PLUGIN_URL . 'core/includes/assets/dist/css/styles.min.css', array(), WPWH_VERSION, 'all' );
+
 			wp_enqueue_style( 'wpwhpro-admin-styles', WPWH_PLUGIN_URL . 'core/includes/assets/dist/css/admin-styles' . ( $is_dev_mode ? '' : '.min' ) . '.css', array(), WPWH_VERSION, 'all' );
 
 			wp_enqueue_script( 'jquery-ui-sortable');
+			wp_enqueue_editor();
+			wp_enqueue_media();
 
 			wp_enqueue_script( 'wpwhpro-admin-vendors', WPWH_PLUGIN_URL . 'core/includes/assets/dist/js/admin-vendor' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWH_VERSION, true );
 			wp_enqueue_script( 'wpwhpro-admin-scripts', WPWH_PLUGIN_URL . 'core/includes/assets/dist/js/admin-scripts' . ( $is_dev_mode ? '' : '.min' ) . '.js', array( 'jquery' ), WPWH_VERSION, true );
+
 			wp_localize_script( 'wpwhpro-admin-scripts', 'ironikus', array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( md5( $this->page_name ) ),
 				'plugin_url' => WPWH_PLUGIN_URL,
+				'language' => '',
 			));
+
 			// wp_enqueue_script( 'wpwhpro-admin-scripts-old', WPWH_PLUGIN_URL . 'core/includes/assets-old/dist/js/admin-scripts.js', array( 'jquery' ), WPWH_VERSION, true );
 		}
 	}
@@ -406,7 +411,7 @@ class WP_Webhooks_Pro_Run{
 				'webhook' => $webhook,
 				'webhooks' => $webhooks,
 				'webhook_group' => $webhook_group,
-			) );	
+			) );
 
 			if( ! empty( $webhook_callback ) ){
 				$data = apply_filters( 'ironikus_demo_' . $webhook_callback, $data, $webhook, $webhook_group, $webhooks[ $webhook ] );
@@ -423,133 +428,6 @@ class WP_Webhooks_Pro_Run{
         echo json_encode( $response );
 		die();
     }
-
-	/*
-     * Functionality to add the currently chosen data mapping
-     */
-	public function ironikus_add_authentication_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-
-        $auth_template    = isset( $_REQUEST['auth_template'] ) ? sanitize_title( $_REQUEST['auth_template'] ) : '';
-        $auth_type    = isset( $_REQUEST['auth_type'] ) ? sanitize_title( $_REQUEST['auth_type'] ) : '';
-		$response           = array( 'success' => false );
-
-		if( ! empty( $auth_template ) && ! empty( $auth_type ) ){
-		    $check = WPWHPRO()->auth->add_template( $auth_template, $auth_type );
-
-		    if( ! empty( $check ) ){
-
-				$response['success'] = true;
-
-            }
-        }
-
-        echo json_encode( $response );
-		die();
-	}
-
-	/*
-     * Functionality to load the currently chosen authentication
-     */
-	public function ironikus_load_authentication_template_data(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-
-        $auth_template_id    = isset( $_REQUEST['auth_template_id'] ) ? intval( $_REQUEST['auth_template_id'] ) : '';
-        $response           = array( 'success' => false );
-
-		if( ! empty( $auth_template_id ) && is_numeric( $auth_template_id ) ){
-		    $check = WPWHPRO()->auth->get_auth_templates( intval( $auth_template_id ) );
-
-		    if( ! empty( $check ) ){
-
-				$response['success'] = true;
-		        $response['text'] 	 = array(
-					'save_button_text' => WPWHPRO()->helpers->translate( 'Save Template', 'wpwhpro-page-authentication' ),
-					'delete_button_text' => WPWHPRO()->helpers->translate( 'Delete Template', 'wpwhpro-page-authentication' ),
-				);
-				$response['id'] = '';
-				$response['content'] = '';
-
-				if( isset( $check->id ) && ! empty( $check->id ) ){
-					$response['id'] = $check->id;
-				}
-
-				$template_data = ( isset( $check->template ) && ! empty( $check->template ) ) ? base64_decode( $check->template ) : '';
-
-				if( isset( $check->auth_type ) && ! empty( $check->auth_type )  ){
-					$response['content'] = WPWHPRO()->auth->get_html_fields_form( $check->auth_type, $template_data );
-				}
-
-            }
-        }
-
-        echo json_encode( $response );
-		die();
-	}
-
-	/*
-     * Functionality to save the current authentication template
-     */
-	public function ironikus_save_authentication_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-
-        $data_auth_id    = isset( $_REQUEST['data_auth_id'] ) ? intval( $_REQUEST['data_auth_id'] ) : '';
-        $datastring    = isset( $_REQUEST['datastring'] ) ? $_REQUEST['datastring'] : '';
-		$response           = array( 'success' => false );
-
-		parse_str( $datastring, $authentication_template );
-
-		//Maybe validate the incoming template data
-		if( empty( $authentication_template ) ){
-			$authentication_template = array();
-		}
-
-		//Validate arrays
-		if( is_array( $authentication_template ) ){
-			$authentication_template = json_encode( $authentication_template );
-		}
-
-		if( ! empty( $data_auth_id ) && is_string( $authentication_template ) ){
-
-			if( WPWHPRO()->helpers->is_json( $authentication_template ) ){
-				$check = WPWHPRO()->auth->update_template( $data_auth_id, array(
-					'template' => $authentication_template
-				) );
-
-				if( ! empty( $check ) ){
-
-					$response['success'] = true;
-
-				}
-			}
-		}
-
-        echo json_encode( $response );
-		die();
-	}
-
-	/*
-     * Functionality to delete the currently chosen authentication template
-     */
-	public function ironikus_delete_authentication_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-
-        $data_auth_id    = isset( $_REQUEST['data_auth_id'] ) ? intval( $_REQUEST['data_auth_id'] ) : '';
-        $response           = array( 'success' => false );
-
-		if( ! empty( $data_auth_id ) && is_numeric( $data_auth_id ) ){
-		    $check = WPWHPRO()->auth->delete_authentication_template( intval( $data_auth_id ) );
-
-		    if( ! empty( $check ) ){
-
-				$response['success'] = true;
-
-            }
-        }
-
-        echo json_encode( $response );
-		die();
-	}
 
     /*
      * Functionality to load all of the available demo webhook triggers
@@ -604,227 +482,6 @@ class WP_Webhooks_Pro_Run{
 		die();
     }
 
-    /*
-     * Manage WP Webhooks extensions
-     */
-	public function ironikus_manage_extensions(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
-
-        $extension_slug            = isset( $_REQUEST['extension_slug'] ) ? sanitize_text_field( $_REQUEST['extension_slug'] ) : '';
-        $extension_status            = isset( $_REQUEST['extension_status'] ) ? sanitize_text_field( $_REQUEST['extension_status'] ) : '';
-        $extension_download            = isset( $_REQUEST['extension_download'] ) ? sanitize_text_field( $_REQUEST['extension_download'] ) : '';
-        $extension_id            = isset( $_REQUEST['extension_id'] ) ? intval( $_REQUEST['extension_id'] ) : '';
-        $extension_version            = isset( $_REQUEST['extension_version'] ) ? sanitize_text_field( $_REQUEST['extension_version'] ) : '';
-		$response           = array( 'success' => false );
-
-		if( empty( $extension_slug ) || empty( $extension_status ) ){
-			$response['msg'] = WPWHPRO()->helpers->translate('An error occured while doing this action.', 'ajax-settings');
-			return $response;
-		}
-
-		switch( $extension_status ){
-			case 'activated': //runs when the "Deactivate" button was clicked
-				$response['new_class'] = 'text-green';
-				$response['new_status'] = 'deactivated';
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
-				$response['success'] = $this->manage_extensions_deactivate( $extension_slug );
-				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully deactivated.', 'ajax-settings');
-				break;
-			case 'deactivated': //runs when the "Activate" button was clicked
-				$response['new_class'] = 'text-warning';
-				$response['new_status'] = 'activated';
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Deactivate', 'wpwhpro-page-extensions' );
-				$response['success'] = $this->manage_extensions_activate( $extension_slug );
-				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully activated.', 'ajax-settings');
-				break;
-			case 'uninstalled': //runs when the "Install" button was clicked
-				$response['new_class'] = 'text-green';
-				$response['new_status'] = 'deactivated';
-				$response['delete_name'] = WPWHPRO()->helpers->translate( 'Delete', 'wpwhpro-page-extensions' );
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
-				$response['success'] = $this->manage_extensions_install( $extension_slug, $extension_download, $extension_id, $extension_version );
-				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully installed.', 'ajax-settings');
-				break;
-			case 'update_active': //runs when the "Update" button was clicked and the previous status was active
-				$response['new_class'] = 'text-warning';
-				$response['new_status'] = 'activated';
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Deactivate', 'wpwhpro-page-extensions' );
-				$response['success'] = $this->manage_extensions_update( $extension_slug, $extension_download, $extension_id, $extension_version );;
-				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully updated.', 'ajax-settings');
-				break;
-			case 'update_deactive': //runs when the "Update" button was clicked and the previous status was inactive
-				$response['new_class'] = 'text-green';
-				$response['new_status'] = 'deactivated';
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Activate', 'wpwhpro-page-extensions' );
-				$response['success'] = $this->manage_extensions_update( $extension_slug, $extension_download, $extension_id, $extension_version );;
-				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully updated.', 'ajax-settings');
-				break;
-			case 'delete': //runs when the "Delete" link was clicked
-				$response['new_class'] = 'text-secondary';
-				$response['new_status'] = 'uninstalled';
-				$response['new_label'] = WPWHPRO()->helpers->translate( 'Install', 'wpwhpro-page-extensions' );
-				$response['success'] = $this->manage_extension_uninstall( $extension_slug );
-				$response['msg'] = WPWHPRO()->helpers->translate('The plugin was successfully deleted.', 'ajax-settings');
-				break;
-		}
-
-        echo json_encode( $response );
-		die();
-    }
-
-	/**
-	 * ######################
-	 * ###
-	 * #### MANAGE EXTENSIONS
-	 * ###
-	 * ######################
-	 */
-
-	 public function manage_extensions_deactivate( $slug ){
-
-		if( empty( $slug ) ){
-			return false;
-		}
-
-		if ( is_plugin_active( $slug ) ) {
-			deactivate_plugins( $slug );
-		}
-
-		return true;
-	 }
-
-	 public function manage_extensions_activate( $slug ){
-
-		if( empty( $slug ) ){
-			return false;
-		}
-
-		if ( ! WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
-			return false;
-		}
-
-		$activate = activate_plugin( $slug );
-		if (is_null($activate)) {
-			return true;
-		}
-
-		return false;
-	 }
-
-	 public function manage_extensions_install( $slug, $dl, $item_id, $version ){
-
-		if( empty( $slug ) || empty( $dl ) ){
-			return false;
-		}
-
-		if ( WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
-			return false;
-		}
-
-		$check = $this->manage_extension_install( $slug, $dl );
-
-		return $check;
-	 }
-
-	 public function manage_extension_install( $slug, $dl ){
-
-		@include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		@include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-		@include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-		@include_once ABSPATH . 'wp-admin/includes/file.php';
-		@include_once ABSPATH . 'wp-admin/includes/misc.php';
-		@include_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-upgrader-skin.php';
-
-		if( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'WP_Webhooks_Upgrader_Skin' ) ){
-			return false;
-		}
-
-		wp_cache_flush();
-		$skin = new WP_Webhooks_Upgrader_Skin( array( 'plugin' => $slug ) );
-		$upgrader = new Plugin_Upgrader( $skin );
-		$installed = $upgrader->install( $dl );
-		wp_cache_flush();
-
-		if( ! is_wp_error( $installed ) && $installed ) {
-			return true;
-		} else {
-			return false;
-		}
-
-	 }
-
-	 public function manage_extension_uninstall( $slug ){
-
-		if ( ! WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
-			return false;
-		}
-
-		@include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		@include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-		@include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-		@include_once ABSPATH . 'wp-admin/includes/file.php';
-		@include_once ABSPATH . 'wp-admin/includes/misc.php';
-
-		if( ! function_exists( 'delete_plugins' ) ){
-			return false;
-		}
-
-		if ( is_plugin_active( $slug ) ) {
-			deactivate_plugins( $slug );
-		}
-
-		$deleted = delete_plugins( array( $slug ) );
-
-		if( ! is_wp_error( $deleted ) && $deleted ) {
-			return true;
-		} else {
-			return false;
-		}
-
-	 }
-
-	 public function manage_extensions_update( $slug, $dl, $item_id, $version ){
-
-		if( empty( $slug ) || empty( $dl ) ){
-			return false;
-		}
-
-		if ( ! WPWHPRO()->helpers->is_plugin_installed( $slug ) ) {
-			return false;
-		}
-
-		$check = $this->manage_extension_update( $slug, $dl );
-
-		return $check;
-	 }
-
-	 public function manage_extension_update( $slug, $dl ){
-
-		@include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		@include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-		@include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-		@include_once ABSPATH . 'wp-admin/includes/file.php';
-		@include_once ABSPATH . 'wp-admin/includes/misc.php';
-		@include_once WPWH_PLUGIN_DIR . 'core/includes/classes/class-wp-webhooks-pro-upgrader-skin.php';
-
-		if( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'WP_Webhooks_Upgrader_Skin' ) ){
-			return false;
-		}
-
-		wp_cache_flush();
-		$skin = new WP_Webhooks_Upgrader_Skin( array( 'plugin' => $slug ) );
-		$upgrader = new Plugin_Upgrader( $skin );
-		$updated = $upgrader->upgrade( $slug );
-		wp_cache_flush();
-
-		if( ! is_wp_error( $updated ) && $updated ) {
-			return true;
-		} else {
-			return false;
-		}
-
-	 }
-
 	/**
 	 * ######################
 	 * ###
@@ -850,16 +507,16 @@ class WP_Webhooks_Pro_Run{
 				'81.025'
 			);
 		} else {
-			add_submenu_page( 
-				'options-general.php', 
-				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-title' ), 
-				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-site-title' ), 
-				WPWHPRO()->settings->get_admin_cap( 'admin-add-submenu-page-item' ), 
-				$this->page_name, 
-				array( $this, 'render_admin_submenu_page' ) 
+			add_submenu_page(
+				'options-general.php',
+				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-title' ),
+				WPWHPRO()->helpers->translate( $this->page_title, 'admin-add-submenu-page-site-title' ),
+				WPWHPRO()->settings->get_admin_cap( 'admin-add-submenu-page-item' ),
+				$this->page_name,
+				array( $this, 'render_admin_submenu_page' )
 			);
 		}
-		
+
 	}
 
 	/**
@@ -901,16 +558,18 @@ class WP_Webhooks_Pro_Run{
 			),
 		);
 
+		$tabs['receive-data']['items']['whitelist']  = WPWHPRO()->helpers->translate( 'IP Whitelist', 'admin-menu' );
+		$tabs['flows'] = WPWHPRO()->helpers->translate( 'Flows', 'admin-menu' );
 		$tabs['authentication'] = WPWHPRO()->helpers->translate( 'Authentication', 'admin-menu' );
-
+		$tabs['data-mapping'] = WPWHPRO()->helpers->translate( 'Data Mapping', 'admin-menu' );
+		$tabs['logs']  = WPWHPRO()->helpers->translate( 'Logs', 'admin-menu' );
 		$tabs['settings']   = array(
 			'label' => WPWHPRO()->helpers->translate( 'Settings', 'admin-menu' ),
 			'items' => array(
 				'settings'  		=> WPWHPRO()->helpers->translate( 'All Settings', 'admin-menu' ),
+				'extensions'  		=> WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' ),
 			),
 		);
-
-		$tabs['settings']['items']['extensions'] = WPWHPRO()->helpers->translate( 'Extensions', 'admin-menu' );
 
 		$tabs['pro'] = WPWHPRO()->helpers->translate( 'Pro', 'admin-menu' );
 
@@ -926,9 +585,6 @@ class WP_Webhooks_Pro_Run{
 	public function add_main_settings_content( $tab ){
 
 		switch($tab){
-			case 'pro':
-				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
-				break;
 			case 'send-data':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/send-data.php' );
 				break;
@@ -942,71 +598,27 @@ class WP_Webhooks_Pro_Run{
 			case 'authentication':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/authentication.php' );
 				break;
-			case 'data-mapping':
-				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
-				break;
-			case 'logs':
-				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
-				break;
 			case 'extensions':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/extensions.php' );
 				break;
 			case 'home':
 				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/home.php' );
 				break;
+			case 'flows-add-new':
+			case 'flows-add-new-trigger':
+			case 'flows-add-new-trigger':
+			case 'license':
+			case 'logs':
+			case 'whitelist':
+			case 'flows':
+			case 'whitelabel':
+			case 'data-mapping':
+			case 'pro':
+				include( WPWH_PLUGIN_DIR . 'core/includes/partials/tabs/pro.php' );
+				break;
 		}
 
 	}
-
-	/**
-	 * ######################
-	 * ###
-	 * #### TEMPLATE MAPPING
-	 * ###
-	 * ######################
-	 */
-
-	 public function apply_authentication_template_data( $data, $response, $webhook, $args, $authentication_data ){
-
-		if( empty( $authentication_data ) ){
-			return $data;
-		}
-
-		$auth_type = $authentication_data['auth_type'];
-		$auth_data = $authentication_data['data'];
-
-		switch( $auth_type ){
-			case 'api_key':
-				$data = WPWHPRO()->auth->validate_http_api_key_body( $data, $auth_data );
-			break;
-		}
-
-		return $data;
-	 }
-
-	 public function apply_authentication_template_header( $http_args, $args, $url, $webhook, $authentication_data ){
-
-		if( empty( $authentication_data ) ){
-			return $http_args;
-		}
-
-		$auth_type = $authentication_data['auth_type'];
-		$auth_data = $authentication_data['data'];
-
-		switch( $auth_type ){
-			case 'api_key':
-				$http_args = WPWHPRO()->auth->validate_http_api_key_header( $http_args, $auth_data );
-			break;
-			case 'bearer_token':
-				$http_args = WPWHPRO()->auth->validate_http_bearer_token_header( $http_args, $auth_data );
-			break;
-			case 'basic_auth':
-				$http_args = WPWHPRO()->auth->validate_http_basic_auth_header( $http_args, $auth_data );
-			break;
-		}
-
-		return $http_args;
-	 }
 
 	/**
 	 * ######################
