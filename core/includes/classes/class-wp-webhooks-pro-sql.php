@@ -47,7 +47,7 @@ class WP_Webhooks_Pro_SQL{
 	 * @param string $type
 	 * @return void
 	 */
-	public function run($sql, $type = OBJECT){
+	public function run( $sql, $type = OBJECT, $args = array() ){
 		global $wpdb;
 
 		$sql = $this->replace_tags($sql);
@@ -57,7 +57,35 @@ class WP_Webhooks_Pro_SQL{
 
 		$result = $wpdb->get_results($sql, $type);
 
+		if( isset( $args['return_id'] ) && $args['return_id'] ){
+			if( isset( $wpdb->insert_id ) ){
+				$result = $wpdb->insert_id;
+			}
+		}
+
 		return $result;
+	}
+
+	/**
+	 * Prepare certain SQL Queries
+	 *
+	 * @param string $sql
+	 * @param string $type
+	 * @since 4.3.3
+	 * @return void
+	 */
+	public function prepare( $sql, $values = array() ){
+		global $wpdb;
+
+		$sql = $this->replace_tags($sql);
+
+		if( empty( $sql ) ){
+			return false;
+		}
+
+		$sql = $wpdb->query( $wpdb->prepare( $sql, $values ) );
+
+		return $sql;
 	}
 
 	/**
@@ -116,6 +144,34 @@ class WP_Webhooks_Pro_SQL{
 		$query = $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name );
 
 		if( $wpdb->get_var( $query ) == $table_name ){
+			$return = true;
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Checks if one or multiple column exists or not
+	 *
+	 * @param $table_name - the table name
+	 * @param $column_name - the column name
+	 * @return bool - true if the column exists
+	 */
+	public function column_exists( $table_name, $column_name ){
+		global $wpdb;
+
+		$return = false;
+		$prefix = $wpdb->base_prefix;
+		$table_name = esc_sql($table_name);
+		$column_name = esc_sql($column_name);
+
+		if(substr($table_name, 0, strlen($prefix)) != $prefix){
+			$table_name = $prefix . $table_name;
+		}
+
+		$query = $wpdb->prepare( 'SHOW COLUMNS FROM %1$s LIKE \'%2$s\';', $table_name, $column_name );
+
+		if( $wpdb->get_var( $query ) == $column_name ){
 			$return = true;
 		}
 

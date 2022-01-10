@@ -219,6 +219,9 @@ We offer you a very awesome hook system to customize everything based on your ne
 * Added new function WPWHPRO()->auth->execute(); to execute the authentication hooks
 * Added new function WPWHPRO()->extensions->execute(); to execute the extension hooks
 * Added new function WPWHPRO()->integrations->get_integrations(); to to get a list of all available integrations
+* Added new function WPWHPRO()->sql->column_exists(); to check if a table column exists
+* Added new function WPWHPRO()->sql->prepare(); as an equivalent to WPDB's prepare
+* The function WPWHPRO()->sql->run( $sql, $type = OBJECT, $args = array()  ); accepts the $args for extra values (e.g. return_id) 
 * Return single triggers using the WPWHPRO()->integrations->get_triggers( $slug ); function
 * New scheduled event "wpwh_maintenance" that runs once daily for various checks
 * Introduce new filter wpwhpro/integrations/integration/is_active
