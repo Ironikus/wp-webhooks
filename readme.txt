@@ -197,6 +197,18 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 == Changelog ==
 
+= 3.3.0: January 08, 2022 =
+
+**New Features:**
+
+**Little tweaks:**
+
+**Fixed issues:**
+
+**For developers:**
+
+* New scheduled event "wpwh_maintenance" that runs once daily for various checks
+
 = 3.2.1: July 30, 2021 =
 * Feature: Add "Advanced Custom Fields" integration (https://wp-webhooks.com/integrations/advanced-custom-fields/)
 * Feature: Add "Paid Memberships Pro" integration (https://wp-webhooks.com/integrations/paid-memberships-pro/)
