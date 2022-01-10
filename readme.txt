@@ -201,6 +201,8 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 **New Features:**
 
+* New trigger setting to prevent a trigger firing multiple times within the same WordPress instance
+
 **Little tweaks:**
 * Optimized feature awareness
 
