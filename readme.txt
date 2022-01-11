@@ -72,6 +72,19 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 * **Trigger**: Send data once an email was sent from your WordPress system
 * **Trigger**: Send data on custom WordPress hook calls
 
+**[Amelia](https://wp-webhooks.com/integrations/amelia/) related integrations**
+
+* **Trigger**: Send data once a booking was added
+
+**[AffiliateWP](https://wp-webhooks.com/integrations/affiliatewp/) related integrations**
+
+* **Trigger**: Send data once an affiliates status changed
+* **Trigger**: Send data once an new affiliate was added
+
+**[Broken Link Checker](https://wp-webhooks.com/integrations/broken-link-checker/) related integrations**
+
+* **Trigger**: Send data once broken links have been detected
+
 **[Contact Form 7](https://wp-webhooks.com/integrations/contact-form-7/) related integrations**
 
 * **Trigger**: Send data once a **Contact Form 7** form was submitted
@@ -92,6 +105,13 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 * **Trigger**: Send data once an "EDD Software licensing" license was created, activated, deactivated, or the status changed
 * **Trigger**: Send data once an "EDD Recurring" subscription was created or a specific status changed
 
+**[FluentCRM](https://wp-webhooks.com/integrations/fluentcrm/) related integrations**
+
+* **Trigger**: Send data once a contact was added to a list
+* **Trigger**: Send data once a contact was added to a tag
+* **Action**: Add a contact to a list
+* **Action**: Add a contact to a tag
+
 **[Fluent Forms](https://wp-webhooks.com/integrations/fluent-forms/) related integrations**
 
 * **Trigger**: Send data once a "Fluent Forms" form was submitted
@@ -111,6 +131,14 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 **[HappyForms](https://wp-webhooks.com/integrations/happyforms/) related integrations**
 
 * **Trigger**: Send data once a "HappyForms" form was submitted
+
+**[LearnDash](https://wp-webhooks.com/integrations/learndash/) related integrations**
+
+* **Trigger**: Send data once a course was completed
+* **Trigger**: Send data once a lesson was completed
+* **Trigger**: Send data once a quiz was completed
+* **Trigger**: Send data once a topic was completed
+* **Action**: Complete a course within LearnDash
 
 **[Newsletter](https://wp-webhooks.com/integrations/newsletter/) related integrations**
 
@@ -143,6 +171,12 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 **[WP Simple Pay](https://wp-webhooks.com/integrations/wp-simple-pay/) related integrations**
 
 * **Trigger**: Send data once a "WP Simple Pay" purchase was completed
+* **Action**: Truncate Custom Tables
+
+**[WP Webhooks](https://wp-webhooks.com/integrations/wp-webhooks/) related integrations**
+
+* **Trigger**: Send data once an action of "WP Webhooks" was fired
+* **Action**: Fire an existing trigger within "WP Webhooks"
 
 = The best Pro version you have ever seen! =
 
