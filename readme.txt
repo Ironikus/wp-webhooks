@@ -204,6 +204,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * New integration "WP Webhooks"
 * New integration "LearnDash"
 * New integration "FluentCRM"
+* New integration "Broken Link Checker"
 * New webhook action "Fire trigger" for the "WP Webhooks" integration
 * New webhook action "Complete courses" for the "LearnDash" integration
 * New webhook action "Add contact to list" for the "FluentCRM" integration
@@ -215,6 +216,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 * New webhook trigger "Topic completed" for the "LearnDash" integration
 * New webhook trigger "Contact added to list" for the "FluentCRM" integration
 * New webhook trigger "Contact added to tag" for the "FluentCRM" integration
+* New webhook trigger "Broken links detected" for the "Broken Link Checker" integration
 * New trigger setting to prevent a trigger firing multiple times within the same WordPress instance
 
 **Little tweaks:**
