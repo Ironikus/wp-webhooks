@@ -202,8 +202,14 @@ We offer you a very awesome hook system to customize everything based on your ne
 **New Features:**
 
 * New integration "WP Webhooks"
+* New integration "LearnDash"
 * New webhook action "Fire trigger" for the "WP Webhooks" integration
+* New webhook action "Complete courses" for the "LearnDash" integration
 * New webhook trigger "Action fired" for the "WP Webhooks" integration
+* New webhook trigger "Course completed" for the "LearnDash" integration
+* New webhook trigger "Lesson completed" for the "LearnDash" integration
+* New webhook trigger "Quiz completed" for the "LearnDash" integration
+* New webhook trigger "Topic completed" for the "LearnDash" integration
 * New trigger setting to prevent a trigger firing multiple times within the same WordPress instance
 
 **Little tweaks:**
