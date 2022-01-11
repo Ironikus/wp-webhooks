@@ -201,6 +201,9 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 **New Features:**
 
+* New integration "WP Webhooks"
+* New webhook action "Fire trigger" for the "WP Webhooks" integration
+* New webhook trigger "Action fired" for the "WP Webhooks" integration
 * New trigger setting to prevent a trigger firing multiple times within the same WordPress instance
 
 **Little tweaks:**
