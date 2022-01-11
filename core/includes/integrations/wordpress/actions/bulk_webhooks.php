@@ -56,29 +56,24 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_bulk_webhooks' 
 <?php echo WPWHPRO()->helpers->translate( "The JSON can contain multiple webhook calls that are marked via the top level key within the JSON (first_webhook_call, second_webhook_call, ...). This top-level-key indicates the webhook you want to fire and is later used within the response to add the response for that call. Down below you will find an explanation on each of the available settings.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>http_arguments</strong> (array)
-		<br>
+		<strong>http_arguments</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This key accepts an array containing multiple arguments from the WP_Http object within WordPress. You can take a look at the argumet list by visiting on the following link:", $translation_ident ); ?> <a title="wordpress.org" target="_blank" href="https://developer.wordpress.org/reference/classes/WP_Http/request/">https://developer.wordpress.org/reference/classes/WP_Http/request/</a>
 	</li>
 	<li>
-		<strong>webhook_url</strong> (string)
-		<br>
+		<strong>webhook_url</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This contains the webhook URL you want to send the request to. By default, it is set to the same webhook URL you are sending this webhook action call to. You can also define external URL's here and send data out of WordPress.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>webhook_name</strong> (string)
-		<br>
+		<strong>webhook_name</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The name as an identicator when you sent the webhook. By default, it is set to <strong>bulk_actions</strong>. This value will be sent over to the webhook call within the header as well.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>webhook_status</strong> (string)
-		<br>
+		<strong>webhook_status</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Use this argumet to prevent the webhook from being sent in the first place. This allows you to temporarily deactivate the call instead of removing it completely fromthe JSON. To deactivate it, please set it to <strong>inactive</strong>. Default: <strong>active</strong>", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>webhook_settings</strong> (array)
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "This powerful argument allows you to assign All the settings features, that are available for triggers, for ANY webhook call. That means you can even assign authentication templates to triggers just for reformatting the data. Down below, you will find a list with all default trigger settings and its possible values:", $translation_ident ); ?>
+		<strong>webhook_settings</strong> (array)<br>
+		<?php echo WPWHPRO()->helpers->translate( "This powerful argument allows you to assign All the settings features, that are available for triggers, for ANY webhook call. That means you can even assign authentication and data mapping templates to triggers just for reformatting the data. Down below, you will find a list with all default trigger settings and its possible values:", $translation_ident ); ?>
 		<ol>
 			<?php
 				foreach( $trigger_settings as $setting => $setting_data ){
@@ -120,8 +115,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_bulk_webhooks' 
 		</ol>
 	</li>
 	<li>
-		<strong>payload_data</strong> (mixed)
-		<br>
+		<strong>payload_data</strong> (mixed)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This key contains all of the actual data you would like to send to this specific webhook call.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -140,13 +134,11 @@ function my_custom_callback_function( $actions, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$actions</strong> (array)
-		<br>
+		<strong>$actions</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the validated data from the <code>actions</code> argument.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the full response that is sent back to the webhook caller.s", $translation_ident ); ?>
 	</li>
 </ol>
@@ -157,18 +149,11 @@ function my_custom_callback_function( $actions, $return_args ){
 			'actions'		=> array( 'short_description' => WPWHPRO()->helpers->translate( 'A list of all executed actions and their responses.', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-//This is how the default response looks like
-$return_args = array(
-	'success' => false,
-	'msg' => '',
-	'actions' => ''
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array(
+				'success' => false,
+				'msg' => '',
+				'actions' => ''
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Fire multiple webhooks',
@@ -177,13 +162,14 @@ $return_args = array(
 				'tipps' => array(
 					WPWHPRO()->helpers->translate( "To make the most out of this webhook endpoint, please take a look at the <strong>Arguments</strong> list.", $translation_ident ),
 					WPWHPRO()->helpers->translate( "You can send data to internal and external URL's. There is no limitation to the system.", $translation_ident ),
-					WPWHPRO()->helpers->translate( "This action integrates all available feature of this plugin. You can also connect authentication templates and much more.", $translation_ident ),
+					WPWHPRO()->helpers->translate( "This action integrates all available feature of this plugin. You can also connect data mapping templates, as well as authentication templates and much more.", $translation_ident ),
 				)
 			) );
 
 			return array(
 				'action'			=> 'bulk_webhooks',
 				'name'			  => WPWHPRO()->helpers->translate( 'Fire multiple webhooks', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'fire multiple webhooks within one request', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

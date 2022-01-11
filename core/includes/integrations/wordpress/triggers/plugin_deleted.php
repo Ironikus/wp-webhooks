@@ -45,6 +45,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_plugin_deleted
             return array(
                 'trigger'           => 'plugin_deleted',
                 'name'              => WPWHPRO()->helpers->translate( 'Plugin deleted', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a plugin was deleted', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

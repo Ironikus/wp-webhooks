@@ -31,11 +31,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_ninjaforms_Triggers_ninjaforms_su
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-ninjaforms_submit-description";
@@ -88,6 +83,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_ninjaforms_Triggers_ninjaforms_su
 		return array(
 			'trigger'		   => 'ninjaforms_submit',
 			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),
@@ -182,7 +178,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_ninjaforms_Triggers_ninjaforms_su
 				  0 => 'Content-Type: text/html',
 				  1 => 'charset=UTF-8',
 				  2 => 'X-Ninja-Forms:ninja-forms',
-				  3 => 'From: zipfme <admin@domain.test>',
+				  3 => 'From: Admin <admin@domain.test>',
 				  4 => 'Reply-to: jondoe@domain.test <jondoe@domain.test>',
 				),
 				'attachments' => 

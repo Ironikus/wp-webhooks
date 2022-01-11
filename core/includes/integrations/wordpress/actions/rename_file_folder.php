@@ -94,6 +94,7 @@ function my_custom_callback_function( $return_args, $source_path, $destination_p
 			return array(
 				'action'			=> 'rename_file_folder',
 				'name'			  => WPWHPRO()->helpers->translate( 'Rename file or folder', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'rename a file or a folder', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

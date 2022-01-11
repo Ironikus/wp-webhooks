@@ -38,19 +38,15 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_renew_license' ) 
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the license id, as well as the associated payment id of the license.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The license was successfully renewed.",
-    "data": {
-        "license_id": 17,
-        "payment_id": 843
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The license was successfully renewed.',
+				'data' => 
+				array (
+				  'license_id' => 17,
+				  'payment_id' => 843,
+				),
+			);
 
 			ob_start();
 ?>
@@ -123,7 +119,8 @@ function my_custom_callback_function( $license_id, $license, $return_args ){
 
             return array(
                 'action'            => 'edd_renew_license',
-                'name'              => WPWHPRO()->helpers->translate( 'Renew a license', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Renew license', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'renew a license', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

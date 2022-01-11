@@ -41,49 +41,41 @@ function my_custom_callback_function( $post, $post_id, $check, $force_delete ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$post</strong> (object)
-		<br>
+		<strong>$post</strong> (object)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the WordPress post object of the already deleted post.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$post_id</strong> (integer)
-		<br>
+		<strong>$post_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the post id of the deleted post.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$check</strong> (mixed)
-		<br>
+		<strong>$check</strong> (mixed)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the response of the wp_delete_post() function.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$force_delete</strong> (string)
-		<br>
+		<strong>$force_delete</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Returns either yes or no, depending on your settings for the force_delete argument.", $translation_ident ); ?>
 	</li>
 </ol>
 		<?php
 		$parameter['do_action']['description'] = ob_get_clean();
 
-		$returns = array(
-			'success'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
-			'data'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Post related data as an array. We return the post id with the key "post_id" and the force delete boolean with the key "force_delete". E.g. array( \'data\' => array(...) )', $translation_ident ) ),
-			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
-		);
-
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg' => '',
-	'data' => array(
-		'post_id' => 0,
-		'force_delete' => false
-	)
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns = array(
+				'success'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', $translation_ident ) ),
+				'data'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Post related data as an array. We return the post id with the key "post_id" and the force delete boolean with the key "force_delete". E.g. array( \'data\' => array(...) )', $translation_ident ) ),
+				'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
+			);
+		
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Post successfully deleted.',
+				'data' => 
+				array (
+				  'post_id' => 1337,
+				  'force_delete' => false,
+				  'permalink' => 'https://yourdomain.test/?p=1337',
+				),
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Delete a post',
@@ -98,11 +90,12 @@ $return_args = array(
 
 			return array(
 				'action'			=> 'delete_post',
-				'name'			  => WPWHPRO()->helpers->translate( 'Delete a post', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Delete post', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'delete a post', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,
-				'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s.', $translation_ident ), WPWH_NAME ),
+				'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s.', $translation_ident ), WPWHPRO_NAME ),
 				'description'	   => $description,
 				'integration'	   => 'wordpress',
 				'premium' 			=> false,
@@ -120,7 +113,8 @@ $return_args = array(
 				'msg' => '',
 				'data' => array(
 					'post_id' => 0,
-					'force_delete' => false
+					'force_delete' => false,
+					'permalink' => ''
 				)
 			);
 
@@ -137,6 +131,7 @@ $return_args = array(
 			if( ! empty( $post ) ){
 				if( ! empty( $post->ID ) ){
 
+					$permalink = get_permalink( $post_id );
 					$check = wp_delete_post( $post->ID, $force_delete );
 
 					if ( $check ) {
@@ -147,6 +142,7 @@ $return_args = array(
 						$return_args['success'] = true;
 						$return_args['data']['post_id'] = $post->ID;
 						$return_args['data']['force_delete'] = $force_delete;
+						$return_args['data']['permalink'] = $permalink;
 					} else {
 						$return_args['msg']  = WPWHPRO()->helpers->translate("Error deleting post. Please check wp_delete_post( " . $post->ID . ", " . $force_delete . " ) for more information.", 'action-delete-post-success' );
 						$return_args['data']['post_id'] = $post->ID;

@@ -58,20 +58,16 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_create_subscripti
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the new susbcription id, the payment id, customer id, as well as further details about the subscription.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The subscription was successfully created.",
-    "data": {
-        "subscription_id": "23",
-        "payment_id": 843,
-        "customer_id": 8
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The subscription was successfully created.',
+				'data' => 
+				array (
+				  'subscription_id' => '23',
+				  'payment_id' => 843,
+				  'customer_id' => 8,
+				),
+			);
 
 			ob_start();
 $default_subscription_statuses = array (
@@ -98,8 +94,10 @@ $default_subscription_periods = apply_filters( 'wpwh/descriptions/actions/edd_cr
 $beautified_subscription_periods = json_encode( $default_subscription_periods, JSON_PRETTY_PRINT );
 
 $default_subscription_gateways = array ();
-foreach( edd_get_payment_gateways() as $gwslug => $gwdata ){
-    $default_subscription_gateways[ $gwslug ] = ( isset( $gwdata['admin_label'] ) ) ? $gwdata['admin_label'] : $gwdata['checkout_label'];
+if( function_exists( 'edd_get_payment_gateways' ) ){
+	foreach( edd_get_payment_gateways() as $gwslug => $gwdata ){
+		$default_subscription_gateways[ $gwslug ] = ( isset( $gwdata['admin_label'] ) ) ? $gwdata['admin_label'] : $gwdata['checkout_label'];
+	}
 }
 $default_subscription_gateways = apply_filters( 'wpwh/descriptions/actions/edd_create_subscription/default_subscription_gateways', $default_subscription_gateways );
 $beautified_subscription_gateways = json_encode( $default_subscription_gateways, JSON_PRETTY_PRINT );
@@ -276,7 +274,8 @@ function my_custom_callback_function( $subscription_id, $subscription, $payment,
 
             return array(
                 'action'            => 'edd_create_subscription',
-                'name'              => WPWHPRO()->helpers->translate( 'Create a subscription', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Create subscription', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'create a subscription', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

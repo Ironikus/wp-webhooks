@@ -12,11 +12,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_gravityforms_Triggers_gf_payment_
 	 */
 	class WP_Webhooks_Integrations_gravityforms_Triggers_gf_payment_complete {
 
-		/*
-		* Register the post delete trigger as an element
-		*
-		* @since 1.2
-		*/
 		public function get_details(){
 
 			$translation_ident = "trigger-gf_payment_complete-description";
@@ -44,6 +39,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_gravityforms_Triggers_gf_payment_
 			return array(
 				'trigger'		   => 'gf_payment_complete',
 				'name'			  => WPWHPRO()->helpers->translate( 'Payment completed', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'a payment was completed', $translation_ident ),
 				'parameter'		 => $parameter,
 				'settings'		  => $settings,
 				'returns_code'	  => $this->get_demo( array() ),

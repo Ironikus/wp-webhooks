@@ -67,6 +67,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_update_user' )
             return array(
                 'trigger'           => 'update_user',
                 'name'              => WPWHPRO()->helpers->translate( 'User updated', 'trigger-update-user-content' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a user was updated', 'trigger-update-user-content' ),
                 'parameter'         => $parameter,
                 'returns_code'      => $this->get_demo( array() ),
                 'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user updates his profile.', 'trigger-update-user-content' ),
@@ -83,6 +84,17 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_update_user' )
         public function ironikus_trigger_user_update( $user_id, $old_data ){
             $webhooks                   = WPWHPRO()->webhook->get_hooks( 'trigger', 'update_user' );
             $user_data                  = (array) get_user_by( 'id', $user_id );
+
+            //Make sure we only return the clean, private site variable
+            if( ! empty( $user_data ) ){
+                foreach( $user_data as $udk => $udv ){
+                    if( strpos( $udk, 'site_id' ) !== FALSE ){
+                        $user_data['site_id'] = $udv;
+                        unset( $user_data[ $udk ] );
+                    }
+                }
+            }
+
             $user_data['user_meta']     = get_user_meta( $user_id );
             $user_data['user_old_data'] = $old_data;
             $response_data = array();

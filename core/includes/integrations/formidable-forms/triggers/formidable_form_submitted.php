@@ -97,6 +97,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_formidable_forms_Triggers_formida
 		return array(
 			'trigger'		   => 'formidable_form_submitted',
 			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

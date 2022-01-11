@@ -43,11 +43,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_contactform7_Triggers_cf7_forms' 
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$validated_forms = array();
@@ -154,7 +149,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_contactform7_Triggers_cf7_forms' 
 
 		return array(
 			'trigger'		   => 'cf7_forms',
-			'name'			  => WPWHPRO()->helpers->translate( 'Contact Form 7 submit', $translation_ident ),
+			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

@@ -39,18 +39,14 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_delete_payment' )
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Within the data array, you will find further details about the response, as well as the payment id and further information.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The payment was successfully created.",
-    "data": {
-        "payment_id": 747,
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The payment was successfully deleted.',
+				'data' => 
+				array (
+				  'payment_id' => 747,
+				),
+			);
 
 			ob_start();
 ?>
@@ -118,7 +114,8 @@ function my_custom_callback_function( $payment_id, $return_args ){
 
             return array(
                 'action'            => 'edd_delete_payment',
-                'name'              => WPWHPRO()->helpers->translate( 'Delete a payment', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Delete payment', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'delete a payment', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

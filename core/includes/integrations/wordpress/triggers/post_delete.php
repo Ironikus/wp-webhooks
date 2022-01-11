@@ -9,6 +9,14 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_delete' )
 	 */
 	class WP_Webhooks_Integrations_wordpress_Triggers_post_delete {
 
+        /**
+         * Preserver certain values
+         *
+         * @var array
+         * @since 2.0.5
+         */
+        private $pre_action_values = array();
+
 		/**
 		 * Register the actual functionality of the webhook
 		 *
@@ -49,11 +57,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_delete' )
 
 		}
 
-        /*
-        * Register the post delete trigger as an element
-        *
-        * @since 1.2
-        */
         public function get_details(){
 
             $translation_ident = "trigger-delete-post-description";
@@ -116,6 +119,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_delete' )
             return array(
                 'trigger'           => 'post_delete',
                 'name'              => WPWHPRO()->helpers->translate( 'Post deleted', 'trigger-post-delete' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a post was deleted', 'trigger-post-delete' ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

@@ -52,13 +52,11 @@ function my_custom_callback_function(  $return_args, $file ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response to the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$file</strong> (string)
-		<br>
+		<strong>$file</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The relative path of the file you deleted.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -88,7 +86,8 @@ function my_custom_callback_function(  $return_args, $file ){
 
 			return array(
 				'action'			=> 'delete_file',
-				'name'			  => WPWHPRO()->helpers->translate( 'Delete a file', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Delete file', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'delete a file', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

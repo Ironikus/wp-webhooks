@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wpreset_Actions_reset_wp' ) ) :
 	 */
 	class WP_Webhooks_Integrations_wpreset_Actions_reset_wp {
 
-		/*
-	 * The core logic to test a webhook
-	 */
 	public function get_details(){
 
 		$translation_ident = "action-reset_wp-content";
@@ -46,18 +43,15 @@ function my_custom_callback_function( $reactivate_theme, $reactivate_plugins, $r
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$reactivate_theme</strong> (bool)
-		<br>
+		<strong>$reactivate_theme</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "True if you chose to reactivate installed themes.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$reactivate_plugins</strong> (bool)
-		<br>
+		<strong>$reactivate_plugins</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "True if you chose to reactivate installed plugins.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$reactivate_wpreset</strong> (bool)
-		<br>
+		<strong>$reactivate_wpreset</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "True if you chose to reactivate WP Reset.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -80,6 +74,7 @@ function my_custom_callback_function( $reactivate_theme, $reactivate_plugins, $r
 			return array(
 				'action'			=> 'reset_wp', //required
 				'name'			   => WPWHPRO()->helpers->translate( 'Reset WordPress', $translation_ident ),
+				'sentence'			   => WPWHPRO()->helpers->translate( 'reset WordPress', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

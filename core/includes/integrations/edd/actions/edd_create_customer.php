@@ -57,26 +57,21 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_create_customer' 
 				'user_id'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(String) The user id you set within the user_id argument.', 'action-create-customer-content' ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The user was successfully created.",
-    "customer_id": "5",
-    "customer_email": "test@domain.com",
-    "additional_emails": "second@domain.com,thir@domain.com",
-    "customer_first_name": "John",
-    "customer_last_name": "Doe",
-    "attach_payments": "747",
-    "increase_purchase_count": 2,
-    "increase_lifetime_value": "55.46",
-    "customer_notes": "[\"First Note 1\",\"First Note 2\"]",
-    "customer_meta": "{\"meta_1\": \"test1\",\"meta_2\": \"test2\"}"
-    "user_id": 23
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The customer was successfully created.',
+				'customer_id' => '5',
+				'customer_email' => 'test@domain.com',
+				'additional_emails' => 'second@domain.com,thir@domain.com',
+				'customer_first_name' => 'John',
+				'customer_last_name' => 'Doe',
+				'attach_payments' => '747',
+				'increase_purchase_count' => 2,
+				'increase_lifetime_value' => '55.46',
+				'customer_notes' => '["First Note 1","First Note 2"]',
+				'customer_meta' => '{"meta_1": "test1","meta_2": "test2"}',
+				'user_id' => 23,
+			);
 
 			ob_start();
 ?>
@@ -215,7 +210,8 @@ function my_custom_callback_function( $customer_id, $return_args ){
 
             return array(
                 'action'            => 'edd_create_customer',
-                'name'              => WPWHPRO()->helpers->translate( 'Create a customer', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Create customer', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'create a customer', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,
@@ -385,7 +381,7 @@ function my_custom_callback_function( $customer_id, $return_args ){
 					$return_args['customer_notes'] = $customer_notes;
 					$return_args['customer_meta'] = $customer_meta;
 					$return_args['user_id'] = $user_id;
-					$return_args['msg'] = WPWHPRO()->helpers->translate( "The user was successfully created.", 'action-edd_create_customer-success' );
+					$return_args['msg'] = WPWHPRO()->helpers->translate( "The customer was successfully created.", 'action-edd_create_customer-success' );
 					$return_args['success'] = true;
 				} else {
 					$return_args['customer_id'] = $customer_id;

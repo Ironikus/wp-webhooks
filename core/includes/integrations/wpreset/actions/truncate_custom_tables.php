@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wpreset_Actions_truncate_custom_t
 	 */
 	class WP_Webhooks_Integrations_wpreset_Actions_truncate_custom_tables {
 
-		/*
-		* The core logic to test a webhook
-		*/
 		public function get_details(){
 
 			$translation_ident = "action-truncate_custom_tables-content";
@@ -81,6 +78,7 @@ function my_custom_callback_function( $return_args, $confirm, $count ){
 			return array(
 				'action'			=> 'truncate_custom_tables', //required
 				'name'			   => WPWHPRO()->helpers->translate( 'Truncate custom tables', $translation_ident ),
+				'sentence'			   => WPWHPRO()->helpers->translate( 'truncate custom tables', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

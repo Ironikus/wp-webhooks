@@ -77,18 +77,15 @@ function my_custom_callback_function( $comment_id, $commentdata, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$comment_id</strong> (integer)
-		<br>
+		<strong>$comment_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The ID of the newly created comment.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$commentdata</strong> (array)
-		<br>
+		<strong>$commentdata</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Further daa about the created comment.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -155,7 +152,8 @@ function my_custom_callback_function( $comment_id, $commentdata, $return_args ){
 
 			return array(
 				'action'			=> 'create_comment',
-				'name'			  => WPWHPRO()->helpers->translate( 'Create a comment', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Create comment', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'create a comment', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

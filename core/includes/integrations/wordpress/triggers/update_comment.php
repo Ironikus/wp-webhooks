@@ -95,6 +95,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_update_comment
             return array(
                 'trigger'           => 'update_comment',
                 'name'              => WPWHPRO()->helpers->translate( 'Comment updated', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a comment was updated', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

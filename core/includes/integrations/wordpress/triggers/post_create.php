@@ -122,6 +122,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_create' )
             return array(
                 'trigger'           => 'post_create',
                 'name'              => WPWHPRO()->helpers->translate( 'Post created', 'trigger-post-create' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a post was created', 'trigger-post-create' ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

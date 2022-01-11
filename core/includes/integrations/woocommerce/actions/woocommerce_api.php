@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_woocommerce_Actions_woocommerce_a
 	 */
 	class WP_Webhooks_Integrations_woocommerce_Actions_woocommerce_api {
 
-		/*
-		* The core logic to test a webhook
-		*/
 		public function get_details(){
 
 			$translation_ident = "action-woocommerce_api-content";
@@ -32,17 +29,11 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_woocommerce_Actions_woocommerce_a
 				'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 			);
 
-			ob_start();
-			?>
-			<pre>
-$return_args = array(
-	'success' => false,
-	'msg' => '',
-	'data' => array()
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array(
+				'success' => false,
+				'msg' => '',
+				'data' => array()
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Woocommerce API call',
@@ -56,6 +47,7 @@ $return_args = array(
 			return array(
 				'action'			=> 'woocommerce_api', //required
 				'name'			   => WPWHPRO()->helpers->translate( 'Woocommerce API call', $translation_ident ),
+				'sentence'			   => WPWHPRO()->helpers->translate( 'perform a Woocommerce API call', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

@@ -95,6 +95,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_trash_comment'
             return array(
                 'trigger'           => 'trash_comment',
                 'name'              => WPWHPRO()->helpers->translate( 'Comment trashed', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a comment was trashed', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

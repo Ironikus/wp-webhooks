@@ -80,23 +80,19 @@ function my_custom_callback_function( $return_args, $post_id, $thumbnail_size, $
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$post_id</strong> (integer)
-		<br>
+		<strong>$post_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The id of the currently fetched post.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$thumbnail_size</strong> (string)
-		<br>
+		<strong>$thumbnail_size</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The string formatted thumbnail sizes sent by the caller within the thumbnail_size argument.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$post_taxonomies</strong> (string)
-		<br>
+		<strong>$post_taxonomies</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The string formatted taxonomy slugs sent by the caller within the post_taxonomies argument.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -109,17 +105,61 @@ function my_custom_callback_function( $return_args, $post_id, $thumbnail_size, $
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg'	 => '',
-	'data' => array()
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Post was successfully returned.',
+				'data' => 
+				array (
+				  'post' => 
+				  array (
+					'ID' => 7920,
+					'post_author' => '1',
+					'post_date' => '2021-12-31 11:11:11',
+					'post_date_gmt' => '2021-12-31 11:11:11',
+					'post_content' => 'The content of the post, including all HTML',
+					'post_title' => 'A demo title',
+					'post_excerpt' => 'The short description of the post',
+					'post_status' => 'future',
+					'comment_status' => 'open',
+					'ping_status' => 'open',
+					'post_password' => '',
+					'post_name' => 'somedemoname',
+					'to_ping' => '',
+					'pinged' => '',
+					'post_modified' => '2021-12-31 11:11:11',
+					'post_modified_gmt' => '2021-12-31 11:11:11',
+					'post_content_filtered' => '',
+					'post_parent' => 0,
+					'guid' => 'https://yourdomain.test/?p=7920',
+					'menu_order' => 0,
+					'post_type' => 'post',
+					'post_mime_type' => '',
+					'comment_count' => '0',
+					'filter' => 'raw',
+				  ),
+				  'post_thumbnail' => false,
+				  'post_terms' => 
+				  array (
+				  ),
+				  'post_meta' => 
+				  array (
+					'first_custom_key' => 
+					array (
+					  0 => 'Some custom value',
+					),
+					'second_custom_key' => 
+					array (
+					  0 => 'The new value',
+					),
+					'wpwhpro_create_post_temp_status_jobs' => 
+					array (
+					  0 => 'future',
+					),
+				  ),
+				  'post_permalink' => 'https://yourdomain.test/?p=7920',
+				  'acf_data' => false,
+				),
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Get a post',
@@ -134,7 +174,8 @@ $return_args = array(
 
 			return array(
 				'action'			=> 'get_post',
-				'name'			  => WPWHPRO()->helpers->translate( 'Get a post', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Get post', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'get a post', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

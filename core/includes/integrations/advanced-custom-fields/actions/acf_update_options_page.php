@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_advanced_custom_fields_Actions_ac
 	 */
 	class WP_Webhooks_Integrations_advanced_custom_fields_Actions_acf_update_options_page {
 
-		/*
-	 * The core logic to test a webhook
-	 */
 	public function get_details(){
 
 		$translation_ident = "action-acf_update_options_page-description";
@@ -64,13 +61,11 @@ function my_custom_callback_function( $manage_acf_data, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$manage_acf_data</strong> (String)
-		<br>
+		<strong>$manage_acf_data</strong> (String)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The ACF data that was sent by the webhook caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -88,6 +83,7 @@ function my_custom_callback_function( $manage_acf_data, $return_args ){
 			return array(
 				'action'			=> 'acf_update_options_page',
 				'name'			  => WPWHPRO()->helpers->translate( 'Update options page', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'update an options page', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

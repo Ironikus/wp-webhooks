@@ -51,18 +51,15 @@ function my_custom_callback_function( $comment_id, $deleted, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$comment_id</strong> (integer)
-		<br>
+		<strong>$comment_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The id of the comment you deleted.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$deleted</strong> (bool)
-		<br>
+		<strong>$deleted</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "True if the comment was deleted, false if not.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response to the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -95,7 +92,8 @@ function my_custom_callback_function( $comment_id, $deleted, $return_args ){
 
 			return array(
 				'action'			=> 'delete_comment',
-				'name'			  => WPWHPRO()->helpers->translate( 'Delete a comment', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Delete comment', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'delete a comment', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

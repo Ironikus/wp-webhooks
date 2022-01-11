@@ -90,18 +90,15 @@ function my_custom_callback_function( $url, $parent_post_id, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$url</strong> (string)
-		<br>
+		<strong>$url</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The original URL of the provided file.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$parent_post_id</strong> (integer)
-		<br>
+		<strong>$parent_post_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The parent post id. In case it wasn't given, we return 0.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response to the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -139,6 +136,7 @@ function my_custom_callback_function( $url, $parent_post_id, $return_args ){
 			return array(
 				'action'			=> 'create_url_attachment',
 				'name'			  => WPWHPRO()->helpers->translate( 'Create URL attachment', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'create an attachment from a URL', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

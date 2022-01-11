@@ -105,6 +105,7 @@ function my_custom_callback_function( $return_args, $source_path, $destination_p
 			return array(
 				'action'			=> 'move_file',
 				'name'			  => WPWHPRO()->helpers->translate( 'Move file', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'move a file', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

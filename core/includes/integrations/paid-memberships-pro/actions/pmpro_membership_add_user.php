@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_paid_memberships_pro_Actions_pmpr
 	 */
 	class WP_Webhooks_Integrations_paid_memberships_pro_Actions_pmpro_membership_add_user {
 
-		/*
-	 * The core logic to test a webhook
-	 */
 	public function get_details(){
 
 		$translation_ident = "action-pmpro_membership_add_user-description";
@@ -48,18 +45,15 @@ function my_custom_callback_function( $user_id, $level_id, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$user_id</strong> (integer)
-		<br>
+		<strong>$user_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The ID of the user you assigned the membership to.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$level_id</strong> (integer)
-		<br>
+		<strong>$level_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The ID of the membership level you assigned to the user.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -78,6 +72,7 @@ function my_custom_callback_function( $user_id, $level_id, $return_args ){
 			return array(
 				'action'			=> 'pmpro_membership_add_user',
 				'name'			  => WPWHPRO()->helpers->translate( 'Add user to membership', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'add a user to a membership', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

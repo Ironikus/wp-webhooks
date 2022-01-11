@@ -37,21 +37,18 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_delete_license' )
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the license id, as well as the license object.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The license was successfully deleted.",
-    "data": {
-        "license_id": "4fc336680bf576cc0298777278ceb15a",
-        "license": {
-            "ID": 16
-        }
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+                'success' => true,
+                'msg' => 'The license was successfully deleted.',
+                'data' => 
+                array (
+                  'license_id' => '4fc336680bf576cc0298777278ceb15a',
+                  'license' => 
+                  array (
+                    'ID' => 16,
+                  ),
+                ),
+            );
 
 			ob_start();
 ?>
@@ -118,7 +115,8 @@ function my_custom_callback_function( $license_id, $license, $return_args ){
 
             return array(
                 'action'            => 'edd_delete_license',
-                'name'              => WPWHPRO()->helpers->translate( 'Delete a license', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Delete license', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'delete a license', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

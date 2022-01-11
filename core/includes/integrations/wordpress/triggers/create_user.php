@@ -52,7 +52,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_create_user' )
 
             return array(
                 'trigger'           => 'create_user',
-                'name'              => WPWHPRO()->helpers->translate( 'New user', 'trigger-create-user-content' ),
+                'name'              => WPWHPRO()->helpers->translate( 'User created', 'trigger-create-user-content' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a user was created', 'trigger-create-user-content' ),
                 'parameter'         => $parameter,
                 'returns_code'      => $this->get_demo( array() ),
                 'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registers.', 'trigger-create-user-content' ),
@@ -66,6 +67,17 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_create_user' )
         public function ironikus_trigger_user_register( $user_id ){
             $webhooks               = WPWHPRO()->webhook->get_hooks( 'trigger', 'create_user' );
             $user_data              = (array) get_user_by( 'id', $user_id );
+
+            //Make sure we only return the clean, private site variable
+            if( ! empty( $user_data ) ){
+                foreach( $user_data as $udk => $udv ){
+                    if( strpos( $udk, 'site_id' ) !== FALSE ){
+                        $user_data['site_id'] = $udv;
+                        unset( $user_data[ $udk ] );
+                    }
+                }
+            }
+
             $user_data['user_meta'] = get_user_meta( $user_id );
             $response_data = array();
 

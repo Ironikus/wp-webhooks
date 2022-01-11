@@ -65,23 +65,19 @@ function my_custom_callback_function( $return_args, $user_query, $args, $return_
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user_query</strong> (object)
-		<br>
+		<strong>$user_query</strong> (object)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The full WP_User_Query object.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$args</strong> (string)
-		<br>
+		<strong>$args</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The string formatted JSON construct that was sent by the caller within the arguments argument.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_only</strong> (string)
-		<br>
+		<strong>$return_only</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The string that was sent by the caller via the return_only argument.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -94,17 +90,218 @@ function my_custom_callback_function( $return_args, $user_query, $args, $return_
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg'	 => '',
-	'data' => array()
-);
-		</pre>
-		<?php
-		$returns_code = ob_get_clean();
+		$returns_code = array (
+			'success' => true,
+			'msg' => 'Query was successfully executed.',
+			'data' => 
+			array (
+			  'get_total' => 1,
+			  'get_results' => 
+			  array (
+				0 => 
+				array (
+				  'data' => 
+				  array (
+					'ID' => '50',
+					'user_login' => 'jon',
+					'user_pass' => '$P$BmFilT8WMcJahus2xZ0PK06UGGyAjA/',
+					'user_nicename' => 'jon',
+					'user_email' => 'jon@doe.test',
+					'user_url' => '',
+					'user_registered' => '2018-09-19 14:23:16',
+					'user_activation_key' => '',
+					'user_status' => '0',
+					'display_name' => 'jon',
+					'spam' => '0',
+					'deleted' => '0',
+					'meta_data' => 
+					array (
+					  'nickname' => 
+					  array (
+						0 => 'jon',
+					  ),
+					  'first_name' => 
+					  array (
+						0 => '',
+					  ),
+					  'last_name' => 
+					  array (
+						0 => '',
+					  ),
+					  'description' => 
+					  array (
+						0 => '',
+					  ),
+					  'rich_editing' => 
+					  array (
+						0 => 'true',
+					  ),
+					  'syntax_highlighting' => 
+					  array (
+						0 => 'true',
+					  ),
+					  'comment_shortcuts' => 
+					  array (
+						0 => 'false',
+					  ),
+					  'admin_color' => 
+					  array (
+						0 => 'fresh',
+					  ),
+					  'use_ssl' => 
+					  array (
+						0 => '0',
+					  ),
+					  'show_admin_bar_front' => 
+					  array (
+						0 => 'true',
+					  ),
+					  'locale' => 
+					  array (
+						0 => '',
+					  ),
+					  'wp_capabilities' => 
+					  array (
+						0 => 'a:1:{s:10:"subscriber";b:1;}',
+					  ),
+					  'wp_user_level' => 
+					  array (
+						0 => '0',
+					  ),
+					  'dismissed_wp_pointers' => 
+					  array (
+						0 => 'wp496_privacy',
+					  ),
+					  'pending' => 
+					  array (
+						0 => '1',
+					  ),
+					  'Address' => 
+					  array (
+						0 => 'Rd. Victoria',
+					  ),
+					  'City' => 
+					  array (
+						0 => 'Atlanta',
+					  ),
+					  'State' => 
+					  array (
+						0 => 'Georgia',
+					  ),
+					  'Zip code' => 
+					  array (
+						0 => '1201',
+					  ),
+					  'Country' => 
+					  array (
+						0 => 'USA',
+					  ),
+					  'account_status' => 
+					  array (
+						0 => 'approved',
+					  ),
+					),
+				  ),
+				  'ID' => 50,
+				  'caps' => 
+				  array (
+					'subscriber' => true,
+				  ),
+				  'cap_key' => 'wp_capabilities',
+				  'roles' => 
+				  array (
+					0 => 'subscriber',
+				  ),
+				  'allcaps' => 
+				  array (
+					'read' => true,
+					'level_0' => true,
+					'read_private_locations' => true,
+					'read_private_events' => true,
+					'subscriber' => true,
+				  ),
+				  'filter' => NULL,
+				),
+			  ),
+			  'all' => 
+			  array (
+				'query_vars' => 
+				array (
+				  'blog_id' => 1,
+				  'role' => '',
+				  'role__in' => 
+				  array (
+				  ),
+				  'role__not_in' => 
+				  array (
+				  ),
+				  'meta_key' => '',
+				  'meta_value' => '',
+				  'meta_compare' => '',
+				  'include' => 
+				  array (
+				  ),
+				  'exclude' => 
+				  array (
+				  ),
+				  'search' => 'Max',
+				  'search_columns' => 
+				  array (
+				  ),
+				  'orderby' => 'login',
+				  'order' => 'ASC',
+				  'offset' => '',
+				  'number' => 5,
+				  'paged' => 1,
+				  'count_total' => true,
+				  'fields' => 'all',
+				  'who' => '',
+				  'has_published_posts' => NULL,
+				  'nicename' => '',
+				  'nicename__in' => 
+				  array (
+				  ),
+				  'nicename__not_in' => 
+				  array (
+				  ),
+				  'login' => '',
+				  'login__in' => 
+				  array (
+				  ),
+				  'login__not_in' => 
+				  array (
+				  ),
+				),
+				'meta_query' => 
+				array (
+				  'queries' => 
+				  array (
+					0 => 
+					array (
+					  'key' => 'wp_capabilities',
+					  'compare' => 'EXISTS',
+					),
+					'relation' => 'AND',
+				  ),
+				  'relation' => NULL,
+				  'meta_table' => 'wp_usermeta',
+				  'meta_id_column' => 'user_id',
+				  'primary_table' => 'wp_users',
+				  'primary_id_column' => 'ID',
+				),
+				'request' => 'SELECT SQL_CALC_FOUND_ROWS wp_users.* FROM wp_users INNER JOIN wp_usermeta ON ( wp_users.ID = wp_usermeta.user_id ) WHERE 1=1 AND ( 
+			wp_usermeta.meta_key = \'wp_capabilities\'
+		  ) AND (user_login LIKE \'Max\' OR user_url LIKE \'Max\' OR user_email LIKE \'Max\' OR user_nicename LIKE \'Max\' OR display_name LIKE \'Max\' OR display_name LIKE \'Max\') ORDER BY user_login ASC LIMIT 0, 5',
+				'query_fields' => 'SQL_CALC_FOUND_ROWS wp_users.*',
+				'query_from' => 'FROM wp_users INNER JOIN wp_usermeta ON ( wp_users.ID = wp_usermeta.user_id )',
+				'query_where' => 'WHERE 1=1 AND ( 
+			wp_usermeta.meta_key = \'wp_capabilities\'
+		  ) AND (user_login LIKE \'Max\' OR user_url LIKE \'Max\' OR user_email LIKE \'Max\' OR user_nicename LIKE \'Max\' OR display_name LIKE \'Max\' OR display_name LIKE \'Max\')',
+				'query_orderby' => 'ORDER BY user_login ASC',
+				'query_limit' => 'LIMIT 0, 5',
+			  ),
+			),
+		);
 
 		$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 			'webhook_name' => 'Get multiple users',
@@ -117,6 +314,7 @@ $return_args = array(
 		return array(
 			'action'			=> 'get_users',
 			'name'			  => WPWHPRO()->helpers->translate( 'Get multiple users', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'get or search for multiple users', $translation_ident ),
 			'parameter'		 => $parameter,
 			'returns'		   => $returns,
 			'returns_code'	  => $returns_code,

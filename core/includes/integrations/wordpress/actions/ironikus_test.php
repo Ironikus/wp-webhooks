@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_ironikus_test' 
 	 */
 	class WP_Webhooks_Integrations_wordpress_Actions_ironikus_test {
 
-		/*
-	 * The core logic to test a webhook
-	 */
 	public function get_details(){
 
 		$translation_ident = "action-ironikus-test-description";
@@ -26,17 +23,11 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_ironikus_test' 
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-ironikus-test-content' ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg' => '',
-	'test_var' => 'test-value123'
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Test value successfully filled.',
+				'test_var' => 'test-value123',
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Test action',
@@ -45,13 +36,14 @@ $return_args = array(
 					WPWHPRO()->helpers->translate( 'The second argument you need to set is <strong>test_var</strong>. Please set it to <strong>test-value123</strong>', $translation_ident )
 				),
 				'tipps' => array(
-					sprintf( WPWHPRO()->helpers->translate( "This webhook makes sense if you want to test if %s works properly on your WordPress website. You can try to setup different values to see how the webhook interacts with your site.", $translation_ident ), WPWH_NAME )
+					sprintf( WPWHPRO()->helpers->translate( "This webhook makes sense if you want to test if %s works properly on your WordPress website. You can try to setup different values to see how the webhook interacts with your site.", $translation_ident ), WPWHPRO_NAME )
 				),
 			) );
 
 			return array(
 				'action'			=> 'ironikus_test',
 				'name'			  => WPWHPRO()->helpers->translate( 'Test action', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'send a demo action', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

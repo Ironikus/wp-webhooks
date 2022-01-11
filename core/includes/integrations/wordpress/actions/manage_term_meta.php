@@ -109,32 +109,22 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_manage_term_met
 <?php echo WPWHPRO()->helpers->translate( "Down below you will find a list that explains each of the top level keys.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong><?php echo WPWHPRO()->helpers->translate( "add_term_meta", $translation_ident ); ?></strong>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>add_term_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/add_term_meta/">https://developer.wordpress.org/reference/functions/add_term_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "In the example above, you will find two entries within the add_term_meta key. The first one shows the default behavior using only the meta key and the value. This causes the meta key to be created without checking upfront if it exists - that allows you to create the meta value multiple times.", $translation_ident ); ?>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "As seen in the second entry, you will find a third key called <strong>unique</strong> that allows you to check upfront if the meta key exists already. If it does, the meta entry is neither created, nor updated. Set the value to <strong>true</strong> to check against existing ones. Default: false", $translation_ident ); ?>
-		<br>
+		<strong><?php echo WPWHPRO()->helpers->translate( "add_term_meta", $translation_ident ); ?></strong><br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>add_term_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/add_term_meta/">https://developer.wordpress.org/reference/functions/add_term_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "In the example above, you will find two entries within the add_term_meta key. The first one shows the default behavior using only the meta key and the value. This causes the meta key to be created without checking upfront if it exists - that allows you to create the meta value multiple times.", $translation_ident ); ?><br>
+		<?php echo WPWHPRO()->helpers->translate( "As seen in the second entry, you will find a third key called <strong>unique</strong> that allows you to check upfront if the meta key exists already. If it does, the meta entry is neither created, nor updated. Set the value to <strong>true</strong> to check against existing ones. Default: false", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "If you look closely to the second entry again, the value included is not a string, but a JSON construct, which is considered as an array and will therefore be serialized. The given value will be saved to the database in the following format: <code>a:1:{s:14:\"some_array_key\";s:16:\"Some array Value\";}</code>", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong><?php echo WPWHPRO()->helpers->translate( "update_term_meta", $translation_ident ); ?></strong>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>update_term_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/update_term_meta/">https://developer.wordpress.org/reference/functions/update_term_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "The example above shows you two entries for this function. The first one is the default set up thats used in most cases. Simply define the meta key and the meta value and the key will be updated if it does exist and if it does not exist, it will be created.", $translation_ident ); ?>
-		<br>
+		<strong><?php echo WPWHPRO()->helpers->translate( "update_term_meta", $translation_ident ); ?></strong><br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>update_term_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/update_term_meta/">https://developer.wordpress.org/reference/functions/update_term_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "The example above shows you two entries for this function. The first one is the default set up thats used in most cases. Simply define the meta key and the meta value and the key will be updated if it does exist and if it does not exist, it will be created.", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "The third argument, as seen in the second entry, allows you to check against a previous value before updating. That causes that the meta value will only be updated if the previous key fits to whats currently saved within the database. Default: ''", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong><?php echo WPWHPRO()->helpers->translate( "delete_term_meta", $translation_ident ); ?></strong>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>delete_term_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/delete_term_meta/">https://developer.wordpress.org/reference/functions/delete_term_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "Within the example above, you will see that only the meta key is required for deleting an entry. This will cause all meta keys on this term, with the same key, to be deleted.", $translation_ident ); ?>
-		<br>
+		<strong><?php echo WPWHPRO()->helpers->translate( "delete_term_meta", $translation_ident ); ?></strong><br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>delete_term_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/delete_term_meta/">https://developer.wordpress.org/reference/functions/delete_term_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "Within the example above, you will see that only the meta key is required for deleting an entry. This will cause all meta keys on this term, with the same key, to be deleted.", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "The second argument allows you to target only a specific meta key/value combination. This gets important if you want to target a specific meta key/value combination and not delete all available entries for the given term. Default: ''", $translation_ident ); ?>
 	</li>
 </ol>
@@ -163,13 +153,11 @@ function my_custom_callback_function( $term_id, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$term_id</strong> (integer)
-		<br>
+		<strong>$term_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the taxonomy term id of the taxonomy term you assigned the taxonomies meta to.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller. The data includes the following key: msg, success, data", $translation_ident ); ?>
 	</li>
 </ol>
@@ -262,6 +250,7 @@ function my_custom_callback_function( $term_id, $return_args ){
 			return array(
 				'action'			=> 'manage_term_meta',
 				'name'			  => WPWHPRO()->helpers->translate( 'Set taxonomy term meta', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'set custom taxonomy term meta data', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

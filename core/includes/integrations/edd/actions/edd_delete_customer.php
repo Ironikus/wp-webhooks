@@ -43,20 +43,17 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_delete_customer' 
 				'customer_data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) The Data from the EDD_Customer class.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The user was successfully created.",
-    "customer_id": "5",
-    "get_customer_by": "email",
-    "customer_value": "jondoe@domain.test",
-    "delete_records": false,
-    "customer_data": []
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The customer was successfully deleted.',
+				'customer_id' => '5',
+				'get_customer_by' => 'email',
+				'customer_value' => 'jondoe@domain.test',
+				'delete_records' => false,
+				'customer_data' => 
+				array (
+				),
+			);
 
 			ob_start();
 ?>
@@ -135,7 +132,8 @@ function my_custom_callback_function( $customer_id, $customer, $return_args ){
 
             return array(
                 'action'            => 'edd_delete_customer',
-                'name'              => WPWHPRO()->helpers->translate( 'Delete a customer', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Delete customer', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'delete a customer', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,
@@ -226,7 +224,7 @@ function my_custom_callback_function( $customer_id, $customer, $return_args ){
 				$return_args['customer_value'] = $customer_value;
 				$return_args['delete_records'] = $delete_records;
 				$return_args['customer_data'] = $customer;
-				$return_args['msg'] = WPWHPRO()->helpers->translate( "The user was successfully deleted.", 'action-edd_delete_customer-success' );
+				$return_args['msg'] = WPWHPRO()->helpers->translate( "The customer was successfully deleted.", 'action-edd_delete_customer-success' );
 				$return_args['success'] = true;
 
 			} else {

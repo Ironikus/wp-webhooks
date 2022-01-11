@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_woocommerce_Actions_create_woocom
 	 */
 	class WP_Webhooks_Integrations_woocommerce_Actions_create_woocommerce_order {
 
-		/*
-		* The core logic to test a webhook
-		*/
 		public function get_details(){
 
 			$translation_ident = "action-create_woocommerce_order-content";
@@ -190,6 +187,7 @@ $order_statuses = array(
 			return array(
 				'action'			=> 'create_woocommerce_order', //required
 				'name'			   => WPWHPRO()->helpers->translate( 'Create Woocommerce order', $translation_ident ),
+				'sentence'			   => WPWHPRO()->helpers->translate( 'create a Woocommerce order', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

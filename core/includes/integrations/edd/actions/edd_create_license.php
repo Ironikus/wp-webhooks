@@ -50,30 +50,40 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_create_license' )
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the new license id and other arguments set during the creation of the license.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The license was successfully created.",
-    "data": {
-        "license_id": 17,
-        "download_id": 285,
-        "payment_id": 843,
-        "price_id": "2",
-        "cart_index": 0,
-        "license_options": {
-            "activation_limit": 0,
-            "license_length": "32",
-            "expiration_date": 1621654140,
-            "is_lifetime": true
-        },
-        "license_meta": "{\n  \"meta_1\": \"test1\",\n  \"meta_2\": \"ironikus-serialize{\\\"test_key\\\":\\\"wow\\\",\\\"testval\\\":\\\"new\\\"}\"\n}",
-        "logs": "[\n  {\n    \"title\": \"Log 1\",\n    \"message\": \"This is my description for log 1\"\n  },\n  {\n    \"title\": \"Log 2\",\n    \"message\": \"This is my description for log 2\",\n    \"type\": null\n  }\n]"
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+                'success' => true,
+                'msg' => 'The license was successfully created.',
+                'data' => 
+                array (
+                  'license_id' => 17,
+                  'download_id' => 285,
+                  'payment_id' => 843,
+                  'price_id' => '2',
+                  'cart_index' => 0,
+                  'license_options' => 
+                  array (
+                    'activation_limit' => 0,
+                    'license_length' => '32',
+                    'expiration_date' => 1621654140,
+                    'is_lifetime' => true,
+                  ),
+                  'license_meta' => '{
+                "meta_1": "test1",
+                "meta_2": "ironikus-serialize{\\"test_key\\":\\"wow\\",\\"testval\\":\\"new\\"}"
+              }',
+                  'logs' => '[
+                {
+                  "title": "Log 1",
+                  "message": "This is my description for log 1"
+                },
+                {
+                  "title": "Log 2",
+                  "message": "This is my description for log 2",
+                  "type": null
+                }
+              ]',
+                ),
+        );
 
 			ob_start();
 ?>
@@ -280,7 +290,8 @@ function my_custom_callback_function( $license_id, $license, $return_args ){
 
             return array(
                 'action'            => 'edd_create_license',
-                'name'              => WPWHPRO()->helpers->translate( 'Create a license', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Create license', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'create a license', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

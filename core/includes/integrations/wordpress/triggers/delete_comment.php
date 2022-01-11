@@ -95,6 +95,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_delete_comment
             return array(
                 'trigger'           => 'delete_comment',
                 'name'              => WPWHPRO()->helpers->translate( 'Comment deleted', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a comment was deleted', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

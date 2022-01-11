@@ -62,18 +62,15 @@ function my_custom_callback_function( $return_args, $source_path, $destination_p
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$source_path</strong> (string)
-		<br>
+		<strong>$source_path</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The source path you set within the webhook request.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$destination_path</strong> (string)
-		<br>
+		<strong>$destination_path</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The destination path you set within the webhook request.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -106,6 +103,7 @@ function my_custom_callback_function( $return_args, $source_path, $destination_p
 			return array(
 				'action'			=> 'copy_file',
 				'name'			  => WPWHPRO()->helpers->translate( 'Copy file', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'copy a file', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

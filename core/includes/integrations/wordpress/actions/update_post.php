@@ -86,8 +86,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_post' ) 
 <?php echo WPWHPRO()->helpers->translate( "To make it work, we offer certain different features and methods to make the most out of the taxonomy management. Down below, you will find further information about the whole functionality.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong><?php echo WPWHPRO()->helpers->translate( "String method", $translation_ident ); ?></strong>
-		<br>
+		<strong><?php echo WPWHPRO()->helpers->translate( "String method", $translation_ident ); ?></strong><br>
 		<?php echo WPWHPRO()->helpers->translate( "This method allows you to add/update/delete or bulk manage the post taxonomies using a simple string. Both the string and the JSON method support custom taxonomies too. In case you use more complex taxonomies that use semicolons or double points within the slugs, you need to use the JSON method.", $translation_ident ); ?>
 		<ul class="list-group list-group-flush">
 			<li class="list-group-item">
@@ -120,8 +119,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_post' ) 
 		</ul>
 	</li>
 	<li>
-	<strong><?php echo WPWHPRO()->helpers->translate( "JSON method", $translation_ident ); ?></strong>
-		<br>
+	<strong><?php echo WPWHPRO()->helpers->translate( "JSON method", $translation_ident ); ?></strong><br>
 		<?php echo WPWHPRO()->helpers->translate( "This method allows you to add/update/delete or bulk manage the post taxonomies using a simple string. Both the string and the JSON method support custom taxonomies too.", $translation_ident ); ?>
 		<ul class="list-group list-group-flush">
 			<li class="list-group-item">
@@ -282,12 +280,9 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_post' ) 
 	  }
 	]
 }</pre>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>add_post_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/add_post_meta/">https://developer.wordpress.org/reference/functions/add_post_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "In the example above, you will find two entries within the add_post_meta key. The first one shows the default behavior using only the meta key and the value. This causes the meta key to be created without checking upfront if it exists - that allows you to create the meta value multiple times.", $translation_ident ); ?>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "As seen in the second entry, you will find a third key called <strong>unique</strong> that allows you to check upfront if the meta key exists already. If it does, the meta entry is neither created, nor updated. Set the value to <strong>true</strong> to check against existing ones. Default: false", $translation_ident ); ?>
-		<br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>add_post_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/add_post_meta/">https://developer.wordpress.org/reference/functions/add_post_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "In the example above, you will find two entries within the add_post_meta key. The first one shows the default behavior using only the meta key and the value. This causes the meta key to be created without checking upfront if it exists - that allows you to create the meta value multiple times.", $translation_ident ); ?><br>
+		<?php echo WPWHPRO()->helpers->translate( "As seen in the second entry, you will find a third key called <strong>unique</strong> that allows you to check upfront if the meta key exists already. If it does, the meta entry is neither created, nor updated. Set the value to <strong>true</strong> to check against existing ones. Default: false", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "If you look closely to the second entry again, the value included is not a string, but a JSON construct, which is considered as an array and will therefore be serialized. The given value will be saved to the database in the following format: <code>a:1:{s:14:\"some_array_key\";s:16:\"Some array Value\";}</code>", $translation_ident ); ?>
 	</li>
 	<li>
@@ -305,10 +300,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_post' ) 
 	  }
 	]
 }</pre>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>update_post_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/update_post_meta/">https://developer.wordpress.org/reference/functions/update_post_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "The example above shows you two entries for this function. The first one is the default set up thats used in most cases. Simply define the meta key and the meta value and the key will be updated if it does exist and if it does not exist, it will be created.", $translation_ident ); ?>
-		<br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>update_post_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/update_post_meta/">https://developer.wordpress.org/reference/functions/update_post_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "The example above shows you two entries for this function. The first one is the default set up thats used in most cases. Simply define the meta key and the meta value and the key will be updated if it does exist and if it does not exist, it will be created.", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "The third argument, as seen in the second entry, allows you to check against a previous value before updating. That causes that the meta value will only be updated if the previous key fits to whats currently saved within the database. Default: ''", $translation_ident ); ?>
 	</li>
 	<li>
@@ -324,10 +317,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_post' ) 
 	  }
 	]
 }</pre>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>delete_post_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/delete_post_meta/">https://developer.wordpress.org/reference/functions/delete_post_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "Within the example above, you will see that only the meta key is required for deleting an entry. This will cause all meta keys on this post with the same key to be deleted.", $translation_ident ); ?>
-		<br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>delete_post_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/delete_post_meta/">https://developer.wordpress.org/reference/functions/delete_post_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "Within the example above, you will see that only the meta key is required for deleting an entry. This will cause all meta keys on this post with the same key to be deleted.", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "The second argument allows you to target only a specific meta key/value combination. This gets important if you want to target a specific meta key/value combination and not delete all available entries for the given post. Default: ''", $translation_ident ); ?>
 	</li>
 </ol>
@@ -356,23 +347,19 @@ function my_custom_callback_function( $post_data, $post_id, $meta_input, $return
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$post_data</strong> (array)
-		<br>
+		<strong>$post_data</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the data that is used to update the post and some additional data as the meta input.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$post_id</strong> (integer)
-		<br>
+		<strong>$post_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the post id of the newly updated post. Please note that it can also contain a wp_error object since it is the response of the wp_update_user() function.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$meta_input</strong> (string)
-		<br>
+		<strong>$meta_input</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the unformatted post meta as you sent it over within the webhook request as a string.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -394,20 +381,24 @@ function my_custom_callback_function( $post_data, $post_id, $meta_input, $return
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success'   => false,
-	'msg'	   => '',
-	'data'	  => array(
-		'post_id' => null,
-		'post_data' => null
-	)
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Post successfully updated',
+				'data' => 
+				array (
+				  'post_id' => 1339,
+				  'post_data' => 
+				  array (
+					'ID' => 1339,
+					'post_content' => 'Some new post content.',
+					'post_title' => 'The new post title',
+					'post_status' => 'publish',
+					'meta_data' => false,
+					'tax_input' => false,
+				  ),
+				  'permalink' => 'https://yourdomain.test/blog/2021/08/28/post-name/',
+				),
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Update a post',
@@ -423,7 +414,8 @@ $return_args = array(
 
 			return array(
 				'action'			=> 'update_post',
-				'name'			  => WPWHPRO()->helpers->translate( 'Update a post', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Update post', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'update a post', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

@@ -53,38 +53,36 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_update_discount' 
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing all of the predefined data of the webhook, as well as the discount id in case it was successfully updated (or created).', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The discount code was successfully created.",
-    "data": {
-        "code": "erthsashtsw",
-        "name": "Demo Discount Code",
-        "status": "inactive",
-        "uses": "5",
-        "max": "10",
-        "amount": "11.10",
-        "start": "05/23/2020 00:00:00",
-        "expiration": "06/27/2020 23:59:59",
-        "type": "flat",
-        "min_price": "22",
-        "products": [
-            "176",
-            "772"
-        ],
-        "product_condition": "any",
-        "excluded-products": [
-            "774"
-        ],
-        "not_global": true,
-        "use_once": true,
-        "discount_id": 805
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The discount code was successfully updated.',
+				'data' => 
+				array (
+				  'code' => 'erthsashtsw',
+				  'name' => 'Demo Discount Code',
+				  'status' => 'inactive',
+				  'uses' => '5',
+				  'max' => '10',
+				  'amount' => '11.10',
+				  'start' => '05/23/2020 00:00:00',
+				  'expiration' => '06/27/2020 23:59:59',
+				  'type' => 'flat',
+				  'min_price' => '22',
+				  'products' => 
+				  array (
+					0 => '176',
+					1 => '772',
+				  ),
+				  'product_condition' => 'any',
+				  'excluded-products' => 
+				  array (
+					0 => '774',
+				  ),
+				  'not_global' => true,
+				  'use_once' => true,
+				  'discount_id' => 805,
+				),
+			);
 
 			ob_start();
 ?>
@@ -222,7 +220,8 @@ function my_custom_callback_function( $discount_id, $discount, $needs_creation, 
 
             return array(
                 'action'            => 'edd_update_discount',
-                'name'              => WPWHPRO()->helpers->translate( 'Update a discount', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Update discount', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'update a discount', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

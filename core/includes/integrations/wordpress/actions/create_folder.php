@@ -54,13 +54,11 @@ function my_custom_callback_function( $return_args, $folder ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 <li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$folder</strong> (string)
-		<br>
+		<strong>$folder</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The folder you set within the webhook request.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -88,7 +86,8 @@ function my_custom_callback_function( $return_args, $folder ){
 
 			return array(
 				'action'			=> 'create_folder',
-				'name'			  => WPWHPRO()->helpers->translate( 'Create a folder', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Create folder', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'create a folder', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

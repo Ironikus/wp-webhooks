@@ -37,18 +37,14 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_delete_discount' 
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the discount id of the deleted discount.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The discount code was successfully deleted.",
-    "data": {
-        "discount_id": 803
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The discount code was successfully deleted.',
+				'data' => 
+				array (
+				  'discount_id' => 803,
+				),
+			);
 
 			ob_start();
 ?>
@@ -110,7 +106,8 @@ function my_custom_callback_function( $discount_id, $discount, $return_args ){
 
             return array(
                 'action'            => 'edd_delete_discount',
-                'name'              => WPWHPRO()->helpers->translate( 'Delete a discount', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Delete discount', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'delete a discount', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

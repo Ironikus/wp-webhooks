@@ -104,44 +104,40 @@ function my_custom_callback_function( $check, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$check</strong> (bool)
-		<br>
+		<strong>$check</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Returns true if the email was sent and false if not.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the response data of the request, which also include the complete validated data we used for sending the email.", $translation_ident ); ?>
 	</li>
 </ol>
 		<?php
 		$parameter['do_action']['description'] = ob_get_clean();
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-			<pre>{
-	"success": true,
-	"msg": "Email successfully sent.",
-	"data": {
-		"send_to": "demo@demo.demo",
-		"subject": "This is my email Subject",
-		"message": "This is my <strong>HTML</strong> message!",
-		"headers": [
-			"Content-Type: text/html; charset=UTF-8",
-			"From: Sender Name <anotheremail@someemail.demo>",
-			"Cc: Receiver Name <receiver@someemail.demo>",
-			"Cc: onlyemail@someemail.demo",
-			"Bcc: bccmail@someemail.demo",
-			"Reply-To: Reply Name <replytome@someemail.demo>"
-		],
-		"attachments": [
-			"/Your/full/server/path/wp-content/uploads/2020/06/my-custom-file.jpg"
-		]
-	}
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Email successfully sent.',
+				'data' => 
+				array (
+				  'send_to' => 'demo@demo.demo',
+				  'subject' => 'This is my email Subject',
+				  'message' => 'This is my <strong>HTML</strong> message!',
+				  'headers' => 
+				  array (
+					0 => 'Content-Type: text/html; charset=UTF-8',
+					1 => 'From: Sender Name <anotheremail@someemail.demo>',
+					2 => 'Cc: Receiver Name <receiver@someemail.demo>',
+					3 => 'Cc: onlyemail@someemail.demo',
+					4 => 'Bcc: bccmail@someemail.demo',
+					5 => 'Reply-To: Reply Name <replytome@someemail.demo>',
+				  ),
+				  'attachments' => 
+				  array (
+					0 => '/Your/full/server/path/wp-content/uploads/2020/06/my-custom-file.jpg',
+				  ),
+				),
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Send an email',
@@ -159,7 +155,8 @@ function my_custom_callback_function( $check, $return_args ){
 
 			return array(
 				'action'			=> 'send_email',
-				'name'			  => WPWHPRO()->helpers->translate( 'Send an email', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Send email', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'send an email', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

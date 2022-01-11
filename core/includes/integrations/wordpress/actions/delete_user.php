@@ -43,23 +43,19 @@ function my_custom_callback_function( $user, $user_id, $user_email, $send_email 
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$user</strong> (object)
-		<br>
+		<strong>$user</strong> (object)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the WordPress user object.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user_id</strong> (integer)
-		<br>
+		<strong>$user_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the user id of the deleted user. Please note that it can also contain a wp_error object since it is the response of the wp_insert_user() function.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user_email</strong> (string)
-		<br>
+		<strong>$user_email</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the user email.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$send_email</strong> (string)
-		<br>
+		<strong>$send_email</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Returns either yes or no, depending on your settings for the send_email argument.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -72,20 +68,15 @@ function my_custom_callback_function( $user, $user_id, $user_email, $send_email 
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg'	 => '',
-	'data' => array(
-		'user_deleted' => false,
-		'user_id' => 0
-	)
-);
-		</pre>
-		<?php
-		$returns_code = ob_get_clean();
+		$returns_code = array (
+			'success' => true,
+			'msg' => 'User successfully deleted.',
+			'data' => 
+			array (
+			  'user_deleted' => true,
+			  'user_id' => 112,
+			),
+		);
 
 		$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 			'webhook_name' => 'Delete a user',
@@ -100,7 +91,8 @@ $return_args = array(
 
 		return array(
 			'action'			=> 'delete_user',
-			'name'			  => WPWHPRO()->helpers->translate( 'Delete a user', $translation_ident ),
+			'name'			  => WPWHPRO()->helpers->translate( 'Delete user', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'delete a user', $translation_ident ),
 			'parameter'		 => $parameter,
 			'returns'		   => $returns,
 			'returns_code'	  => $returns_code,

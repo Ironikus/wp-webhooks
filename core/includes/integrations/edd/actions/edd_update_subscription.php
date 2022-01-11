@@ -56,18 +56,15 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_update_subscripti
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the new susbcription id, the payment id, customer id, as well as further details about the subscription.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The discount code was successfully deleted.",
-    "data": {
-        "discount_id": 803
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array(
+				'success' => false,
+				'msg' => '',
+				'data' => array(
+					'subscription_id' => 0,
+					'payment_id' => 0,
+					'customer_id' => 0,
+				),
+			);
 
 			ob_start();
             $default_subscription_statuses = array (
@@ -244,7 +241,8 @@ function my_custom_callback_function( $subscription_id, $subscription, $sub_args
 
             return array(
                 'action'            => 'edd_update_subscription',
-                'name'              => WPWHPRO()->helpers->translate( 'Update a subscription', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Update subscription', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'update a subscription', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

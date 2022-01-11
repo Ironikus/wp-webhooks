@@ -72,39 +72,66 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_create_download' 
 				'data'        	=> array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Within the data array, you will find further details about the response, as well as the payment id and further information.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "Download successfully created",
-    "data": {
-        "download_id": 797,
-        "download_data": {
-            "post_type": "download",
-            "meta_data": "{\n  \"meta_key_1\": \"This is my meta value 1\",\n  \"another_meta_key\": \"This is my second meta key!\",\n  \"third_meta_key\": \"ironikus-serialize{\\\"price\\\": \\\"100\\\"}\"\n}",
-            "tax_input": false,
-            "edd": {
-                "increase_earnings": "25.49",
-                "decrease_earnings": false,
-                "increase_sales": "15",
-                "decrease_sales": false,
-                "edd_price": "11.11",
-                "is_variable_pricing": 1,
-                "edd_variable_prices": "{\n    \"1\": {\n        \"index\": \"1\",\n        \"name\": \"Variation 1\",\n        \"amount\": \"39.90\",\n        \"license_limit\": \"0\",\n        \"is_lifetime\": \"1\"\n    },\n    \"2\": {\n        \"index\": \"2\",\n        \"name\": \"Variation 2\",\n        \"amount\": \"49.90\",\n        \"license_limit\": \"4\"\n    }\n}",
-                "default_price_id": "2",
-                "edd_download_files": "{\n    \"1\": {\n        \"index\": \"0\",\n        \"attachment_id\": \"\",\n        \"thumbnail_size\": \"\",\n        \"name\": \"wp-webhooks-pro-\",\n        \"file\": \"https:\\/\\/domain.demo\\/wp-content\\/uploads\\/edd\\/2020\\/02\\/wp-webhooks-pro.zip\",\n        \"condition\": \"all\"\n    }\n}",
-                "edd_bundled_products": false,
-                "bundled_products_conditions": false,
-                "hide_purchase_link": "on",
-                "download_limit": 45
-            }
-        },
-        "edd": []
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Download successfully created',
+				'data' => 
+				array (
+				  'download_id' => 797,
+				  'download_data' => 
+				  array (
+					'post_type' => 'download',
+					'meta_data' => '{
+				"meta_key_1": "This is my meta value 1",
+				"another_meta_key": "This is my second meta key!",
+				"third_meta_key": "ironikus-serialize{\\"price\\": \\"100\\"}"
+			  }',
+					'tax_input' => false,
+					'edd' => 
+					array (
+					  'increase_earnings' => '25.49',
+					  'decrease_earnings' => false,
+					  'increase_sales' => '15',
+					  'decrease_sales' => false,
+					  'edd_price' => '11.11',
+					  'is_variable_pricing' => 1,
+					  'edd_variable_prices' => '{
+				  "1": {
+					  "index": "1",
+					  "name": "Variation 1",
+					  "amount": "39.90",
+					  "license_limit": "0",
+					  "is_lifetime": "1"
+				  },
+				  "2": {
+					  "index": "2",
+					  "name": "Variation 2",
+					  "amount": "49.90",
+					  "license_limit": "4"
+				  }
+			  }',
+					  'default_price_id' => '2',
+					  'edd_download_files' => '{
+				  "1": {
+					  "index": "0",
+					  "attachment_id": "",
+					  "thumbnail_size": "",
+					  "name": "wp-webhooks-pro-",
+					  "file": "https:\\/\\/domain.demo\\/wp-content\\/uploads\\/edd\\/2020\\/02\\/wp-webhooks-pro.zip",
+					  "condition": "all"
+				  }
+			  }',
+					  'edd_bundled_products' => false,
+					  'bundled_products_conditions' => false,
+					  'hide_purchase_link' => 'on',
+					  'download_limit' => 45,
+					),
+				  ),
+				  'edd' => 
+				  array (
+				  ),
+				),
+			);
 
 			ob_start();
             $default_download_variations = array(
@@ -513,7 +540,8 @@ function my_custom_callback_function( $post_data, $post_id, $meta_input, $return
 
             return array(
                 'action'            => 'edd_create_download',
-                'name'              => WPWHPRO()->helpers->translate( 'Create a download', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Create download', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'create a download', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

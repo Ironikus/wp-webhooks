@@ -35,11 +35,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_forminator_Triggers_forminator_fo
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-forminator_form_submitted-description";
@@ -96,6 +91,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_forminator_Triggers_forminator_fo
 		return array(
 			'trigger'		   => 'forminator_form_submitted',
 			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

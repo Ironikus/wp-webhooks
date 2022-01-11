@@ -89,23 +89,19 @@ function my_custom_callback_function( $return_args, $post_query, $args, $return_
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$post_query</strong> (object)
-		<br>
+		<strong>$post_query</strong> (object)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The full WP_Query object.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$args</strong> (string)
-		<br>
+		<strong>$args</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The string formatted JSON construct that was sent by the caller within the arguments argument.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_only</strong> (string)
-		<br>
+		<strong>$return_only</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The string that was sent by the caller via the return_only argument.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -118,17 +114,291 @@ function my_custom_callback_function( $return_args, $post_query, $args, $return_
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg'	 => '',
-	'data' => array()
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Query was successfully executed.',
+				'data' => 
+				array (
+				  'all' => 
+				  array (
+					'query' => 
+					array (
+					  'search' => 'Demo',
+					),
+					'query_vars' => 
+					array (
+					  'search' => 'Demo',
+					  'error' => '',
+					  'm' => '',
+					  'p' => 0,
+					  'post_parent' => '',
+					  'subpost' => '',
+					  'subpost_id' => '',
+					  'attachment' => '',
+					  'attachment_id' => 0,
+					  'name' => '',
+					  'pagename' => '',
+					  'page_id' => 0,
+					  'second' => '',
+					  'minute' => '',
+					  'hour' => '',
+					  'day' => 0,
+					  'monthnum' => 0,
+					  'year' => 0,
+					  'w' => 0,
+					  'category_name' => '',
+					  'tag' => '',
+					  'cat' => '',
+					  'tag_id' => '',
+					  'author' => '',
+					  'author_name' => '',
+					  'feed' => '',
+					  'tb' => '',
+					  'paged' => 0,
+					  'meta_key' => '',
+					  'meta_value' => '',
+					  'preview' => '',
+					  's' => '',
+					  'sentence' => '',
+					  'title' => '',
+					  'fields' => '',
+					  'menu_order' => '',
+					  'embed' => '',
+					  'category__in' => 
+					  array (
+					  ),
+					  'category__not_in' => 
+					  array (
+					  ),
+					  'category__and' => 
+					  array (
+					  ),
+					  'post__in' => 
+					  array (
+					  ),
+					  'post__not_in' => 
+					  array (
+					  ),
+					  'post_name__in' => 
+					  array (
+					  ),
+					  'tag__in' => 
+					  array (
+					  ),
+					  'tag__not_in' => 
+					  array (
+					  ),
+					  'tag__and' => 
+					  array (
+					  ),
+					  'tag_slug__in' => 
+					  array (
+					  ),
+					  'tag_slug__and' => 
+					  array (
+					  ),
+					  'post_parent__in' => 
+					  array (
+					  ),
+					  'post_parent__not_in' => 
+					  array (
+					  ),
+					  'author__in' => 
+					  array (
+					  ),
+					  'author__not_in' => 
+					  array (
+					  ),
+					  'ignore_sticky_posts' => false,
+					  'suppress_filters' => false,
+					  'cache_results' => true,
+					  'update_post_term_cache' => true,
+					  'lazy_load_term_meta' => true,
+					  'update_post_meta_cache' => true,
+					  'post_type' => '',
+					  'posts_per_page' => 10,
+					  'nopaging' => false,
+					  'comments_per_page' => '50',
+					  'no_found_rows' => false,
+					  'order' => 'DESC',
+					),
+					'tax_query' => 
+					array (
+					  'queries' => 
+					  array (
+					  ),
+					  'relation' => 'AND',
+					  'queried_terms' => 
+					  array (
+					  ),
+					  'primary_table' => 'wp_posts',
+					  'primary_id_column' => 'ID',
+					),
+					'meta_query' => 
+					array (
+					  'queries' => 
+					  array (
+					  ),
+					  'relation' => NULL,
+					  'meta_table' => NULL,
+					  'meta_id_column' => NULL,
+					  'primary_table' => NULL,
+					  'primary_id_column' => NULL,
+					),
+					'date_query' => false,
+					'request' => 'SELECT SQL_CALC_FOUND_ROWS  wp_posts.ID FROM wp_posts  WHERE 1=1  AND wp_posts.post_type = \'post\' AND (wp_posts.post_status = \'publish\' OR wp_posts.post_status = \'cancelled\' OR wp_posts.post_status = \'edd_subscription\' OR wp_posts.post_status = \'expired\' OR wp_posts.post_status = \'refunded\' OR wp_posts.post_status = \'failed\' OR wp_posts.post_status = \'revoked\' OR wp_posts.post_status = \'abandoned\' OR wp_posts.post_status = \'processing\' OR wp_posts.post_status = \'active\' OR wp_posts.post_status = \'inactive\' OR wp_posts.post_status = \'acf-disabled\')  ORDER BY wp_posts.post_date DESC LIMIT 0, 10',
+					'posts' => 
+					array (
+					  0 => 
+					  array (
+						'ID' => 1339,
+						'post_author' => '1',
+						'post_date' => '2021-08-28 11:28:01',
+						'post_date_gmt' => '2021-08-28 11:28:01',
+						'post_content' => '',
+						'post_title' => 'This is a demo title',
+						'post_excerpt' => 'Test excerpt',
+						'post_status' => 'publish',
+						'comment_status' => 'open',
+						'ping_status' => 'open',
+						'post_password' => '',
+						'post_name' => 'cool-title-2',
+						'to_ping' => '',
+						'pinged' => '',
+						'post_modified' => '2021-09-05 11:56:47',
+						'post_modified_gmt' => '2021-09-05 11:56:47',
+						'post_content_filtered' => '',
+						'post_parent' => 0,
+						'guid' => 'https://yourdomain.test/?p=1339',
+						'menu_order' => 0,
+						'post_type' => 'post',
+						'post_mime_type' => '',
+						'comment_count' => '0',
+						'filter' => 'raw',
+					  ),
+					  1 => 
+					  array (
+						'ID' => 1295,
+						'post_author' => '1',
+						'post_date' => '2021-07-22 20:44:58',
+						'post_date_gmt' => '2021-07-22 20:44:58',
+						'post_content' => 'test',
+						'post_title' => 'The second demo post',
+						'post_excerpt' => '',
+						'post_status' => 'publish',
+						'comment_status' => 'open',
+						'ping_status' => 'open',
+						'post_password' => '',
+						'post_name' => 'the-second-demo-post',
+						'to_ping' => '',
+						'pinged' => '',
+						'post_modified' => '2021-07-22 20:44:58',
+						'post_modified_gmt' => '2021-07-22 20:44:58',
+						'post_content_filtered' => '',
+						'post_parent' => 0,
+						'guid' => 'https://yourdomain.test/?p=1295',
+						'menu_order' => 0,
+						'post_type' => 'post',
+						'post_mime_type' => '',
+						'comment_count' => '0',
+						'filter' => 'raw',
+					  ),
+					  2 => 
+					  array (
+						'ID' => 1047,
+						'post_author' => '131',
+						'post_date' => '2020-10-20 22:44:28',
+						'post_date_gmt' => '2020-10-20 22:44:28',
+						'post_content' => 'This is more demo content.',
+						'post_title' => 'Another test',
+						'post_excerpt' => '',
+						'post_status' => 'publish',
+						'comment_status' => 'open',
+						'ping_status' => 'open',
+						'post_password' => '',
+						'post_name' => 'another-test-2',
+						'to_ping' => '',
+						'pinged' => '',
+						'post_modified' => '2021-07-13 08:31:39',
+						'post_modified_gmt' => '2021-07-13 08:31:39',
+						'post_content_filtered' => '',
+						'post_parent' => 0,
+						'guid' => 'https://yourdomain.test/?p=1047',
+						'menu_order' => 0,
+						'post_type' => 'post',
+						'post_mime_type' => '',
+						'comment_count' => '0',
+						'filter' => 'raw',
+					  ),
+					),
+					'post_count' => 10,
+					'current_post' => -1,
+					'in_the_loop' => false,
+					'post' => 
+					array (
+					  'ID' => 1339,
+					  'post_author' => '1',
+					  'post_date' => '2021-08-28 11:28:01',
+					  'post_date_gmt' => '2021-08-28 11:28:01',
+					  'post_content' => '',
+					  'post_title' => 'Another demo post title',
+					  'post_excerpt' => 'Test excerpt',
+					  'post_status' => 'publish',
+					  'comment_status' => 'open',
+					  'ping_status' => 'open',
+					  'post_password' => '',
+					  'post_name' => 'cool-title-2',
+					  'to_ping' => '',
+					  'pinged' => '',
+					  'post_modified' => '2021-09-05 11:56:47',
+					  'post_modified_gmt' => '2021-09-05 11:56:47',
+					  'post_content_filtered' => '',
+					  'post_parent' => 0,
+					  'guid' => 'https://yourdomain.test/?p=1339',
+					  'menu_order' => 0,
+					  'post_type' => 'post',
+					  'post_mime_type' => '',
+					  'comment_count' => '0',
+					  'filter' => 'raw',
+					),
+					'comment_count' => 0,
+					'current_comment' => -1,
+					'found_posts' => 21,
+					'max_num_pages' => 3,
+					'max_num_comment_pages' => 0,
+					'is_single' => false,
+					'is_preview' => false,
+					'is_page' => false,
+					'is_archive' => false,
+					'is_date' => false,
+					'is_year' => false,
+					'is_month' => false,
+					'is_day' => false,
+					'is_time' => false,
+					'is_author' => false,
+					'is_category' => false,
+					'is_tag' => false,
+					'is_tax' => false,
+					'is_search' => false,
+					'is_feed' => false,
+					'is_comment_feed' => false,
+					'is_trackback' => false,
+					'is_home' => true,
+					'is_privacy_policy' => false,
+					'is_404' => false,
+					'is_embed' => false,
+					'is_paged' => false,
+					'is_admin' => false,
+					'is_attachment' => false,
+					'is_singular' => false,
+					'is_robots' => false,
+					'is_favicon' => false,
+					'is_posts_page' => false,
+					'is_post_type_archive' => false,
+					'thumbnails_cached' => false,
+				  ),
+				),
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Get multiple posts',
@@ -141,6 +411,7 @@ $return_args = array(
 			return array(
 				'action'			=> 'get_posts',
 				'name'			  => WPWHPRO()->helpers->translate( 'Get multiple posts', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'get or search for multiple posts', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

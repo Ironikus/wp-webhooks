@@ -47,11 +47,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_subscription_pay
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-edd_subscription_payment-description";
@@ -76,7 +71,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_subscription_pay
 
 		return array(
 			'trigger'		   => 'edd_subscription_payment',
-			'name'			  => WPWHPRO()->helpers->translate( 'New subscription payment', $translation_ident ),
+			'name'			  => WPWHPRO()->helpers->translate( 'Subscription payment created', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a new subscription payment was created', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

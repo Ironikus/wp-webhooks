@@ -62,6 +62,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_plugin_activat
             return array(
                 'trigger'           => 'plugin_activated',
                 'name'              => WPWHPRO()->helpers->translate( 'Plugin activated', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a plugin was activated', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

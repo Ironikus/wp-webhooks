@@ -20,6 +20,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_create_term' ) 
 				'description'			=> array( 'short_description' => WPWHPRO()->helpers->translate( '(String) The term description. Default empty string.', $translation_ident ) ),
 				'parent'			=> array( 'short_description' => WPWHPRO()->helpers->translate( '(String) The id of the parent term. Default 0.', $translation_ident ) ),
 				'slug'			=> array( 'short_description' => WPWHPRO()->helpers->translate( '(String) The term slug to use. Default empty string.', $translation_ident ) ),
+				'name'			=> array( 'short_description' => WPWHPRO()->helpers->translate( '(String) The term name to use. Default empty string.', $translation_ident ) ),
 				'do_action'		  => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after WP Webhooks fires this webhook. More infos are in the description.', $translation_ident ) )
 			);
 
@@ -45,23 +46,19 @@ function my_custom_callback_function( $return_args, $term_name, $taxonomy, $term
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller. The data includes the following key: msg, success, data", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$term_name</strong> (string)
-		<br>
+		<strong>$term_name</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the name of the term that was just added.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$taxonomy</strong> (string)
-		<br>
+		<strong>$taxonomy</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the taxonomy slug of the taxonomy you added the term to.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$term_args</strong> (array)
-		<br>
+		<strong>$term_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the additional information you set within the create_term webhook action.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -89,7 +86,8 @@ function my_custom_callback_function( $return_args, $term_name, $taxonomy, $term
 
 			return array(
 				'action'			=> 'create_term',
-				'name'			  => WPWHPRO()->helpers->translate( 'Create a taxonomy term', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Create taxonomy term', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'create a taxonomy term', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

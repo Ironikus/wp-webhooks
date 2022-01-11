@@ -107,11 +107,12 @@ $response = apply_filters( 'wp_webhooks_send_to_webhook_filter', array(), $custo
 
             return array(
                 'trigger'           => 'custom_action',
-                'name'              => WPWHPRO()->helpers->translate( 'Custom action', 'trigger-custom-action' ),
+                'name'              => WPWHPRO()->helpers->translate( 'Custom trigger called', 'trigger-custom-action' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a custom trigger was called via PHP', 'trigger-custom-action' ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo(),
-                'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after a custom action was called. For more information, please check the description.', 'trigger-custom-action' ),
+                'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires after a custom trigger was called. For more information, please check the description.', 'trigger-custom-action' ),
                 'description'       => $description,
                 'callback'          => 'test_custom_action',
                 'integration'       => 'wordpress',

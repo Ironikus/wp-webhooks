@@ -27,17 +27,10 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_custom_action' 
 			'custom'		=> array( 'short_description' => WPWHPRO()->helpers->translate( 'This webhook returns whatever you define withiin the filters. Please check the description for more detials.', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-//This is how the default response looks like
-$return_args = array(
-	'success' => false,
-	'msg' => ''
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'Custom action was successfully fired.',
+			);
 
 			ob_start();
 ?>
@@ -63,18 +56,15 @@ function wpwh_fire_my_custom_logic( $return_args, $identifier, $response_body ){
 <?php echo WPWHPRO()->helpers->translate( "The custom add_filter() callback accepts three parameters, which are explained down below:", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This is what the webhook call returns as a response. You can modify it to return your own custom data.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$identifier</strong> (string)
-		<br>
+		<strong>$identifier</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This is the wpwh_identifier you may have set up within the webhook call. (We also allow to set this specific argument within the URL as &wpwh_identifier=my_identifier). Further information about this argument is available within the <strong>Special Arguments</strong> list.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$response_body</strong> (array)
-		<br>
+		<strong>$response_body</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This returns the validated payload of the incoming webhook call. You can use <code>WPWHPRO()->helpers->validate_request_value()</code> to validate single entries (See example)", $translation_ident ); ?>
 	</li>
 </ol>
@@ -92,7 +82,8 @@ function wpwh_fire_my_custom_logic( $return_args, $identifier, $response_body ){
 
 			return array(
 				'action'			=> 'custom_action',
-				'name'			  => WPWHPRO()->helpers->translate( 'Fire a custom action', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Custom PHP action', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'fire custom PHP code', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

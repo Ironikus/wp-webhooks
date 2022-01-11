@@ -41,23 +41,19 @@ function my_custom_callback_function( $return_args, $user_value, $value_type, $u
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user_value</strong> (string)
-		<br>
+		<strong>$user_value</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The value you included into the user_value argument.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$value_type</strong> (string)
-		<br>
+		<strong>$value_type</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The value you included into the value_type argument.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user</strong> (mixed)
-		<br>
+		<strong>$user</strong> (mixed)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Returns null in case an the user_value wasn't set, the user object on success or a wp_error object in case an error occurs.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -70,17 +66,279 @@ function my_custom_callback_function( $return_args, $user_value, $value_type, $u
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'msg'	 => '',
-	'data' => array()
-);
-		</pre>
-		<?php
-		$returns_code = ob_get_clean();
+		$returns_code = array (
+			'success' => true,
+			'msg' => 'User was successfully returned.',
+			'data' => 
+			array (
+			  'data' => 
+			  array (
+				'ID' => '78',
+				'user_login' => 'demo',
+				'user_pass' => '$P$BNibyUQOn6H5wJNi1Nb9ZxI8iK5mZi0',
+				'user_nicename' => 'demo',
+				'user_email' => 'demo@demo.demo',
+				'user_url' => '',
+				'user_registered' => '2019-07-03 15:13:43',
+				'user_activation_key' => '',
+				'user_status' => '0',
+				'display_name' => 'demo',
+				'spam' => '0',
+				'deleted' => '0',
+			  ),
+			  'ID' => 78,
+			  'caps' => 
+			  array (
+				'editor' => true,
+			  ),
+			  'cap_key' => 'wp_capabilities',
+			  'roles' => 
+			  array (
+				0 => 'editor',
+			  ),
+			  'allcaps' => 
+			  array (
+				'moderate_comments' => true,
+				'manage_categories' => true,
+				'manage_links' => true,
+				'upload_files' => true,
+				'unfiltered_html' => true,
+				'edit_posts' => true,
+				'edit_others_posts' => true,
+				'edit_published_posts' => true,
+				'publish_posts' => true,
+				'edit_pages' => true,
+				'read' => true,
+				'level_7' => true,
+				'level_6' => true,
+				'level_5' => true,
+				'level_4' => true,
+				'level_3' => true,
+				'level_2' => true,
+				'level_1' => true,
+				'level_0' => true,
+				'edit_others_pages' => true,
+				'edit_published_pages' => true,
+				'publish_pages' => true,
+				'delete_pages' => true,
+				'delete_others_pages' => true,
+				'delete_published_pages' => true,
+				'delete_posts' => true,
+				'delete_others_posts' => true,
+				'delete_published_posts' => true,
+				'delete_private_posts' => true,
+				'edit_private_posts' => true,
+				'read_private_posts' => true,
+				'delete_private_pages' => true,
+				'edit_private_pages' => true,
+				'read_private_pages' => true,
+				'edit_blocks' => true,
+				'edit_others_blocks' => true,
+				'publish_blocks' => true,
+				'read_private_blocks' => true,
+				'read_blocks' => true,
+				'delete_blocks' => true,
+				'delete_private_blocks' => true,
+				'delete_published_blocks' => true,
+				'delete_others_blocks' => true,
+				'edit_private_blocks' => true,
+				'edit_published_blocks' => true,
+				'create_blocks' => true,
+				'read_private_aggregator-records' => true,
+				'edit_aggregator-records' => true,
+				'edit_others_aggregator-records' => true,
+				'edit_private_aggregator-records' => true,
+				'edit_published_aggregator-records' => true,
+				'delete_aggregator-records' => true,
+				'delete_others_aggregator-records' => true,
+				'delete_private_aggregator-records' => true,
+				'delete_published_aggregator-records' => true,
+				'publish_aggregator-records' => true,
+				'publish_events' => true,
+				'delete_others_events' => true,
+				'edit_others_events' => true,
+				'manage_others_bookings' => true,
+				'publish_recurring_events' => true,
+				'delete_others_recurring_events' => true,
+				'edit_others_recurring_events' => true,
+				'publish_locations' => true,
+				'delete_others_locations' => true,
+				'delete_locations' => true,
+				'edit_others_locations' => true,
+				'delete_event_categories' => true,
+				'edit_event_categories' => true,
+				'manage_bookings' => true,
+				'upload_event_images' => true,
+				'delete_events' => true,
+				'edit_events' => true,
+				'read_private_events' => true,
+				'delete_recurring_events' => true,
+				'edit_recurring_events' => true,
+				'edit_locations' => true,
+				'read_private_locations' => true,
+				'read_others_locations' => true,
+				'editor' => true,
+			  ),
+			  'filter' => NULL,
+			),
+			'user_meta' => 
+			array (
+			  'nickname' => 
+			  array (
+				0 => 'demo',
+			  ),
+			  'first_name' => 
+			  array (
+				0 => '',
+			  ),
+			  'last_name' => 
+			  array (
+				0 => '',
+			  ),
+			  'description' => 
+			  array (
+				0 => '',
+			  ),
+			  'rich_editing' => 
+			  array (
+				0 => 'true',
+			  ),
+			  'syntax_highlighting' => 
+			  array (
+				0 => 'true',
+			  ),
+			  'comment_shortcuts' => 
+			  array (
+				0 => 'false',
+			  ),
+			  'admin_color' => 
+			  array (
+				0 => 'fresh',
+			  ),
+			  'use_ssl' => 
+			  array (
+				0 => '0',
+			  ),
+			  'show_admin_bar_front' => 
+			  array (
+				0 => 'true',
+			  ),
+			  'locale' => 
+			  array (
+				0 => '',
+			  ),
+			  'wp_capabilities' => 
+			  array (
+				0 => 'a:1:{s:6:"editor";b:1;}',
+			  ),
+			  'wp_user_level' => 
+			  array (
+				0 => '7',
+			  ),
+			  'custom_field_1' => 
+			  array (
+				0 => '',
+			  ),
+			  'account_status' => 
+			  array (
+				0 => 'approved',
+			  ),
+			  'billing_first_name' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_last_name' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_company' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_address_1' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_address_2' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_city' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_postcode' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_country' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_state' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_phone' => 
+			  array (
+				0 => '',
+			  ),
+			  'billing_email' => 
+			  array (
+				0 => 'demo@demo.test',
+			  ),
+			  'shipping_first_name' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_last_name' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_company' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_address_1' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_address_2' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_city' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_postcode' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_country' => 
+			  array (
+				0 => '',
+			  ),
+			  'shipping_state' => 
+			  array (
+				0 => '',
+			  ),
+			  'last_update' => 
+			  array (
+				0 => '1585681906',
+			  ),
+			  'wc_last_active' => 
+			  array (
+				0 => '1585612800',
+			  ),
+			  'primary_blog' => 
+			  array (
+				0 => '1',
+			  ),
+			),
+			'user_posts_url' => 'https://yourdomain.test/blog/author/demo/',
+			'acf_meta' => false,
+		);
 
 		$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 			'webhook_name' => 'Get a user',
@@ -96,7 +354,8 @@ $return_args = array(
 
 		return array(
 			'action'			=> 'get_user',
-			'name'			  => WPWHPRO()->helpers->translate( 'Get a user', $translation_ident ),
+			'name'			  => WPWHPRO()->helpers->translate( 'Get user', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'get a user', $translation_ident ),
 			'parameter'		 => $parameter,
 			'returns'		   => $returns,
 			'returns_code'	  => $returns_code,

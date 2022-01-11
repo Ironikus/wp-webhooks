@@ -16,11 +16,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_elementor_Triggers_elementor_subm
 		return defined( 'ELEMENTOR_PRO_VERSION' );
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-elementor_submit-description";
@@ -76,6 +71,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_elementor_Triggers_elementor_subm
 		return array(
 			'trigger'		   => 'elementor_submit',
 			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

@@ -39,20 +39,18 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_update_payment' )
 				'errors'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) An array containing all errors that might happened during the update.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The payment was successfully updated or no changes have been made.",
-    "data": {
-        "payment_id": 749,
-        "payment_status": "processing"
-    },
-    "errors": []
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+                'success' => true,
+                'msg' => 'The payment was successfully updated or no changes have been made.',
+                'data' => 
+                array (
+                  'payment_id' => 749,
+                  'payment_status' => 'processing',
+                ),
+                'errors' => 
+                array (
+                ),
+            );
 
 			ob_start();
 //load default edd statuses
@@ -137,7 +135,8 @@ function my_custom_callback_function( $payment_id, $return_args ){
 
             return array(
                 'action'            => 'edd_update_payment',
-                'name'              => WPWHPRO()->helpers->translate( 'Update a payment', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Update payment', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'update a payment', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

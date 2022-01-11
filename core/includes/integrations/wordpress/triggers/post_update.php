@@ -9,6 +9,14 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_update' )
 	 */
 	class WP_Webhooks_Integrations_wordpress_Triggers_post_update {
 
+        /**
+         * Preserver certain values
+         *
+         * @var array
+         * @since 2.0.5
+         */
+        private $pre_action_values = array();
+
 		/**
 		 * Register the actual functionality of the webhook
 		 *
@@ -146,6 +154,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_update' )
             return array(
                 'trigger'           => 'post_update',
                 'name'              => WPWHPRO()->helpers->translate( 'Post updated', 'trigger-post-update' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a post was updated', 'trigger-post-update' ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

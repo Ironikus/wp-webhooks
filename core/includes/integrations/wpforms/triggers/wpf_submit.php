@@ -12,11 +12,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wpforms_Triggers_wpf_submit' ) ) 
   */
   class WP_Webhooks_Integrations_wpforms_Triggers_wpf_submit {
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 	  $translation_ident = "trigger-wpf_submit-description";
@@ -74,6 +69,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wpforms_Triggers_wpf_submit' ) ) 
 	  return array(
 		'trigger'	  => 'wpf_submit',
 		'name'	   => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+		'sentence'	   => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 		'parameter'	 => $parameter,
 		'settings'	 => $settings,
 		'returns_code'   => $this->get_demo( array() ),

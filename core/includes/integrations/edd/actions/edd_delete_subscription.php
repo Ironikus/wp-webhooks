@@ -39,20 +39,16 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_delete_subscripti
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the new susbcription id and other arguments set during the deletion of the subscription.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The subscription was successfully deleted.",
-    "data": {
-        "subscription_id": 21,
-        "keep_payment_meta": false,
-        "keep_list_of_trials": false
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The subscription was successfully deleted.',
+				'data' => 
+				array (
+				  'subscription_id' => 21,
+				  'keep_payment_meta' => false,
+				  'keep_list_of_trials' => false,
+				),
+			);
 
 			ob_start();
 ?>
@@ -129,7 +125,8 @@ function my_custom_callback_function( $subscription_id, $subscription, $return_a
 
             return array(
                 'action'            => 'edd_delete_subscription',
-                'name'              => WPWHPRO()->helpers->translate( 'Delete a subscription', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Delete subscription', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'delete a subscription', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

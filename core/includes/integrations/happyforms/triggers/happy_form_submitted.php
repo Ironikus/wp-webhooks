@@ -35,11 +35,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_happyforms_Triggers_happy_form_su
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-happy_form_submitted-description";
@@ -90,6 +85,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_happyforms_Triggers_happy_form_su
 		return array(
 			'trigger'		   => 'happy_form_submitted',
 			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

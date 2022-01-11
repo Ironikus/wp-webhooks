@@ -47,11 +47,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_license_status' 
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-edd_license_status-description";
@@ -109,6 +104,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_license_status' 
 		return array(
 			'trigger'		   => 'edd_license_status',
 			'name'			  => WPWHPRO()->helpers->translate( 'License status updated', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a license status was updated', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

@@ -109,6 +109,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_post_trash' ) 
             return array(
                 'trigger'           => 'post_trash',
                 'name'              => WPWHPRO()->helpers->translate( 'Post trashed', 'trigger-post-trash' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a post was trashed', 'trigger-post-trash' ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

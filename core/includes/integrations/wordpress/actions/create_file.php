@@ -58,23 +58,19 @@ function my_custom_callback_function( $return_args, $file, $content, $mode ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$file</strong> (integer)
-		<br>
+		<strong>$file</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The path of the created file.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$content</strong> (array)
-		<br>
+		<strong>$content</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The content of the created file.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$mode</strong> (array)
-		<br>
+		<strong>$mode</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The given mode of the file. Default: w", $translation_ident ); ?>
 	</li>
 </ol>
@@ -102,7 +98,8 @@ function my_custom_callback_function( $return_args, $file, $content, $mode ){
 
 			return array(
 				'action'			=> 'create_file',
-				'name'			  => WPWHPRO()->helpers->translate( 'Create a file', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Create file', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'create a file', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

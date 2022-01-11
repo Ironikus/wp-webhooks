@@ -204,11 +204,18 @@ We offer you a very awesome hook system to customize everything based on your ne
 * New trigger setting to prevent a trigger firing multiple times within the same WordPress instance
 
 **Little tweaks:**
+* Added permalink to the "Create post" webhook action response
+* Added the permalink to "Delete post" webhok action response
+* Added force_delete key to "Delete post" webhok action response
 * Optimize sorting for custom trigger filter settings
 * Optimized the overall layout and usability
 * Optimized feature awareness
 * Make sure we initialize the settings key for action webhook endpoints by default
 * Added new dynamic action description
+* Optimized webhook naming for trigger and actions
+* Optimized output of response codes for triggers and demo data for actions
+* Make sure the "Paid Memberships Pro" triggers return the most recent data
+* Optimized various trigger responses to show more real data
 
 **Fixed issues:**
 
@@ -218,6 +225,9 @@ We offer you a very awesome hook system to customize everything based on your ne
 * The trigger callbacks did not return a value in case a filter or shortcode callback was given
 * The Shop URL on the plugin overview page was broken
 * Prevent undefined variable notice on the "Send Data" & "Receive Data" tab if default values are used
+* The "User updated" and "User created" webhook triggers returned a wrongly formatted variable key if a multisite was used
+* Prevent the file helpers to add absolute path on top of each other
+* Optimize file helpers and fix issues for the file actions of the WordPress integration
 
 **For developers:**
 

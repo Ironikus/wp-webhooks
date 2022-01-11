@@ -65,6 +65,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_plugin_deactiv
             return array(
                 'trigger'           => 'plugin_deactivated',
                 'name'              => WPWHPRO()->helpers->translate( 'Plugin deactivated', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a plugin was deactivated', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

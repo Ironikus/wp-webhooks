@@ -78,18 +78,15 @@ function my_custom_callback_function( $comment_id, $commentdata, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$comment_id</strong> (integer)
-		<br>
+		<strong>$comment_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The ID of the comment you updated.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$commentdata</strong> (array)
-		<br>
+		<strong>$commentdata</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the data that got updated.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller. The data includes the following key: msg, success, data", $translation_ident ); ?>
 	</li>
 </ol>
@@ -191,7 +188,8 @@ function my_custom_callback_function( $comment_id, $commentdata, $return_args ){
 
 			return array(
 				'action'			=> 'update_comment',
-				'name'			  => WPWHPRO()->helpers->translate( 'Update a comment', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Update comment', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'update a comment', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

@@ -277,7 +277,7 @@ function my_custom_callback_function( $user_data, $user_id, $user_meta, $update 
 			'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
         );
 
-		$return_code_data = array(
+		$returns_code = array(
 			"success" => true,
 			"msg" => "User successfully created.",
 			"data" => array(
@@ -360,9 +360,6 @@ function my_custom_callback_function( $user_data, $user_id, $user_meta, $update 
 				)
 			)
 		);
-		ob_start();
-			echo WPWHPRO()->helpers->display_var( $return_code_data );
-		$returns_code = ob_get_clean();
 
 		$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 			'webhook_name' => 'Create a user',
@@ -377,10 +374,11 @@ function my_custom_callback_function( $user_data, $user_id, $user_meta, $update 
 
 		return array(
 			'action'            => 'create_user',
-			'name'              => WPWHPRO()->helpers->translate( 'Create a user', $translation_ident ),
+			'name'              => WPWHPRO()->helpers->translate( 'Create user', $translation_ident ),
+			'sentence'              => WPWHPRO()->helpers->translate( 'create a user', $translation_ident ),
 			'parameter'         => $parameter,
 			'returns'           => $returns,
-			'returns_code'      => '<pre>' . $returns_code . '</pre>',
+			'returns_code'      => $returns_code,
 			'short_description' => WPWHPRO()->helpers->translate( 'Create a new user via webhooks.', $translation_ident ),
 			'description'       => $description,
 			'integration'       => 'wordpress',

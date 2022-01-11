@@ -35,11 +35,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_fluent_forms_Triggers_fluent_form
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-fluent_form_submitted-description";
@@ -93,6 +88,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_fluent_forms_Triggers_fluent_form
 		return array(
 			'trigger'		   => 'fluent_form_submitted',
 			'name'			  => WPWHPRO()->helpers->translate( 'Form submitted', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a form was submitted', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

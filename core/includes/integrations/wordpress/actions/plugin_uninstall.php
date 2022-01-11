@@ -53,18 +53,15 @@ function my_custom_callback_function( $plugin_slug, force_delete, $check, $retur
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$plugin_slug</strong> (string)
-		<br>
+		<strong>$plugin_slug</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The currently given slug (+ filename) of the plugin. (The given data from the plugin_slug argument)", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$check</strong> (bool)
-		<br>
+		<strong>$check</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "True if the plugin was successfully uninstalled, false if not.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -92,7 +89,8 @@ function my_custom_callback_function( $plugin_slug, force_delete, $check, $retur
 
 			return array(
 				'action'			=> 'plugin_uninstall',
-				'name'			  => WPWHPRO()->helpers->translate( 'Uninstall a plugin', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Uninstall plugin', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'uninstall a plugin', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

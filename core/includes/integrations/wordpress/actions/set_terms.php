@@ -67,28 +67,23 @@ function my_custom_callback_function( $return_args, $object_id, $terms, $taxonom
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller. The data includes the following key: msg, success, data", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$object_id</strong> (integer)
-		<br>
+		<strong>$object_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the post id of the post you want to assign the taxonomies to.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$terms</strong> (string)
-		<br>
+		<strong>$terms</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the value of the <strong>terms</strong> argument that was set within the webhook call.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$taxonomy</strong> (string)
-		<br>
+		<strong>$taxonomy</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the taxonomy slug of the taxonomy you want to assign to the given post.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$append</strong> (bool)
-		<br>
+		<strong>$append</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains <strong>true</strong> if the <strong>append</strong> argument was set to <strong>yes</strong> and <strong>false</strong> if it was set to <strong>no</strong>.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -116,6 +111,7 @@ function my_custom_callback_function( $return_args, $object_id, $terms, $taxonom
 			return array(
 				'action'			=> 'set_terms',
 				'name'			  => WPWHPRO()->helpers->translate( 'Set taxonomy terms', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'set custom taxonomy terms', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

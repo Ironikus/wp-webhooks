@@ -35,11 +35,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_paid_memberships_pro_Triggers_pmp
         );
     }
 
-    /*
-    * Register the post delete trigger as an element
-    *
-    * @since 1.2
-    */
     public function get_details(){
 
         $translation_ident = "action-pmpro_membership_canceled-description";
@@ -91,6 +86,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_paid_memberships_pro_Triggers_pmp
         return array(
             'trigger'           => 'pmpro_membership_canceled',
             'name'              => WPWHPRO()->helpers->translate( 'Membership canceled', $translation_ident ),
+            'sentence'              => WPWHPRO()->helpers->translate( 'a membership was canceled', $translation_ident ),
             'parameter'         => $parameter,
             'settings'          => $settings,
             'returns_code'      => $this->get_demo( array() ),

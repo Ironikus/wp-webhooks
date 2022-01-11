@@ -77,7 +77,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_wordpress_hook
 
             return array(
                 'trigger'           => 'wordpress_hook',
-                'name'              => WPWHPRO()->helpers->translate( 'WordPress hook', 'trigger-custom-action' ),
+                'name'              => WPWHPRO()->helpers->translate( 'WordPress hook fired', 'trigger-custom-action' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a WordPress hook was fired', 'trigger-custom-action' ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo(),

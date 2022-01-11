@@ -87,11 +87,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_subscriptions' )
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-edd_subscriptions-description";
@@ -163,7 +158,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_subscriptions' )
 
 		return array(
 			'trigger'		   => 'edd_subscriptions',
-			'name'			  => WPWHPRO()->helpers->translate( 'Subscriptions', $translation_ident ),
+			'name'			  => WPWHPRO()->helpers->translate( 'Subscription status changed', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a subscription status has changed', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

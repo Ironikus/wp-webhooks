@@ -44,18 +44,15 @@ function my_custom_callback_function( $comment_id, $trashed, $return_args ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$comment_id</strong> (integer)
-		<br>
+		<strong>$comment_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The ID of the comment you trashed.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$trashed</strong> (bool)
-		<br>
+		<strong>$trashed</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The respone of the wp_trash_comment() function.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller. The data includes the following key: msg, success, data", $translation_ident ); ?>
 	</li>
 </ol>
@@ -87,7 +84,8 @@ function my_custom_callback_function( $comment_id, $trashed, $return_args ){
 
 			return array(
 				'action'			=> 'trash_comment',
-				'name'			  => WPWHPRO()->helpers->translate( 'Trash a comment', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Trash comment', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'trash a comment', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

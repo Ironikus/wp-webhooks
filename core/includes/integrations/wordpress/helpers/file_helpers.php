@@ -44,13 +44,17 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Helpers_file_helpers' )
 		        return false;
             }
 
+			if( strpos( $path, ABSPATH ) !== FALSE ){
+				$path = str_replace( ABSPATH, '', $path );
+			}
+
             //Backwards compatibility
             $validate = true;
             $check_1 = add_filter( 'wpwhpro/remote_file_control/validate_path', true, $path );
             $check_2 = add_filter( 'wpwhpro/manage_media_files/validate_path', true, $path );
             if( $check_1 === $check_2 && empty( $check_1 ) ){
                 $validate = false;
-            } 
+            }
 
             //todo - add to docs
             if( $validate ){
@@ -214,7 +218,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Helpers_file_helpers' )
 		}
 
 		/**
-		 * Recursively copy files from one directory to another
+		 * Recursively copy files and folders from one directory to another
 		 *
 		 * @param String $source - Source of files being moved
 		 * @param String $target - Destination of files being moved
@@ -228,14 +232,28 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Helpers_file_helpers' )
 
 			$source = $this->validate_path( $source );
 			$target = $this->validate_path( $target );
-
+	
 			if( ! is_dir( $source ) ){
 			    return $return;
 			}
 
 			if( ! is_dir( $target ) ) {
-				if( ! mkdir( $target, $mode, $recursive ) ) {
+				$check_create = mkdir( $target, $mode, $recursive );
+				if( ! $check_create ) {
 					return $return;
+				} else {
+
+					if( ! isset( $return['data']['folder'] ) ){
+						$return['data']['folder'] = array();
+					}
+
+					$return['data']['folder'][] = array(
+						'success' => true,
+						'data' => $check_create,
+						'source' => $source,
+						'destination' => $target,
+
+					);
 				}
 			}
 
@@ -243,21 +261,30 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Helpers_file_helpers' )
 			$i = new DirectoryIterator( $source );
 			foreach( $i as $f ) {
 				if( $f->isFile() ) {
+					if( ! isset( $return['data']['file'] ) ){
+						$return['data']['file'] = array();
+					}
+
 					$check = copy( $f->getRealPath() , "$target/" . $f->getFilename() );
 					$return['success'] = true;
 					$return['data']['file'][] = array(
                         'success' => $check,
                         'source' => $f->getRealPath(),
                         'destination' => "$target/" . $f->getFilename(),
-
                     );
-				} elseif( ! $f->isDot() && $f->isDir() ) {
-					$data = call_user_func( array( $this, 'copy_folder' ), $f->getRealPath(), "$target/$f" );
-					$return['data']['folder'][] = array(
-						'success' => ( ! empty( $data ) ),
-						'data' => $data
+				} elseif( ! $f->isDot() && $f->isDir() ) {	
+					if( ! isset( $return['data']['folder'] ) ){
+						$return['data']['folder'] = array();
+					}
 
+					$check_create = mkdir( "$target/$f", $mode, $recursive );
+					$return['data']['folder'][] = array(
+						'success' => ( ! empty( $check_create ) ) ? true : false,
+						'childs' => call_user_func( array( $this, 'copy_folder' ), $f->getRealPath(), "$target/$f", $mode, $recursive ),
+						'source' => $f->getRealPath(),
+                        'destination' => "$target/$f",
 					);
+					
 				}
 			}
 

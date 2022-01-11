@@ -35,11 +35,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_paid_memberships_pro_Triggers_pmp
         );
     }
 
-    /*
-    * Register the post delete trigger as an element
-    *
-    * @since 1.2
-    */
     public function get_details(){
 
         $translation_ident = "action-pmpro_order_created-description";
@@ -91,6 +86,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_paid_memberships_pro_Triggers_pmp
         return array(
             'trigger'           => 'pmpro_order_created',
             'name'              => WPWHPRO()->helpers->translate( 'Order created', $translation_ident ),
+            'sentence'              => WPWHPRO()->helpers->translate( 'an order was created', $translation_ident ),
             'parameter'         => $parameter,
             'settings'          => $settings,
             'returns_code'      => $this->get_demo( array() ),
@@ -108,9 +104,17 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_paid_memberships_pro_Triggers_pmp
      */
     public function pmpro_added_order_callback( MemberOrder $order ){
 
+        //try to fetch the order again for better values
+        if( isset( $order->id ) && ! empty( $order->id ) ){
+            $norder = new MemberOrder( $order->id );
+            if( ! empty( $norder ) ){
+                $order = $norder;
+            }
+        }
+
         $webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'pmpro_order_created' );
 		$membership_level = $order->getMembershipLevel();
-		$membership_id = $membership_level->id;
+        $membership_id = ( is_object( $membership_level ) && isset( $membership_level->id ) ) ? $membership_level->id : 0;
         $user = $order->getUser();
 		$user_id = $user->ID;
 

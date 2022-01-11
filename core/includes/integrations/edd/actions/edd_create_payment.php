@@ -53,63 +53,68 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_create_payment' )
 				'data'        	=> array( 'short_description' => WPWHPRO()->helpers->translate( '(array) Within the data array, you will find further details about the response, as well as the payment id and further information.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The payment was successfully created.",
-    "data": {
-        "payment_id": 747,
-        "payment_data": {
-            "purchase_key": "aa10bc587fb544b10c01fe13905fba74",
-            "user_email": "jondoe@test.test",
-            "user_info": {
-                "id": 0,
-                "email": "jondoe@test.test",
-                "first_name": "Jannis",
-                "last_name": "Testing",
-                "discount": false,
-                "address": {
-                    "country": "AE",
-                    "state": false,
-                    "zip": false
-                }
-            },
-            "gateway": "paypal",
-            "currency": "EUR",
-            "cart_details": [
-                {
-                    "id": 176,
-                    "quantity": 1,
-                    "item_price": 49,
-                    "tax": 5,
-                    "discount": 4,
-                    "fees": [
-                        {
-                            "label": "Custom Fee",
-                            "amount": 10,
-                            "type": "fee",
-                            "id": "",
-                            "no_tax": false,
-                            "download_id": 435
-                        }
-                    ],
-                    "item_number": {
-                        "options": {
-                            "price_id": null
-                        }
-                    }
-                }
-            ],
-            "parent": false,
-            "status": "publish",
-            "post_date": "2020-04-23 00:00:00"
-        }
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+                'success' => true,
+                'msg' => 'The payment was successfully created.',
+                'data' => 
+                array (
+                  'payment_id' => 747,
+                  'payment_data' => 
+                  array (
+                    'purchase_key' => 'aa10bc587fb544b10c01fe13905fba74',
+                    'user_email' => 'jondoe@test.test',
+                    'user_info' => 
+                    array (
+                      'id' => 0,
+                      'email' => 'jondoe@test.test',
+                      'first_name' => 'Jannis',
+                      'last_name' => 'Testing',
+                      'discount' => false,
+                      'address' => 
+                      array (
+                        'country' => 'AE',
+                        'state' => false,
+                        'zip' => false,
+                      ),
+                    ),
+                    'gateway' => 'paypal',
+                    'currency' => 'EUR',
+                    'cart_details' => 
+                    array (
+                      0 => 
+                      array (
+                        'id' => 176,
+                        'quantity' => 1,
+                        'item_price' => 49,
+                        'tax' => 5,
+                        'discount' => 4,
+                        'fees' => 
+                        array (
+                          0 => 
+                          array (
+                            'label' => 'Custom Fee',
+                            'amount' => 10,
+                            'type' => 'fee',
+                            'id' => '',
+                            'no_tax' => false,
+                            'download_id' => 435,
+                          ),
+                        ),
+                        'item_number' => 
+                        array (
+                          'options' => 
+                          array (
+                            'price_id' => NULL,
+                          ),
+                        ),
+                      ),
+                    ),
+                    'parent' => false,
+                    'status' => 'publish',
+                    'post_date' => '2020-04-23 00:00:00',
+                  ),
+                ),
+            );
 
 			ob_start();
 //load default edd statuses
@@ -331,7 +336,8 @@ function my_custom_callback_function( $payment_id, $purchase_data, $send_receipt
 
             return array(
                 'action'            => 'edd_create_payment',
-                'name'              => WPWHPRO()->helpers->translate( 'Create a payment', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Create payment', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'create a payment', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

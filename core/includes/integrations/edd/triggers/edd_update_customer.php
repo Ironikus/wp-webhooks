@@ -47,11 +47,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_update_customer'
 		);
 	}
 
-	/*
-	* Register the post delete trigger as an element
-	*
-	* @since 1.2
-	*/
 	public function get_details(){
 
 		$translation_ident = "action-edd_update_customer-description";
@@ -85,6 +80,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Triggers_edd_update_customer'
 		return array(
 			'trigger'		   => 'edd_update_customer',
 			'name'			  => WPWHPRO()->helpers->translate( 'Customer updated', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'a customer was updated', $translation_ident ),
 			'parameter'		 => $parameter,
 			'settings'		  => $settings,
 			'returns_code'	  => $this->get_demo( array() ),

@@ -60,18 +60,15 @@ function my_custom_callback_function( $return_args, $source_path, $destination_p
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 <li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "An array containing the information we will send back as the response to the initial webhook caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$source_path</strong> (string)
-		<br>
+		<strong>$source_path</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The source path you set within the webhook request.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$destination_path</strong> (string)
-		<br>
+		<strong>$destination_path</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The destination path you set within the webhook request.", $translation_ident ); ?>
 	</li>
 	
@@ -85,17 +82,58 @@ function my_custom_callback_function( $return_args, $source_path, $destination_p
 				'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 			);
 
-			ob_start();
-			?>
-			<pre>
-$return_args = array(
-	'success' => false,
-	'msg' => '',
-	'data' => array()
-);
-		</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+				'success' => true,
+				'msg' => 'The folder was successfully copied.',
+				'data' => 
+				array (
+				  'success' => true,
+				  'data' => 
+				  array (
+					'folder' => 
+					array (
+					  0 => 
+					  array (
+						'success' => true,
+						'data' => true,
+						'source' => '/your/absolute/file/path/wp-content/upgrade',
+						'destination' => '/your/absolute/file/path/wp-content/upgrade-2',
+					  ),
+					  1 => 
+					  array (
+						'success' => true,
+						'childs' => 
+						array (
+						  'success' => true,
+						  'data' => 
+						  array (
+							'file' => 
+							array (
+							  0 => 
+							  array (
+								'success' => true,
+								'source' => '/your/absolute/file/path/wp-content/upgrade/subfolder/index.php',
+								'destination' => '/your/absolute/file/path/wp-content/upgrade-2/subfolder/index.php',
+							  ),
+							),
+						  ),
+						),
+						'source' => '/your/absolute/file/path/wp-content/upgrade/subfolder',
+						'destination' => '/your/absolute/file/path/wp-content/upgrade-2/subfolder',
+					  ),
+					),
+					'file' => 
+					array (
+					  0 => 
+					  array (
+						'success' => true,
+						'source' => '/your/absolute/file/path/wp-content/upgrade/index.php',
+						'destination' => '/your/absolute/file/path/wp-content/upgrade-2/index.php',
+					  ),
+					),
+				  ),
+				),
+			);
 
 			$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 				'webhook_name' => 'Copy folder',
@@ -112,7 +150,8 @@ $return_args = array(
 
 			return array(
 				'action'			=> 'copy_folder',
-				'name'			  => WPWHPRO()->helpers->translate( 'Copy Folder', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Copy folder', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'copy a folder', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

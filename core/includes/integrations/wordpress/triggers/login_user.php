@@ -64,7 +64,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_login_user' ) 
 
             return array(
                 'trigger'           => 'login_user',
-                'name'              => WPWHPRO()->helpers->translate( 'User login', 'trigger-login-user-content' ),
+                'name'              => WPWHPRO()->helpers->translate( 'User logged in', 'trigger-login-user-content' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a user has logged in', 'trigger-login-user-content' ),
                 'parameter'         => $parameter,
                 'returns_code'      => $this->get_demo( array() ),
                 'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user triggers the login.', 'trigger-login-user-content' ),

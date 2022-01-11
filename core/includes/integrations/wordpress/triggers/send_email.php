@@ -63,6 +63,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_send_email' ) 
             return array(
                 'trigger'           => 'send_email',
                 'name'              => WPWHPRO()->helpers->translate( 'Email sent', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'an email was sent', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

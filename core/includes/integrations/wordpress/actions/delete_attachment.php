@@ -51,18 +51,15 @@ function my_custom_callback_function( $attachment_id, $parent_post_id, $return_a
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$attachment_id</strong> (integer)
-		<br>
+		<strong>$attachment_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The attachment id of the attachment you just deleted.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$parent_post_id</strong> (integer)
-		<br>
+		<strong>$parent_post_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The parent post id. In case it wasn't given, we return 0.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response to the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -122,6 +119,7 @@ function my_custom_callback_function( $attachment_id, $parent_post_id, $return_a
 			return array(
 				'action'			=> 'delete_attachment',
 				'name'			  => WPWHPRO()->helpers->translate( 'Delete attachment', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'delete an attachment', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

@@ -9,6 +9,14 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_deleted_user' 
 	 */
 	class WP_Webhooks_Integrations_wordpress_Triggers_deleted_user {
 
+        /**
+         * Preserver certain values
+         *
+         * @var array
+         * @since 2.0.5
+         */
+        private $pre_action_values = array();
+
 		/**
 		 * Register the actual functionality of the webhook
 		 *
@@ -78,6 +86,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_deleted_user' 
             return array(
                 'trigger'           => 'deleted_user',
                 'name'              => WPWHPRO()->helpers->translate( 'User deleted', 'trigger-deleted-user-content' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a user was deleted', 'trigger-deleted-user-content' ),
                 'parameter'         => $parameter,
                 'returns_code'      => $this->get_demo( array() ),
                 'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user was deleted.', 'trigger-deleted-user-content' ),

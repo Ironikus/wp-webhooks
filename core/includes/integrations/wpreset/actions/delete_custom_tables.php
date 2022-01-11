@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wpreset_Actions_delete_custom_tab
 	 */
 	class WP_Webhooks_Integrations_wpreset_Actions_delete_custom_tables {
 
-		/*
-		* The core logic to test a webhook
-		*/
 		public function get_details(){
 
 			$translation_ident = "action-delete_custom_tables-content";
@@ -37,18 +34,15 @@ function my_custom_callback_function( $return_args, $confirm, $count ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains all the data we send back to the webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$confirm</strong> (bool)
-		<br>
+		<strong>$confirm</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Returns true if the confirm argument was set correctly and false if not.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$count</strong> (integer)
-		<br>
+		<strong>$count</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the number of deleted tables.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -84,6 +78,7 @@ function my_custom_callback_function( $return_args, $confirm, $count ){
 			return array(
 				'action'			=> 'delete_custom_tables', //required
 				'name'			   => WPWHPRO()->helpers->translate( 'Delete custom tables', $translation_ident ),
+				'sentence'			   => WPWHPRO()->helpers->translate( 'delete custom tables', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

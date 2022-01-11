@@ -51,33 +51,43 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_edd_Actions_edd_update_license' )
 				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Array) Containing the license id, as well as the license key and other arguments set during the update of the license.', $translation_ident ) ),
 			);
 
-			//This area will be displayed within the "return" area of the webhook action
-			ob_start();
-			?>
-            <pre>{
-    "success": true,
-    "msg": "The license was successfully updated.",
-    "data": {
-        "license_id": 17,
-        "download_id": 176,
-        "payment_id": 711,
-        "price_id": "2",
-        "cart_index": 0,
-        "license_options": {
-            "download_id": 176,
-            "payment_id": 711,
-            "price_id": "2",
-            "expiration": 1621690140,
-            "customer_id": "1",
-            "user_id": "1"
-        },
-        "license_meta": "{\n  \"meta_5\": \"test5\",\n  \"meta_6\": \"ironikus-serialize{\\\"test_key\\\":\\\"wow\\\",\\\"testval\\\":\\\"new\\\"}\"\n}",
-        "license_key": "e5e52aa45bb0e7c82a471e8234f6e427",
-        "logs": "[\n  {\n    \"title\": \"Log 5\",\n    \"message\": \"This is my description for log 1\"\n  },\n  {\n    \"title\": \"Log 6\",\n    \"message\": \"This is my description for log 2\",\n    \"type\": null\n  }\n]"
-    }
-}</pre>
-			<?php
-			$returns_code = ob_get_clean();
+			$returns_code = array (
+                'success' => true,
+                'msg' => 'The license was successfully updated.',
+                'data' => 
+                array (
+                  'license_id' => 17,
+                  'download_id' => 176,
+                  'payment_id' => 711,
+                  'price_id' => '2',
+                  'cart_index' => 0,
+                  'license_options' => 
+                  array (
+                    'download_id' => 176,
+                    'payment_id' => 711,
+                    'price_id' => '2',
+                    'expiration' => 1621690140,
+                    'customer_id' => '1',
+                    'user_id' => '1',
+                  ),
+                  'license_meta' => '{
+                "meta_5": "test5",
+                "meta_6": "ironikus-serialize{\\"test_key\\":\\"wow\\",\\"testval\\":\\"new\\"}"
+              }',
+                  'license_key' => 'e5e52aa45bb0e7c82a471e8234f6e427',
+                  'logs' => '[
+                {
+                  "title": "Log 5",
+                  "message": "This is my description for log 1"
+                },
+                {
+                  "title": "Log 6",
+                  "message": "This is my description for log 2",
+                  "type": null
+                }
+              ]',
+                ),
+            );
 
 			ob_start();
 ?>
@@ -276,7 +286,8 @@ function my_custom_callback_function( $license_id, $license, $return_args ){
 
             return array(
                 'action'            => 'edd_update_license',
-                'name'              => WPWHPRO()->helpers->translate( 'Update a license', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Update license', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'update a license', $translation_ident ),
                 'parameter'         => $parameter,
                 'returns'           => $returns,
                 'returns_code'      => $returns_code,

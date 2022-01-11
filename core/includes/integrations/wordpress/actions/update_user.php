@@ -69,14 +69,12 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_user' ) 
 <?php echo WPWHPRO()->helpers->translate( "This argument allows you to add or remove additional roles on the user. There are two possible ways of doing that:", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong><?php echo WPWHPRO()->helpers->translate( "String method", $translation_ident ); ?></strong>
-		<br>
+		<strong><?php echo WPWHPRO()->helpers->translate( "String method", $translation_ident ); ?></strong><br>
 		<?php echo WPWHPRO()->helpers->translate( "This method allows you to add or remove the user roles using a simple string. To make it work, simply add the slug of the role and define the action (add/remove) after, separated by double points (:). If you want to add multiple roles, simply separate them with a semicolon (;). Please refer to the example down below.", $translation_ident ); ?>
 		<pre>editor:add;custom-role:add;custom-role-1:remove</pre>
 	</li>
 	<li>
-		<strong><?php echo WPWHPRO()->helpers->translate( "JSON method", $translation_ident ); ?></strong>
-		<br>
+		<strong><?php echo WPWHPRO()->helpers->translate( "JSON method", $translation_ident ); ?></strong><br>
 		<?php echo WPWHPRO()->helpers->translate( "We also support a JSON formatted string, which contains the role slug as the JSON key and the action (add/remove) as the value. Please refer to the example below:", $translation_ident ); ?>
 		<pre>{
   "editor": "add",
@@ -181,12 +179,9 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_user' ) 
 	  }
 	]
 }</pre>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>add_user_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/add_user_meta/">https://developer.wordpress.org/reference/functions/add_user_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "In the example above, you will find two entries within the add_user_meta key. The first one shows the default behavior using only the meta key and the value. This causes the meta key to be created without checking upfront if it exists - that allows you to create the meta value multiple times.", $translation_ident ); ?>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "As seen in the second entry, you will find a third key called <strong>unique</strong> that allows you to check upfront if the meta key exists already. If it does, the meta entry is neither created, nor updated. Set the value to <strong>true</strong> to check against existing ones. Default: false", $translation_ident ); ?>
-		<br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>add_user_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/add_user_meta/">https://developer.wordpress.org/reference/functions/add_user_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "In the example above, you will find two entries within the add_user_meta key. The first one shows the default behavior using only the meta key and the value. This causes the meta key to be created without checking upfront if it exists - that allows you to create the meta value multiple times.", $translation_ident ); ?><br>
+		<?php echo WPWHPRO()->helpers->translate( "As seen in the second entry, you will find a third key called <strong>unique</strong> that allows you to check upfront if the meta key exists already. If it does, the meta entry is neither created, nor updated. Set the value to <strong>true</strong> to check against existing ones. Default: false", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "If you look closely to the second entry again, the value included is not a string, but a JSON construct, which is considered as an array and will therefore be serialized. The given value will be saved to the database in the following format: <code>a:1:{s:14:\"some_array_key\";s:16:\"Some array Value\";}</code>", $translation_ident ); ?>
 	</li>
 	<li>
@@ -204,10 +199,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_user' ) 
 	  }
 	]
 }</pre>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>update_user_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/update_user_meta/">https://developer.wordpress.org/reference/functions/update_user_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "The example above shows you two entries for this function. The first one is the default set up thats used in most cases. Simply define the meta key and the meta value and the key will be updated if it does exist and if it does not exist, it will be created.", $translation_ident ); ?>
-		<br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>update_user_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/update_user_meta/">https://developer.wordpress.org/reference/functions/update_user_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "The example above shows you two entries for this function. The first one is the default set up thats used in most cases. Simply define the meta key and the meta value and the key will be updated if it does exist and if it does not exist, it will be created.", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "The third argument, as seen in the second entry, allows you to check against a previous value before updating. That causes that the meta value will only be updated if the previous key fits to whats currently saved within the database. Default: ''", $translation_ident ); ?>
 	</li>
 	<li>
@@ -223,10 +216,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_update_user' ) 
 	  }
 	]
 }</pre>
-		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>delete_user_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/delete_user_meta/">https://developer.wordpress.org/reference/functions/delete_user_meta/</a>
-		<br>
-		<?php echo WPWHPRO()->helpers->translate( "Within the example above, you will see that only the meta key is required for deleting an entry. This will cause all meta keys on this post with the same key to be deleted.", $translation_ident ); ?>
-		<br>
+		<?php echo WPWHPRO()->helpers->translate( "This key refers to the <strong>delete_user_meta()</strong> function of WordPress:", $translation_ident ); ?> <a title="Go to WordPress" target="_blank" href="https://developer.wordpress.org/reference/functions/delete_user_meta/">https://developer.wordpress.org/reference/functions/delete_user_meta/</a><br>
+		<?php echo WPWHPRO()->helpers->translate( "Within the example above, you will see that only the meta key is required for deleting an entry. This will cause all meta keys on this post with the same key to be deleted.", $translation_ident ); ?><br>
 		<?php echo WPWHPRO()->helpers->translate( "The second argument allows you to target only a specific meta key/value combination. This gets important if you want to target a specific meta key/value combination and not delete all available entries for the given post. Default: ''", $translation_ident ); ?>
 	</li>
 </ol>
@@ -264,23 +255,19 @@ function my_custom_callback_function( $user_data, $user_id, $user_meta, $update 
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$user_data</strong> (array)
-		<br>
+		<strong>$user_data</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the data that is used to update the user.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user_id</strong> (integer)
-		<br>
+		<strong>$user_id</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the user id of the updated user. Please note that it can also contain a wp_error object since it is the response of the wp_insert_user() function.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$user_meta</strong> (string)
-		<br>
+		<strong>$user_meta</strong> (string)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Contains the unformatted user meta as you sent it over within the webhook request as a string.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$update</strong> (bool)
-		<br>
+		<strong>$update</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "This value will be set to 'true' for the update_user webhook.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -293,19 +280,23 @@ function my_custom_callback_function( $user_data, $user_id, $user_meta, $update 
 			'msg'		=> array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', $translation_ident ) ),
 		);
 
-		ob_start();
-		?>
-		<pre>
-$return_args = array(
-	'success' => false,
-	'data' => array(
-		'user_id' => 0,
-		'user_data' => array()
-	)
-);
-		</pre>
-		<?php
-		$returns_code = ob_get_clean();
+		$returns_code = array (
+			'success' => true,
+			'msg' => 'User successfully updated.',
+			'data' => 
+			array (
+			  'user_id' => 108,
+			  'user_data' => 
+			  array (
+				'user_email' => 'newmail@demo.test',
+				'ID' => 108,
+				'display_name' => 'Jon Doe',
+				'first_name' => 'Jon',
+				'last_name' => 'Doe',
+				'additional_roles' => false,
+			  ),
+			),
+		);
 
 		$description = WPWHPRO()->webhook->get_endpoint_description( 'action', array(
 			'webhook_name' => 'Update a user',
@@ -317,7 +308,8 @@ $return_args = array(
 
 		return array(
 			'action'			=> 'update_user',
-			'name'			  => WPWHPRO()->helpers->translate( 'Update a user', $translation_ident ),
+			'name'			  => WPWHPRO()->helpers->translate( 'Update user', $translation_ident ),
+			'sentence'			  => WPWHPRO()->helpers->translate( 'update a user', $translation_ident ),
 			'parameter'		 => $parameter,
 			'returns'		   => $returns,
 			'returns_code'	  => $returns_code,

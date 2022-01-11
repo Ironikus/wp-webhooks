@@ -36,7 +36,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_wpwh_shortcode
     "param": "some value"
 }
 </pre>
-        <?php echo WPWHPRO()->helpers->translate( "We do also support custom tags, meaning you can add dynamic values from the currently given data. E.g. <code>email=\"%user_email%\"</code> - This will add the email of the currently logged in user. For a full list of the dynamic arguments, please take a look at the able down below.", $translation_ident ); ?>
+        <?php echo WPWHPRO()->helpers->translate( "We do also support custom tags, meaning you can add dynamic values from the currently given data. E.g. <code>email=\"%user_email%\"</code> - This will add the email of the currently logged in user. For a full list of the dynamic arguments, please take a look at the list down below.", $translation_ident ); ?>
 
         <table class="wpwh-table wpwh-text-small">
             <thead>
@@ -91,6 +91,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_wpwh_shortcode
             return array(
                 'trigger'           => 'wpwh_shortcode',
                 'name'              => WPWHPRO()->helpers->translate( 'Shortcode called', 'trigger-login-user-content' ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a shortcode was called', 'trigger-login-user-content' ),
                 'parameter'         => $parameter,
                 'returns_code'      => $this->get_demo( array() ),
                 'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as the [wpwh_shortcode] shortcode was triggered.', 'trigger-login-user-content' ),

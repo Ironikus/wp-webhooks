@@ -86,7 +86,8 @@ function my_custom_callback_function(  $return_args, $folder ){
 
 			return array(
 				'action'			=> 'delete_folder',
-				'name'			  => WPWHPRO()->helpers->translate( 'Delete a folder', $translation_ident ),
+				'name'			  => WPWHPRO()->helpers->translate( 'Delete folder', $translation_ident ),
+				'sentence'			  => WPWHPRO()->helpers->translate( 'delete a folder', $translation_ident ),
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,

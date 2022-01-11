@@ -91,7 +91,8 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_create_comment
 
             return array(
                 'trigger'           => 'create_comment',
-                'name'              => WPWHPRO()->helpers->translate( 'New Comment', $translation_ident ),
+                'name'              => WPWHPRO()->helpers->translate( 'Comment created', $translation_ident ),
+                'sentence'              => WPWHPRO()->helpers->translate( 'a comment was created', $translation_ident ),
                 'parameter'         => $parameter,
                 'settings'          => $settings,
                 'returns_code'      => $this->get_demo( array() ),

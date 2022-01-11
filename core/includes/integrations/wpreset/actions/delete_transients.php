@@ -9,9 +9,6 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wpreset_Actions_delete_transients
 	 */
 	class WP_Webhooks_Integrations_wpreset_Actions_delete_transients {
 
-		/*
-	 * The core logic to test a webhook
-	 */
 	public function get_details(){
 
 		$translation_ident = "action-delete_transients-content";
@@ -43,18 +40,15 @@ function my_custom_callback_function( $return_args, $confirm, $count ){
 <?php echo WPWHPRO()->helpers->translate( "Here's an explanation to each of the variables that are sent over within the custom function.", $translation_ident ); ?>
 <ol>
 	<li>
-		<strong>$return_args</strong> (array)
-		<br>
+		<strong>$return_args</strong> (array)<br>
 		<?php echo WPWHPRO()->helpers->translate( "All the values that are sent back as a response the the initial webhook action caller.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$confirm</strong> (bool)
-		<br>
+		<strong>$confirm</strong> (bool)<br>
 		<?php echo WPWHPRO()->helpers->translate( "Whether you confirmed the deletion or not.", $translation_ident ); ?>
 	</li>
 	<li>
-		<strong>$count</strong> (integer)
-		<br>
+		<strong>$count</strong> (integer)<br>
 		<?php echo WPWHPRO()->helpers->translate( "The number of deleted transients.", $translation_ident ); ?>
 	</li>
 </ol>
@@ -81,6 +75,7 @@ function my_custom_callback_function( $return_args, $confirm, $count ){
 		return array(
 			'action'			=> 'delete_transients', //required
 			'name'			   => WPWHPRO()->helpers->translate( 'Delete transients', $translation_ident ),
+			'sentence'			   => WPWHPRO()->helpers->translate( 'delete all transients', $translation_ident ),
 			'parameter'		 => $parameter,
 			'returns'		   => $returns,
 			'returns_code'	  => $returns_code,
