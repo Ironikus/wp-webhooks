@@ -306,7 +306,7 @@ if ( empty( $active_trigger ) ) {
                                 $action_name .= '<span class="integration-pro">Pro</span>';
                             }
                         ?>
-                            <a href="#webhook-action-<?php echo $identkey; ?>" data-wpwh-trigger-id="<?php echo $action['action']; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $action_name; ?></a>
+                            <a href="#webhook-action-<?php echo $action['action']; ?>" data-wpwh-trigger-id="<?php echo $action['action']; ?>" class="wpwh-trigger-search__item<?php echo $is_active ? ' wpwh-trigger-search__item--active' : ''; ?>"><?php echo $action_name; ?></a>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -333,7 +333,7 @@ if ( empty( $active_trigger ) ) {
 							$trigger_integration_name = esc_html( $action_details['name'] );
 						}
                     ?>
-                        <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $identkey; ?>">
+                        <div class="wpwh-trigger-item<?php echo $is_active ? ' wpwh-trigger-item--active' : ''; ?> wpwh-table-container" id="webhook-action-<?php echo $action['action']; ?>">
                             <div class="wpwh-table-header">
                                 <div class="mb-2 d-flex align-items-center justify-content-between">
 									<h2 class="d-flex align-items-end" data-wpwh-trigger-name>
@@ -364,7 +364,7 @@ if ( empty( $active_trigger ) ) {
                             </div>
                             <div class="wpwh-accordion" id="wpwh_accordion_1">
                                 <div class="wpwh-accordion__item border-top-0 pt-0">
-                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_arguments_<?php echo $identkey; ?>" aria-expanded="true" aria-controls="wpwh_accordion_arguments_<?php echo $identkey; ?>">
+                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_arguments_<?php echo $action['action']; ?>" aria-expanded="true" aria-controls="wpwh_accordion_arguments_<?php echo $action['action']; ?>">
                                         <span><?php echo WPWHPRO()->helpers->translate( 'Accepted arguments', 'wpwhpro-page-actions'); ?></span>
                                         <span class="text-secondary">
                                             <span class="wpwh-text-expand"><?php echo WPWHPRO()->helpers->translate( 'Expand', 'wpwhpro-page-actions'); ?></span>
@@ -375,7 +375,7 @@ if ( empty( $active_trigger ) ) {
                                             </svg>
                                         </span>
                                     </button>
-                                    <div id="wpwh_accordion_arguments_<?php echo $identkey; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingOne">
+                                    <div id="wpwh_accordion_arguments_<?php echo $action['action']; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingOne">
                                         <table class="wpwh-table wpwh-text-small">
                                             <thead>
                                                 <tr>
@@ -429,7 +429,7 @@ if ( empty( $active_trigger ) ) {
                                     </div>
                                 </div>
                                 <div class="wpwh-accordion__item">
-                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_return_values_<?php echo $identkey; ?>" aria-expanded="true" aria-controls="wpwh_accordion_return_values_<?php echo $identkey; ?>">
+                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_return_values_<?php echo $action['action']; ?>" aria-expanded="true" aria-controls="wpwh_accordion_return_values_<?php echo $action['action']; ?>">
                                         <span><?php echo WPWHPRO()->helpers->translate( 'Return values', 'wpwhpro-page-actions'); ?></span>
                                         <span class="text-secondary">
                                             <span class="wpwh-text-expand"><?php echo WPWHPRO()->helpers->translate( 'Expand', 'wpwhpro-page-actions'); ?></span>
@@ -440,7 +440,7 @@ if ( empty( $active_trigger ) ) {
                                             </svg>
                                         </span>
                                     </button>
-                                    <div id="wpwh_accordion_return_values_<?php echo $identkey; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingTwo">
+                                    <div id="wpwh_accordion_return_values_<?php echo $action['action']; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingTwo">
                                         <?php if( ! empty( $action['returns'] ) ) : ?>
                                             <table class="wpwh-table wpwh-text-small mb-4">
                                                 <thead>
@@ -478,7 +478,7 @@ if ( empty( $active_trigger ) ) {
                                     </div>
                                 </div>
                                 <div class="wpwh-accordion__item">
-                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_description_<?php echo $identkey; ?>" aria-expanded="true" aria-controls="wpwh_accordion_description_<?php echo $identkey; ?>">
+                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_description_<?php echo $action['action']; ?>" aria-expanded="true" aria-controls="wpwh_accordion_description_<?php echo $action['action']; ?>">
                                         <span><?php echo WPWHPRO()->helpers->translate( 'Description', 'wpwhpro-page-actions'); ?></span>
                                         <span class="text-secondary">
                                             <span class="wpwh-text-expand"><?php echo WPWHPRO()->helpers->translate( 'Expand', 'wpwhpro-page-actions'); ?></span>
@@ -489,14 +489,15 @@ if ( empty( $active_trigger ) ) {
                                             </svg>
                                         </span>
                                     </button>
-                                    <div id="wpwh_accordion_description_<?php echo $identkey; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingThree">
+                                    <div id="wpwh_accordion_description_<?php echo $action['action']; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingThree">
                                         <div class="wpwh-content">
                                             <?php echo wpautop( $action['description'] ); ?>
                                         </div>
                                     </div>
                                 </div>
+                                <?php if( ! $is_premium ) : ?>
                                 <div class="wpwh-accordion__item">
-                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_test_action_<?php echo $identkey; ?>" aria-expanded="true" aria-controls="wpwh_accordion_test_action_<?php echo $identkey; ?>">
+                                    <button class="wpwh-accordion__heading wpwh-btn wpwh-btn--link wpwh-btn--block text-left collapsed" type="button" data-toggle="collapse" data-target="#wpwh_accordion_test_action_<?php echo $action['action']; ?>" aria-expanded="true" aria-controls="wpwh_accordion_test_action_<?php echo $action['action']; ?>">
                                         <span><?php echo WPWHPRO()->helpers->translate( 'Test action', 'wpwhpro-page-actions'); ?></span>
                                         <span class="text-secondary">
                                             <span class="wpwh-text-expand"><?php echo WPWHPRO()->helpers->translate( 'Expand', 'wpwhpro-page-actions'); ?></span>
@@ -507,7 +508,7 @@ if ( empty( $active_trigger ) ) {
                                             </svg>
                                         </span>
                                     </button>
-                                    <div id="wpwh_accordion_test_action_<?php echo $identkey; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingFour">
+                                    <div id="wpwh_accordion_test_action_<?php echo $action['action']; ?>" class="wpwh-accordion__content collapse" aria-labelledby="headingFour">
                                         <div class="wpwh-content">
                                             <p>
                                                 <?php echo WPWHPRO()->helpers->translate( 'Here you can test the specified webhook. Please note, that this test can modify the data of your website (Depending on what action you test). Also, you will see the response as any web service receives it.', 'wpwhpro-page-actions'); ?>
@@ -517,8 +518,8 @@ if ( empty( $active_trigger ) ) {
                                             </p>
                                             <select
                                                 class="wpwh-form-input wpwh-webhook-receive-test-action"
-                                                data-wpwh-identkey="<?php echo $identkey; ?>"
-                                                data-wpwh-target="#wpwh-action-testing-form-<?php echo $identkey; ?>"
+                                                data-wpwh-identkey="<?php echo $action['action']; ?>"
+                                                data-wpwh-target="#wpwh-action-testing-form-<?php echo $action['action']; ?>"
                                             >
                                                 <option value="empty"><?php echo WPWHPRO()->helpers->translate( 'Choose action...', 'wpwhpro-page-data-mapping' ); ?></option>
                                                 <?php if( ! empty( $webhooks ) ) : ?>
@@ -533,7 +534,7 @@ if ( empty( $active_trigger ) ) {
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
                                             </select>
-                                            <form id="wpwh-action-testing-form-<?php echo $identkey; ?>" method="post" class="wpwh-actions-testing-form mt-4" action="" target="_blank" style="display:none;">
+                                            <form id="wpwh-action-testing-form-<?php echo $action['action']; ?>" method="post" class="wpwh-actions-testing-form mt-4" action="" target="_blank" style="display:none;">
                                                 <table class="wpwh-table wpwh-table--in-content">
                                                     <tbody>
                                                         <tr valign="top">
@@ -586,6 +587,7 @@ if ( empty( $active_trigger ) ) {
                                         </div>
                                     </div>
                                 </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>

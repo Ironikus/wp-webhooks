@@ -1,20 +1,21 @@
-=== WP Webhooks ===
+=== WP Webhooks - Create powerful automation workflows directly within WordPress ===
 Author URI: https://wp-webhooks.com/about/
 Plugin URI: https://wp-webhooks.com/
 Contributors: ironikus
 Donate link: https://paypal.me/ironikus
-Tags: api, webhooks, zapier, automation, connector, integrations, automator, create user, ironikus
+Tags: webhooks, automation, zapier, api, connector, integrations, automator, create user, ironikus
 Requires at least: 4.7
 Tested up to: 5.8.3
-Stable Tag: 3.2.1
-License: GNU Version 3 or Any Later Version
+Stable Tag: 3.3.0
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Put your website on autopilot by using webhooks to get rid of manual tasks and focus on what's really important for your business.
 
 == Description ==
 
-Put your website on autopilot by automating manual tasks to leverage your time and ressources for what's really important to your project.
-WP Webhooks can be used on two different ways: 
+Put your website on autopilot by automating manual tasks to leverage your time and ressources for what's really important to your project or business.
+WP Webhooks can be used in three different ways: 
 
 **Trigger (Send Data):**
 A trigger sends information from your WordPress website on a specific event (e.g. when a user logs in), to any API or external service of your choice (e.g. Zapier, Integromat, Pabbly, ...).
@@ -22,13 +23,16 @@ A trigger sends information from your WordPress website on a specific event (e.g
 **Action (Receive Data):**
 An action is the reversed way of the trigger. It allows you to receive data on your website from any API or external service (e.g. Zapier, Integromat, Pabbly) which then executes a specific functionality on your WordPress website (e.g. creating a user or post).
 
+**Flows ([Pro](https://wp-webhooks.com/))**
+A Flow allows you to connect both the triggers and actions together and create tasks that are executed in a consecutive order. E.g. When [a new user is created](https://wp-webhooks.com/integrations/wordpress/triggers/create_user/) (trigger), [send an email](https://wp-webhooks.com/integrations/wordpress/actions/send_email/) to the user.
+
 
 To give you some practical examples, here's what you can do via our plugin: 
 
 = Usage examples =
 * Create a WordPress user as soon as a new signup happens on Teachable
 * Create a WordPress post using Alexa (Voice Control)
-* Create WordPress users from an Excel list
+* Use Integromat, Pabbly, Zapier, etc. to update a user and its meta values
 * Create a Woocommerce order from some Airtable data
 * Send data once a Gravity Form submission was received
 * Send data after a user filled out a WPForms form
@@ -41,20 +45,19 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 
 **Plugin related**
 
+* Create unlimited webhook action URLs and add unlimited triggers
 * All of our integrations are available within a single plugin file. No need for any extra plugins.
+* Test all triggers and actions within a single click
 * Authenticate every trigger and action. Supported are: API Key, Bearer Token and Basic Auth
-* Add multiple Webhooks for each trigger and also for the actions
-* Test all of the available triggers with a single click
-* Test all of the available actions within the plugin
+* In-plugin extension management
 * Advanced settings for each webhook trigger url
-* Manage all of our extensions within one plugin
 * Fully translatable and ready for multilingual sites
 * Fully WPML compatible
 * Advanced Developer Hooks
 * Optimized settings page for more control
-* Supports XML, JSON, plain text/HTML and form urlencode
+* Supports XML, JSON, plain text/HTML, forms, and form urlencode
 * Supports the following request methods: POST (Default), GET, HEAD, PUT, DELETE, TRACE, OPTIONS, PATCH
-* Supports Pabbly, Integromat, automate.io, Zapier and much more
+* Supports Pabbly, Integromat, Integrately, automate.io, Zapier and much more
 
 **[WordPress](https://wp-webhooks.com/integrations/wordpress/) related integrations**
 
@@ -183,10 +186,13 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 Sounds like a catchy title, right? Actually, it really is the truth. Why? We will show you!
 
 * A lot of awesome plugin features (Details down below)
+* Unlimited triggers and actions
+* Unlimited [Flows](https://wp-webhooks.com/features/)
 * All of our [pro integrations](https://wp-webhooks.com/integrations/)
 * All of our [pro features](https://wp-webhooks.com/features/)
 * All of our [pro extensions](https://wp-webhooks.com/downloads/)
 * Advanced security features
+* Whitelabel feature
 * Completely free premium extensions
 
 [Compare WP Webhooks and WP Webhooks Pro now!](https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro%20Compare)
@@ -200,6 +206,7 @@ Here are some of our premium features for [WP Webhooks Pro](https://wp-webhooks.
 * Update posts with post meta (ACF supported)
 * Bulk webhook action to trigger multiple actions at the same time
 * Shortcode webhook action that fires once the shortcode is called
+* Trigger a webhok via a custom link or button on your website
 * WordPress hook webhook action that fires once a specific filter of the WordPress API was called
 * Data Mapping engine to manipulate your incoming/outgoing data
 * Whitelabel feature (see comparison table)
@@ -209,7 +216,7 @@ Here are some of our premium features for [WP Webhooks Pro](https://wp-webhooks.
 * Webhook URL action whitelist
 * In-plugin assistant
 
-Our free premium extensions for [WP Webhooks Pro](https://wp-webhooks.com/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
+Our premium extensions for [WP Webhooks Pro](https://wp-webhooks.com/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro)
 
 * [Create Blog Post Via Email](https://wp-webhooks.com/downloads/wpwh-pro-send-blog-post-by-email/): Yes, it will allow you to create WordPress posts via Email
 * [Execute PHP Code](https://wp-webhooks.com/downloads/execute-php-code/): It is as massive as it sounds. It allows you to run php scripts through webhooks on your WordPress site
@@ -228,10 +235,33 @@ We offer you a very awesome hook system to customize everything based on your ne
 1. Activate the plugin
 2. Go to Settings > WP Webhooks and start automating
 
+For a full manual, please visit our [help file](https://wp-webhooks.com/docs/knowledge-base/how-to-install-wp-webhooks-pro/)
+
+== Frequently Asked Questions ==
+
+= How do I get started with WP Webhooks? =
+
+If you already have a specific picture about what webhook automation you want to create, you can check out each endpoint directly on our website. Here is an example for the LearnDash "Course completed" webhook trigger: [https://wp-webhooks.com/integrations/learndash/triggers/ld_course_completed/](https://wp-webhooks.com/integrations/learndash/triggers/ld_course_completed/).
+In case you would like to get started from scratch, we have a full documentation available here: [https://wp-webhooks.com/docs/article-categories/get-started/](https://wp-webhooks.com/docs/article-categories/get-started/)
+
+= Can I request an integration or new feature? =
+
+Yes, you can! Please visit our [Request an integration](https://wp-webhooks.com/request-integrations/) page and add your request there in case you cannot find it already.
+
+= What is the difference between your free and pro version? =
+
+If you are looking for a full list of differences between our free and pro version, we suggest taking a look at our [comparison table](https://wp-webhooks.com/compare-wp-webhooks-pro/?utm_source=wordpress&utm_medium=description&utm_campaign=WP%20Webhooks%20Pro%20Compare).
+
+== Screenshots ==
+
+1. Exchange data between your website and different services
+2. Send data to external services on specific events
+3. Receive data from external services to do something on your website
+4. Add authentication to every trigger and action
 
 == Changelog ==
 
-= 3.3.0: January 08, 2022 =
+= 3.3.0: January 12, 2022 =
 
 **New Features:**
 
@@ -677,3 +707,7 @@ We offer you a very awesome hook system to customize everything based on your ne
 
 = 1.0.0: March 13, 2019 =
 * Birthday of WP Webhooks
+
+== Upgrade Notice ==
+
+Version 3.3.0 comes along with various bug fixed and a lot of new integrations and features. You will surely appreciate this update.

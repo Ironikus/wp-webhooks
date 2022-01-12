@@ -95,7 +95,7 @@ function my_custom_callback_function( $post, $post_id, $check, $force_delete ){
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,
-				'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s.', $translation_ident ), WPWHPRO_NAME ),
+				'short_description' => sprintf( WPWHPRO()->helpers->translate( 'Delete a post via %s.', $translation_ident ), WPWH_NAME ),
 				'description'	   => $description,
 				'integration'	   => 'wordpress',
 				'premium' 			=> false,

@@ -36,7 +36,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_ironikus_test' 
 					WPWHPRO()->helpers->translate( 'The second argument you need to set is <strong>test_var</strong>. Please set it to <strong>test-value123</strong>', $translation_ident )
 				),
 				'tipps' => array(
-					sprintf( WPWHPRO()->helpers->translate( "This webhook makes sense if you want to test if %s works properly on your WordPress website. You can try to setup different values to see how the webhook interacts with your site.", $translation_ident ), WPWHPRO_NAME )
+					sprintf( WPWHPRO()->helpers->translate( "This webhook makes sense if you want to test if %s works properly on your WordPress website. You can try to setup different values to see how the webhook interacts with your site.", $translation_ident ), WPWH_NAME )
 				),
 			) );
 
