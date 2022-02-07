@@ -338,7 +338,7 @@ if ( empty( $active_trigger ) ) {
                                 <div class="mb-2 d-flex align-items-center justify-content-between">
 									<h2 class="d-flex align-items-end" data-wpwh-trigger-name>
 										<?php if( ! empty( $action_integration_icon ) ) : ?>
-											<img class="wpwh-trigger-search__item-image mb-1" src="<?php echo $action_integration_icon; ?>" />
+											<img class="wpwh-trigger-search__item-image mb-1" style="height:40px;max-height:40px;width:40px;max-width:40px;" src="<?php echo $action_integration_icon; ?>" />
 										<?php endif; ?>
 										<div class="d-flex flex-column">
 											<span class="wpwh-trigger-integration-name wpwh-text-small"><?php echo $trigger_integration_name; ?></span>
