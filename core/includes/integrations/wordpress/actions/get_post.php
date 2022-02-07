@@ -17,12 +17,19 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Actions_get_post' ) ) :
 		$translation_ident = 'action-get_post-content';
 
 		$parameter = array(
-			'post_id'	   => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id of the post you want to fetch.', $translation_ident ) ),
+			'post_value'	   => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'The post id (default) of the post you want to fetch. See the Details for further information.', $translation_ident ) ),
+			'value_type'	   => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this to either post_id or attachment_url, depending on your used post_value.', $translation_ident ) ),
 			'return_only'	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Select the values you want to return. Default is all.', $translation_ident ) ),
 			'thumbnail_size'	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Pass the size of the thumbnail of your given post id. Default is full.', $translation_ident ) ),
 			'post_taxonomies'	=> array( 'short_description' => WPWHPRO()->helpers->translate( 'Single value or comma separated list of the taxonomies you want to return. Default: post_tag.', $translation_ident ) ),
 			'do_action'	 => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after our plugin fires this webhook.', $translation_ident ) )
 		);
+
+		ob_start();
+		?>
+<?php echo WPWHPRO()->helpers->translate( "This argument accepts various values, depending on what you set up within the return_only argument. By default, you can enter the post ID. In case you want to search an attachment, you can also set the attachment URL as a value - please note that in this case you have to adjust the <strong>value_type</strong> argument to <strong>attachment_url</strong>.", $translation_ident ); ?>
+		<?php
+		$parameter['post_value']['description'] = ob_get_clean();
 
 		ob_start();
 		?>
@@ -179,7 +186,7 @@ function my_custom_callback_function( $return_args, $post_id, $thumbnail_size, $
 				'parameter'		 => $parameter,
 				'returns'		   => $returns,
 				'returns_code'	  => $returns_code,
-				'short_description' => WPWHPRO()->helpers->translate( 'Returns the object of a user', $translation_ident ),
+				'short_description' => WPWHPRO()->helpers->translate( 'Returns the post/custom post from your given data.', $translation_ident ),
 				'description'	   => $description,
 				'integration'	   => 'wordpress',
 				'premium' 			=> false,
@@ -197,15 +204,34 @@ function my_custom_callback_function( $return_args, $post_id, $thumbnail_size, $
 				'msg'	 => '',
 				'data' => array()
 			);
+			$post_id = 0;
 
-			$post_id	 = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_id' ) );
+			$fetched_post_id	 	 = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_id' ) );
+			if( ! empty( $fetched_post_id ) ){
+				$post_value = $fetched_post_id;
+			} else {
+				$post_value	 	 = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_value' );
+			}
+			
+			$value_type	 	 = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'value_type' );
 			$return_only	 = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'return_only' );
 			$thumbnail_size	 = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'thumbnail_size' );
 			$post_taxonomies	 = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'post_taxonomies' );
 			$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 
+			if( empty( $value_type ) ){
+				$value_type = 'post_id';
+			}
+
+			if( $value_type === 'post_id' && is_numeric( $post_value ) ){
+				$post_id = intval( $post_value );
+			} elseif( $value_type === 'attachment_url' && is_string( $post_value ) ){
+				$attachment_url_url = strtok( $post_value, '?' );
+				$post_id = attachment_url_to_postid( $attachment_url_url );
+			}
+
 			if( empty( $post_id ) ){
-				$return_args['msg'] = WPWHPRO()->helpers->translate( "It is necessary to define the post_id argument. Please define it first.", 'action-get_post-failure' );
+				$return_args['msg'] = WPWHPRO()->helpers->translate( "We did not find any post for your given post_value.", 'action-get_post-failure' );
 
 				return $return_args;
 			}

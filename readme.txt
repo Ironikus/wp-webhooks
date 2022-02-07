@@ -273,10 +273,12 @@ If you are looking for a full list of differences between our free and pro versi
 * New webhook trigger "Order created" for the "Woocommerce" integration
 * Added new "Fluent Support" integration
 * New webhook trigger "Ticket created" for the "Fluent Support" integration
+* You can now use the get_post action to fetch an attachment (media) id from an URL
 
 **Little tweaks:**
 
 * Optimize integration items on single endpoint view for "Send Data" and "Receive Data"
+* Optimized webhook descriptions and other text
 
 **Fixed issues:**
 
