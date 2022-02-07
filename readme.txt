@@ -119,6 +119,10 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 
 * **Trigger**: Send data once a "Fluent Forms" form was submitted
 
+**[Fluent Support](https://wp-webhooks.com/integrations/fluent-support/) related integrations**
+
+* **Trigger**: Send data once a ticket was created
+
 **[Formidable Forms](https://wp-webhooks.com/integrations/formidable-forms/) related integrations**
 
 * **Trigger**: Send data once a "Formidable Forms" form was submitted
@@ -126,6 +130,10 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 **[Forminator](https://wp-webhooks.com/integrations/forminator/) related integrations**
 
 * **Trigger**: Send data once a "Forminator" form was submitted
+
+**[GiveWP](https://wp-webhooks.com/integrations/givewp/) related integrations**
+
+* **Trigger**: Send data once a donation was completed
 
 **[Gravity Forms](https://wp-webhooks.com/integrations/gravity-forms/) related integrations**
 
@@ -163,6 +171,10 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 **[Woocommerce](https://wp-webhooks.com/integrations/woocommerce/) related integrations**
 
 * **Trigger**: Send data once an order was created
+
+**[WP Fusion](https://wp-webhooks.com/integrations/wp-fusion/) related integrations**
+
+* **Trigger**: Send data once an tag was added
 
 **[WP Reset](https://wp-webhooks.com/integrations/wp-reset/) related integrations**
 
