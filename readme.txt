@@ -160,6 +160,10 @@ https://www.youtube.com/watch?v=EfagA_9Uy7o
 * **Trigger**: Send data once a membership expired
 * **Trigger**: Send data once an order was created
 
+**[Woocommerce](https://wp-webhooks.com/integrations/woocommerce/) related integrations**
+
+* **Trigger**: Send data once an order was created
+
 **[WP Reset](https://wp-webhooks.com/integrations/wp-reset/) related integrations**
 
 * **Action**: Clean the WordPress uploads folder
@@ -260,6 +264,13 @@ If you are looking for a full list of differences between our free and pro versi
 4. Add authentication to every trigger and action
 
 == Changelog ==
+
+= 3.3.1: February 07, 2022 =
+
+**New Features:**
+
+* New integration "Woocommerce"
+* New webhook trigger "Order created" for the "Woocommerce" integration
 
 = 3.3.0: January 12, 2022 =
 
