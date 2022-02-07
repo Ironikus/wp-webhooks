@@ -275,6 +275,8 @@ If you are looking for a full list of differences between our free and pro versi
 * New webhook trigger "Ticket created" for the "Fluent Support" integration
 * Added new "WP Fusion" integration
 * New webhook trigger "Tag added" for the "WP Fusion" integration
+* Added new "GiveWP" integration
+* New webhook trigger "Donation completed" for the "GiveWP" integration
 * You can now use the get_post action to fetch an attachment (media) id from an URL
 
 **Little tweaks:**

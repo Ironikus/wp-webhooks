@@ -78,7 +78,7 @@ if ( ! class_exists( 'WP_Webhooks_Integrations_wordpress_Triggers_wpwh_shortcode
             $description = WPWHPRO()->webhook->get_endpoint_description( 'trigger', array(
 				'webhook_name' => 'Shortcode called',
 				'webhook_slug' => 'wpwh_shortcode',
-				'post_delay' => true,
+				'post_delay' => false,
 				'how_to' => $how_to,
 				'trigger_hooks' => array(
 					array( 
