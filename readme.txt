@@ -5,8 +5,8 @@ Contributors: ironikus
 Donate link: https://paypal.me/ironikus
 Tags: webhooks, automation, zapier, api, connector, integrations, automator, create user, ironikus
 Requires at least: 4.7
-Tested up to: 5.8.3
-Stable Tag: 3.3.0
+Tested up to: 5.9
+Stable Tag: 3.3.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
