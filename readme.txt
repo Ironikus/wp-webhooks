@@ -272,6 +272,14 @@ If you are looking for a full list of differences between our free and pro versi
 * New integration "Woocommerce"
 * New webhook trigger "Order created" for the "Woocommerce" integration
 
+**Fixed issues:**
+
+* In case the wpwhpro/webhooks/validate_webhook_action was set to false, the function threw a notice and used the echo_action_data instead of echo_response_data
+
+**For developers:**
+
+* Added new filter wpwhpro/webhooks/validate_webhook_action to prevent webhook actions from firing
+
 = 3.3.0: January 12, 2022 =
 
 **New Features:**

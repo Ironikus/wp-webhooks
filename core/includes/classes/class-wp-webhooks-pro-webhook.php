@@ -726,9 +726,6 @@ class WP_Webhooks_Pro_Webhook {
 			}
 
 		}
-
-		//Keep the old hook to keep other extensions working (Extensions need to adjust as this way we won't be able to catch the response)
-		do_action( 'wpwhpro/webhooks/add_webhooks_actions', $action, $response_ident_value, $response_api_key );
 	
 		$default_return_data = array(
             'success' => false,
@@ -736,8 +733,16 @@ class WP_Webhooks_Pro_Webhook {
 			'msg' => WPWHPRO()->helpers->translate("It looks like your current webhook call has no action argument defined, it is deactivated or it does not have any action function.", 'action-add-webhook-actions' ),
         );
 
-		//since 3.2.0
-		$return_data = WPWHPRO()->integrations->execute_actions( $default_return_data, $action, $response_ident_value, $response_api_key );
+		if( apply_filters( 'wpwhpro/webhooks/validate_webhook_action', true, $action, $response_ident_value, $response_api_key ) ){
+			//Keep the old hook to keep other extensions working (Extensions need to adjust as this way we won't be able to catch the response)
+			do_action( 'wpwhpro/webhooks/add_webhooks_actions', $action, $response_ident_value, $response_api_key );
+
+			//since 3.2.0
+			$return_data = WPWHPRO()->integrations->execute_actions( $default_return_data, $action, $response_ident_value, $response_api_key );
+		} else {
+			$default_return_data['msg'] = WPWHPRO()->helpers->translate("The webhook action was prevented from execution due to the wpwhpro/webhooks/validate_webhook_action filter returning false.", 'action-add-webhook-actions' );
+			$return_data = $default_return_data;
+		}
 
 		$return_data = apply_filters( 'wpwhpro/webhooks/add_webhook_actions', $return_data, $action, $response_ident_value, $response_api_key );
 		
